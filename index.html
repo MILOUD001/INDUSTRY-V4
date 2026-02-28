@@ -1,1 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MILOUD EZZAKY INDUSTRY V.4 — Wire Request System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --navy:#0a1628;--navy-mid:#112040;--navy-soft:#1a3060;
+            --blue:#1e56c8;--blue-lt:#2d6ae0;
+            --gold:#e8b84b;--gold-lt:#f5d06e;--gold-dk:#c49a2a;
+            --green:#16a06a;--green-lt:#1dc47e;
+            --amber:#d97706;--amber-lt:#f59e0b;
+            --red:#dc2626;--red-lt:#ef4444;
+            --cyan:#0891b2;--purple:#7c3aed;
+            --surface:#f7f8fc;--surface-2:#eef1f8;--surface-3:#e4e8f3;
+            --border:#d8dce8;--border-dk:#b8bdd4;
+            --text-1:#0d1626;--text-2:#3d4a6a;--text-3:#6b7898;
+            --shadow-sm:0 1px 3px rgba(10,22,40,.07),0 1px 2px rgba(10,22,40,.05);
+            --shadow-md:0 4px 16px rgba(10,22,40,.10),0 2px 4px rgba(10,22,40,.07);
+            --shadow-lg:0 12px 40px rgba(10,22,40,.14),0 4px 12px rgba(10,22,40,.08);
+            --shadow-xl:0 24px 64px rgba(10,22,40,.18),0 8px 24px rgba(10,22,40,.10);
+            --r-sm:8px;--r-md:14px;--r-lg:20px;--r-xl:28px;--r-2xl:40px;
+        }
+        html{scroll-behavior:smooth}
+        body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text-1);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+        ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-dk);border-radius:10px}
+        /* LOGIN */
+        #login-screen{position:fixed;inset:0;z-index:999;background:var(--navy);display:flex;align-items:center;justify-content:center;overflow:hidden}
+        #login-screen::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(30,86,200,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(30,86,200,.08) 1px,transparent 1px);background-size:48px 48px;animation:gridDrift 20s linear infinite}
+        @keyframes gridDrift{0%{transform:translateY(0)}100%{transform:translateY(48px)}}
+        #login-screen::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(30,86,200,.15) 0%,transparent 70%)}
+        .login-wrap{position:relative;z-index:1;width:100%;max-width:440px;padding:20px}
+        .login-logo{text-align:center;margin-bottom:32px}
+        .login-logo-mark{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:var(--gold);border-radius:16px;margin-bottom:16px;box-shadow:0 8px 24px rgba(232,184,75,.35)}
+        .login-logo-mark svg{width:32px;height:32px}
+        .login-logo h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:.5px;line-height:1.2}
+        .login-logo p{font-size:12px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+        .login-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:var(--r-xl);padding:36px;backdrop-filter:blur(12px)}
+        .login-card h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
+        .login-card p{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:28px}
+        .field-group{margin-bottom:14px}
+        .field-label{display:block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:7px}
+        .field-input{width:100%;padding:13px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md);color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;transition:all .2s;outline:none}
+        .field-input::placeholder{color:rgba(255,255,255,.25)}
+        .field-input:focus{border-color:var(--gold);background:rgba(255,255,255,.09);box-shadow:0 0 0 3px rgba(232,184,75,.12)}
+        .field-input option{background:var(--navy-mid);color:#fff}
+        .login-btn{width:100%;margin-top:20px;padding:15px;background:var(--gold);color:var(--navy);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:none;border-radius:var(--r-md);cursor:pointer;transition:all .2s}
+        .login-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,184,75,.35)}
+        .login-footer{text-align:center;margin-top:24px;font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.5px}
+        /* DASHBOARD */
+        #dashboard-container{display:none;min-height:100vh}
+        .sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--navy);z-index:100;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.06)}
+        .sidebar-brand{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+        .brand-badge{display:inline-flex;align-items:center;gap:10px;margin-bottom:10px}
+        .brand-icon{width:36px;height:36px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .brand-icon svg{width:20px;height:20px}
+        .brand-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff;line-height:1.2}
+        .brand-sub{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.35)}
+        .sidebar-user{padding:16px 20px;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06)}
+        .user-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--blue-lt),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+        .user-meta{flex:1;min-width:0}
+        .user-name{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .user-dept{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+        .sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}
+        .nav-section-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.28);padding:0 8px;margin-bottom:8px;margin-top:16px}
+        .nav-section-label:first-child{margin-top:0}
+        .nav-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border:none;border-radius:var(--r-md);background:transparent;color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;text-align:left;position:relative}
+        .nav-btn:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
+        .nav-btn.active{background:rgba(30,86,200,.25);color:#fff;font-weight:600}
+        .nav-btn.active::before{content:'';position:absolute;left:0;top:25%;bottom:25%;width:3px;background:var(--gold);border-radius:0 3px 3px 0}
+        .nav-btn svg{width:16px;height:16px;flex-shrink:0}
+        .nav-badge{margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;min-width:20px;text-align:center}
+        .nav-badge.red{background:var(--red);color:#fff}
+        .nav-badge.green{background:var(--green);color:#fff}
+        .nav-badge.purple{background:var(--purple);color:#fff}
+        .sidebar-clock{padding:16px 20px;border-top:1px solid rgba(255,255,255,.06)}
+        .clock-time{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#fff;letter-spacing:2px}
+        .clock-date{font-size:11px;color:rgba(255,255,255,.35);margin-top:3px}
+        .shift-tag{display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(232,184,75,.15);border:1px solid rgba(232,184,75,.25);color:var(--gold-lt);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:6px}
+        .shift-dot{width:5px;height:5px;background:var(--gold);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+        .main-area{margin-left:240px;min-height:100vh;display:flex;flex-direction:column}
+        .topbar{position:sticky;top:0;z-index:50;background:rgba(247,248,252,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+        .topbar-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text-1)}
+        .topbar-actions{display:flex;align-items:center;gap:8px}
+        .topbar-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text-2);transition:all .15s}
+        .topbar-btn:hover{border-color:var(--blue);color:var(--blue)}
+        .topbar-btn svg{width:14px;height:14px}
+        .page{display:none;padding:28px;animation:fadein .2s ease}
+        .page.active{display:block}
+        @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+        /* STATS */
+        .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+        .stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 24px;position:relative;overflow:hidden;transition:box-shadow .2s}
+        .stat-card:hover{box-shadow:var(--shadow-md)}
+        .stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+        .stat-card.total::after{background:var(--blue)}.stat-card.completed::after{background:var(--green)}
+        .stat-card.pending::after{background:var(--amber)}.stat-card.progress::after{background:var(--cyan)}
+        .stat-icon{width:38px;height:38px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+        .stat-icon.blue{background:rgba(30,86,200,.1);color:var(--blue)}.stat-icon.green{background:rgba(22,160,106,.1);color:var(--green)}
+        .stat-icon.amber{background:rgba(217,119,6,.1);color:var(--amber)}.stat-icon.cyan{background:rgba(8,145,178,.1);color:var(--cyan)}
+        .stat-icon svg{width:18px;height:18px}
+        .stat-value{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--text-1);line-height:1;margin-bottom:5px;letter-spacing:-.5px}
+        .stat-label{font-size:12px;font-weight:500;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px}
+        /* CARD */
+        .card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+        .card-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
+        .card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text-1);display:flex;align-items:center;gap:8px}
+        .card-body{padding:20px 22px}
+        /* BADGES */
+        .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+        .badge-critical{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.2)}
+        .badge-urgent{background:rgba(217,119,6,.1);color:var(--amber);border:1px solid rgba(217,119,6,.2)}
+        .badge-normal{background:rgba(22,160,106,.1);color:var(--green);border:1px solid rgba(22,160,106,.2)}
+        .badge-status{background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
+        .badge-blue{background:rgba(30,86,200,.1);color:var(--blue);border:1px solid rgba(30,86,200,.2)}
+        .badge-count{background:var(--gold);color:var(--navy);font-size:10px;padding:2px 7px}
+        .badge-purple{background:rgba(124,58,237,.1);color:var(--purple);border:1px solid rgba(124,58,237,.2)}
+        /* REQUEST CARDS */
+        .req-list{display:flex;flex-direction:column;gap:10px;max-height:580px;overflow-y:auto;padding-right:4px}
+        .req-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px;border-left:4px solid;transition:all .15s;position:relative}
+        .req-card:hover{border-color:var(--border-dk);box-shadow:var(--shadow-sm);transform:translateX(2px)}
+        .req-card.critical{border-left-color:var(--red)}.req-card.urgent{border-left-color:var(--amber)}.req-card.normal{border-left-color:var(--green)}
+        .req-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+        .req-id{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--blue)}
+        .req-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .req-items{display:flex;flex-direction:column;gap:5px;margin:10px 0}
+        .req-item{background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;font-size:12px;display:flex;justify-content:space-between;align-items:center}
+        .req-item-name{font-weight:600;color:var(--text-1)}.req-item-detail{color:var(--text-3)}
+        .req-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:10px}
+        .status-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--text-2)}
+        .status-dot{width:7px;height:7px;border-radius:50%}
+        .dot-pending{background:var(--amber)}.dot-progress{background:var(--blue);animation:pulse 1.5s ease-in-out infinite}.dot-completed{background:var(--green)}
+        .time-lbl{font-size:11px;color:var(--text-3)}
+        /* BUTTONS */
+        .btn-row{display:flex;gap:8px;margin-top:12px}
+        .btn{flex:1;padding:9px 14px;border:none;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.3px}
+        .btn:hover{transform:translateY(-1px)}.btn:active{transform:translateY(0)}
+        .btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:var(--blue-lt);box-shadow:0 4px 12px rgba(30,86,200,.3)}
+        .btn-success{background:var(--green);color:#fff}.btn-success:hover{background:var(--green-lt);box-shadow:0 4px 12px rgba(22,160,106,.3)}
+        .btn-outline{background:#fff;border:1px solid var(--border);color:var(--text-2)}.btn-outline:hover{border-color:var(--red);color:var(--red)}
+        .btn-amber{background:rgba(217,119,6,.1);color:var(--amber);border:1px solid rgba(217,119,6,.2)}.btn-amber:hover{background:var(--amber);color:#fff;box-shadow:0 4px 12px rgba(217,119,6,.3)}
+        .btn-purple{background:rgba(124,58,237,.1);color:var(--purple);border:1px solid rgba(124,58,237,.2)}.btn-purple:hover{background:var(--purple);color:#fff}
+        .btn-disabled{background:var(--surface-2);color:var(--text-3);cursor:not-allowed}.btn-disabled:hover{transform:none}
+        /* LAYOUT */
+        .two-col{display:grid;grid-template-columns:1fr 380px;gap:20px}
+        .three-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+        /* CHARTS */
+        .chart-wrap{padding:20px 22px}
+        .bar-track{display:flex;align-items:flex-end;gap:10px;height:140px}
+        .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+        .bar-fill{width:100%;background:linear-gradient(to top,var(--blue),rgba(30,86,200,.5));border-radius:4px 4px 0 0;min-height:4px;position:relative;transition:height .4s ease}
+        .bar-val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap}
+        .bar-lbl{font-size:11px;color:var(--text-3)}
+        .donut-wrap{display:flex;align-items:center;gap:24px;padding:20px 22px}
+        .donut-svg{width:110px;height:110px;flex-shrink:0}
+        .donut-legend{flex:1}
+        .legend-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
+        .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+        .legend-name{color:var(--text-2);flex:1}.legend-count{font-weight:700;color:var(--text-1)}
+        .wire-bars{display:flex;flex-direction:column;gap:10px}
+        .wbar-item{display:flex;align-items:center;gap:10px;font-size:12px}
+        .wbar-name{flex:1;color:var(--text-2);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .wbar-track{width:80px;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+        .wbar-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .4s}
+        .wbar-count{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--blue);min-width:20px;text-align:right}
+        /* STOCK ALERTS */
+        .alert-list{display:flex;flex-direction:column;gap:8px}
+        .alert-item{display:flex;align-items:center;justify-content:space-between;background:#fffbeb;border:1px solid #fde68a;border-radius:var(--r-sm);padding:10px 14px}
+        .alert-name{font-size:12px;font-weight:600;color:#92400e}.alert-loc{font-size:11px;color:#b45309;margin-top:1px}
+        .alert-stock{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--red)}
+        .alert-ok{font-size:12px;color:var(--green);font-weight:500;display:flex;align-items:center;gap:5px}
+        /* HISTORY */
+        .hist-table{width:100%;border-collapse:collapse}
+        .hist-table th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);padding:8px 12px;border-bottom:1px solid var(--border)}
+        .hist-table td{padding:10px 12px;font-size:12px;color:var(--text-2);border-bottom:1px solid var(--surface-2)}
+        .hist-table tr:last-child td{border-bottom:none}.hist-table tr:hover td{background:var(--surface)}
+        .hist-table .mono{font-family:'DM Mono',monospace;color:var(--blue);font-size:11px}
+        /* FORM */
+        .form-shell{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px}
+        .form-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);padding:22px 24px;display:flex;align-items:center;justify-content:space-between}
+        .form-header.wpa-header{background:linear-gradient(135deg,#0e3a5c 0%,#0f6b9a 100%)}
+        .form-header.twist-header{background:linear-gradient(135deg,#3b1060 0%,#6d28d9 100%)}
+        .form-header-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff}
+        .form-header-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+        .add-wire-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:var(--r-sm);color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+        .add-wire-btn:hover{background:rgba(255,255,255,.18)}
+        .form-body{padding:24px}
+        .wire-entry{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:18px;margin-bottom:14px;position:relative}
+        .wire-entry-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+        .wire-entry-num{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--blue);background:rgba(30,86,200,.08);padding:3px 10px;border-radius:4px}
+        .wire-entry-num.wpa-num{color:#0891b2;background:rgba(8,145,178,.1)}
+        .wire-entry-num.twist-num{color:var(--purple);background:rgba(124,58,237,.1)}
+        .remove-btn{width:28px;height:28px;background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3);transition:all .15s}
+        .remove-btn:hover{border-color:var(--red);color:var(--red);background:rgba(220,38,38,.05)}
+        .remove-btn svg{width:13px;height:13px}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .form-grid.three{grid-template-columns:1fr 1fr 1fr}
+        .field{margin-bottom:12px}.field:last-child{margin-bottom:0}
+        .field label{display:block;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+        .field input,.field select{width:100%;padding:10px 13px;background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-1);outline:none;transition:all .15s}
+        .field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,86,200,.08)}
+        .field input::placeholder{color:var(--text-3)}
+        .type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+        .type-opt{padding:9px 6px;background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);text-align:center;font-size:12px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all .15s}
+        .type-opt:hover{border-color:var(--blue);color:var(--blue)}
+        .type-opt.sel{background:var(--blue);border-color:var(--blue);color:#fff}
+        .type-opt.sel.cyan{background:#0891b2;border-color:#0891b2}
+        .type-opt.sel.purple{background:var(--purple);border-color:var(--purple)}
+        .type-grid-single{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+        .type-grid-two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+        .checkbox-row{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--text-2);cursor:pointer}
+        .checkbox-row input[type=checkbox]{accent-color:var(--blue);width:15px;height:15px;cursor:pointer}
+        .form-divider{border:none;border-top:1px dashed var(--border);margin:20px 0}
+        .ref-row{display:flex;align-items:flex-end;gap:8px}
+        .ref-row .field{flex:1;margin-bottom:0}
+        .lock-btn{height:40px;padding:0 13px;background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text-3);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif}
+        .lock-btn svg{width:13px;height:13px}
+        .lock-btn:hover{border-color:var(--blue);color:var(--blue)}
+        .lock-btn.locked{background:rgba(30,86,200,.08);border-color:var(--blue);color:var(--blue)}
+        .ref-locked{background:rgba(30,86,200,.04)!important;border-color:rgba(30,86,200,.3)!important;color:var(--text-3)!important;cursor:not-allowed!important}
+        .ref-locked-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;letter-spacing:.3px;color:var(--blue);background:rgba(30,86,200,.08);border:1px solid rgba(30,86,200,.2);padding:2px 8px;border-radius:5px;margin-top:5px}
+        .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-soft) 100%);color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:var(--r-md);cursor:pointer;transition:all .2s;margin-top:8px}
+        .submit-btn:hover{background:linear-gradient(135deg,var(--navy-soft) 0%,var(--blue) 100%);box-shadow:0 6px 20px rgba(10,22,40,.3);transform:translateY(-2px)}
+        .submit-btn.wpa-btn{background:linear-gradient(135deg,#0e3a5c 0%,#0891b2 100%)}
+        .submit-btn.wpa-btn:hover{background:linear-gradient(135deg,#0891b2 0%,#0e3a5c 100%)}
+        .submit-btn.twist-btn{background:linear-gradient(135deg,#3b1060 0%,#7c3aed 100%)}
+        .submit-btn.twist-btn:hover{background:linear-gradient(135deg,#7c3aed 0%,#3b1060 100%)}
+        /* DEPT BANNER */
+        .dept-banner{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-soft) 100%);border-radius:var(--r-lg);padding:22px 26px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+        .dept-banner.wpa-banner{background:linear-gradient(135deg,#0e3a5c 0%,#0f6b9a 100%)}
+        .dept-banner.twist-banner{background:linear-gradient(135deg,#3b1060 0%,#6d28d9 100%)}
+        .dept-banner-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff}
+        .dept-banner-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:3px}
+        /* PERF */
+        .perf-list{display:flex;flex-direction:column;gap:12px}
+        .perf-row{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--surface-2)}
+        .perf-row:last-child{border-bottom:none;padding-bottom:0}
+        .perf-key{font-size:12px;color:var(--text-3)}.perf-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--text-1)}
+        .prog-bar{background:var(--surface-2);border-radius:4px;height:4px;overflow:hidden;margin-top:16px}
+        .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:4px;animation:progress-in .8s ease}
+        @keyframes progress-in{from{width:0}}
+        /* MODAL */
+        .modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,22,40,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadein .15s ease}
+        .modal{background:#fff;border-radius:var(--r-xl);width:100%;max-width:620px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-xl);animation:modalIn .2s ease}
+        @keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+        .modal-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-soft) 100%);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+        .modal-header.wpa-modal-hd{background:linear-gradient(135deg,#0e3a5c 0%,#0f6b9a 100%)}
+        .modal-header.twist-modal-hd{background:linear-gradient(135deg,#3b1060 0%,#6d28d9 100%)}
+        .modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff}
+        .modal-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+        .modal-close{width:32px;height:32px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:var(--r-sm);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+        .modal-close:hover{background:rgba(255,255,255,.2)}
+        .modal-close svg{width:14px;height:14px}
+        .modal-body{padding:20px 24px;overflow-y:auto;flex:1}
+        .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;background:var(--surface)}
+        .wire-action-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;transition:all .15s}
+        .wire-action-row.in_stock{border-color:var(--green);background:rgba(22,160,106,.05)}
+        .wire-action-row.out_of_stock{border-color:var(--amber);background:rgba(217,119,6,.05)}
+        .wire-action-info{flex:1;min-width:0}
+        .wire-action-name{font-size:13px;font-weight:700;color:var(--text-1)}
+        .wire-action-detail{font-size:11px;color:var(--text-3);margin-top:2px}
+        .wire-action-btns{display:flex;gap:6px;flex-shrink:0}
+        .wbtn{padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s;letter-spacing:.3px}
+        .wbtn:hover{transform:translateY(-1px)}
+        .wbtn-ok{background:var(--green);color:#fff}.wbtn-ok:hover{box-shadow:0 4px 10px rgba(22,160,106,.3)}
+        .wbtn-oos{background:rgba(217,119,6,.1);color:var(--amber);border:1px solid rgba(217,119,6,.25)}.wbtn-oos:hover{background:var(--amber);color:#fff}
+        .wbtn-undo{background:var(--surface-2);color:var(--text-3);border:1px solid var(--border)}
+        .wbtn-prog{background:rgba(30,86,200,.1);color:var(--blue);border:1px solid rgba(30,86,200,.25)}.wbtn-prog:hover{background:var(--blue);color:#fff}
+        .wire-status-tag{font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:5px;text-transform:uppercase}
+        .wst-in-stock{background:rgba(22,160,106,.12);color:var(--green)}.wst-oos{background:rgba(217,119,6,.12);color:var(--amber)}.wst-progress{background:rgba(30,86,200,.12);color:var(--blue)}
+        .modal-progress{display:flex;align-items:center;gap:10px;padding:12px 0;margin-bottom:16px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-3)}
+        .modal-progress-bar{flex:1;height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+        .modal-progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:3px;transition:width .3s}
+        /* INFO BANNER */
+        .info-banner{background:rgba(30,86,200,.06);border:1px solid rgba(30,86,200,.2);border-radius:var(--r-md);padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px}
+        .info-banner.wpa-info{background:rgba(8,145,178,.06);border-color:rgba(8,145,178,.2)}
+        .info-banner.twist-info{background:rgba(124,58,237,.06);border-color:rgba(124,58,237,.2)}
+        .info-banner svg{width:16px;height:16px;flex-shrink:0;margin-top:1px}
+        .info-banner p{font-size:12px;color:var(--text-2);line-height:1.5}
+        .empty{text-align:center;padding:48px 24px;color:var(--text-3)}
+        .empty svg{width:40px;height:40px;margin-bottom:12px;opacity:.4}.empty p{font-size:13px}
+        /* TOAST */
+        #toast{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+        .toast-item{background:var(--navy);color:#fff;padding:12px 18px;border-radius:var(--r-md);font-size:13px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-lg);animation:toastIn .3s ease;pointer-events:auto;border-left:4px solid var(--gold);min-width:260px}
+        .toast-item.success{border-left-color:var(--green)}.toast-item.error{border-left-color:var(--red)}
+        @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+        /* MOBILE */
+        .menu-toggle{display:none;width:38px;height:38px;background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+        .menu-toggle svg{width:18px;height:18px;color:var(--text-2)}
+        .sidebar-overlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(10,22,40,.5);backdrop-filter:blur(2px)}
+        .sidebar-overlay.show{display:block}
+        @media(max-width:1200px){.sidebar{width:200px}.main-area{margin-left:200px}.stats-row{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.three-stat{grid-template-columns:repeat(3,1fr)}}
+        @media(max-width:900px){.sidebar{width:260px;transform:translateX(-100%);transition:transform .25s ease;z-index:200}.sidebar.open{transform:translateX(0)}.main-area{margin-left:0}.menu-toggle{display:flex}.topbar{padding:0 16px}.page{padding:16px}.stats-row{grid-template-columns:repeat(2,1fr);gap:12px}.two-col{grid-template-columns:1fr;gap:14px}.three-stat{grid-template-columns:repeat(2,1fr);gap:12px}.form-grid{grid-template-columns:1fr}.form-grid.three{grid-template-columns:1fr 1fr}.dept-banner{flex-direction:column;align-items:flex-start;gap:10px}.dept-banner-title{font-size:18px}.modal{max-width:96vw;max-height:90vh}.wire-action-row{flex-direction:column;align-items:flex-start;gap:10px}.wire-action-btns{width:100%;display:flex;gap:6px}.wire-action-btns .wbtn{flex:1;text-align:center}}
+        @media(max-width:600px){.sidebar{width:80vw;max-width:300px}.page{padding:12px}.topbar{height:54px}.topbar-title{font-size:14px}.topbar-btn span{display:none}.topbar-btn{padding:6px 10px}.stats-row{grid-template-columns:repeat(2,1fr);gap:10px}.stat-card{padding:14px 16px}.stat-value{font-size:22px}.three-stat{grid-template-columns:1fr 1fr;gap:10px}.two-col{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-grid.three{grid-template-columns:1fr}.dept-banner{padding:16px;border-radius:var(--r-md)}.dept-banner-title{font-size:16px}.req-card{padding:14px}.req-top{flex-wrap:wrap;gap:6px}.btn-row{flex-direction:column;gap:6px}.btn-row .btn{flex:unset;width:100%}.form-shell{margin-bottom:14px}.form-header{padding:16px;flex-direction:column;align-items:flex-start;gap:10px}.form-body{padding:14px}.wire-entry{padding:14px}.modal{max-width:100vw;max-height:95vh;border-radius:var(--r-lg) var(--r-lg) 0 0;align-self:flex-end}.modal-overlay{align-items:flex-end;padding:0}.modal-header{padding:16px}.modal-body{padding:14px}.modal-footer{padding:12px 14px}.wire-action-row{flex-direction:column;align-items:flex-start}.wire-action-btns{width:100%}.wire-action-btns .wbtn{flex:1}.login-card{padding:24px 20px}.login-logo h1{font-size:18px}.card-header{flex-wrap:wrap;gap:6px;padding:14px 16px}.card-body{padding:14px 16px}.hist-table th,.hist-table td{padding:8px;font-size:11px}#toast{bottom:12px;right:12px;left:12px}.toast-item{min-width:unset;font-size:12px}.sidebar-clock .clock-time{font-size:20px}.nav-btn{padding:11px 12px;font-size:14px}.type-grid{grid-template-columns:repeat(2,1fr);gap:6px}}
+        @media(max-width:380px){.stats-row{grid-template-columns:1fr}.three-stat{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
 
+<!-- LOGIN -->
+<div id="login-screen">
+    <div class="login-wrap">
+        <div class="login-logo">
+            <div class="login-logo-mark">
+                <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#0a1628"/><circle cx="10" cy="16" r="4" fill="#0a1628"/><circle cx="22" cy="16" r="4" fill="#0a1628"/><path d="M6 10 L16 6 L26 10" stroke="#0a1628" stroke-width="2" stroke-linecap="round"/><path d="M6 22 L16 26 L26 22" stroke="#0a1628" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <h1>MILOUD EZZAKY</h1>
+            <p>Industry V.4  ·  Wire Harness Manufacturing</p>
+        </div>
+        <div class="login-card">
+            <h2>Secure Access</h2>
+            <p>Select your department and enter credentials to continue</p>
+            <div class="field-group">
+                <label class="field-label">Department</label>
+                <select id="dept-select" class="field-input">
+                    <option value="assembly">ASSEMBLY — Request Only</option>
+                    <option value="pagoda">PAGODA — Central Hub</option>
+                    <option value="cutting">CUTTING AREA</option>
+                    <option value="wpa">WIRE PREP AREA — Request & Fulfill</option>
+                    <option value="twist">TWIST DEPARTMENT — Request & Fulfill</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Employee ID</label>
+                <input type="text" class="field-input" id="username" placeholder="ME-001" value="ME-001">
+            </div>
+            <div class="field-group">
+                <label class="field-label">Password</label>
+                <input type="password" class="field-input" id="password" placeholder="******" value="123456">
+            </div>
+            <button class="login-btn" onclick="login()">Access System →</button>
+        </div>
+        <div class="login-footer">© 2026 Miloud Ezzaky Industry V.4  ·  Real-Time Wire Tracking</div>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard-container">
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-badge">
+                <div class="brand-icon"><svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#0a1628"/><circle cx="10" cy="16" r="4" fill="#0a1628"/><circle cx="22" cy="16" r="4" fill="#0a1628"/></svg></div>
+                <div><div class="brand-name">MILOUD EZZAKY</div><div class="brand-sub">Industry V.4</div></div>
+            </div>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar" id="user-avatar">M</div>
+            <div class="user-meta"><div class="user-name" id="user-name">Operator</div><div class="user-dept" id="user-dept">Assembly</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Overview</div>
+            <button class="nav-btn active" onclick="switchPage('analytics',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Analytics
+            </button>
+            <div class="nav-section-label">Departments</div>
+            <button class="nav-btn" onclick="switchPage('assembly',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                Assembly
+                <span class="nav-badge" id="badge-assembly">0</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('pagoda',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+                Pagoda Hub
+                <span class="nav-badge red" id="badge-pagoda">0</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('cutting',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v12M6 3l4 9M6 3l-4 9"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg>
+                Cutting
+                <span class="nav-badge" id="badge-cutting">0</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('wpa',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Wire Prep Area
+                <span class="nav-badge" id="badge-wpa">0</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('twist',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg>
+                Twist
+                <span class="nav-badge purple" id="badge-twist">0</span>
+            </button>
+        </nav>
+        <div class="sidebar-clock">
+            <div class="clock-time" id="current-time">--:--:--</div>
+            <div class="clock-date" id="current-date">Loading…</div>
+            <div class="shift-tag"><span class="shift-dot"></span><span id="current-shift">—</span></div>
+        </div>
+    </aside>
+
+    <div class="main-area">
+        <header class="topbar">
+            <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <div class="topbar-title" id="topbar-title">Analytics Dashboard</div>
+            <div class="topbar-actions">
+                <button class="topbar-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alerts</span></button>
+                <button class="topbar-btn" onclick="refreshAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg><span>Refresh</span></button>
+            </div>
+        </header>
+
+        <!-- ANALYTICS -->
+        <div id="page-analytics" class="page active">
+            <div class="stats-row">
+                <div class="stat-card total"><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="stat-value" id="total-requests">0</div><div class="stat-label">Total Requests</div></div>
+                <div class="stat-card completed"><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="stat-value" id="completed-requests">0</div><div class="stat-label">Completed</div></div>
+                <div class="stat-card pending"><div class="stat-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="stat-value" id="pending-requests">0</div><div class="stat-label">Pending</div></div>
+                <div class="stat-card progress"><div class="stat-icon cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="stat-value" id="in-progress-requests">0</div><div class="stat-label">In Progress</div></div>
+            </div>
+            <div class="two-col" style="margin-bottom:20px;">
+                <div class="card"><div class="card-header"><div class="card-title">Daily Requests — Last 7 Days</div><span class="badge badge-blue">Live</span></div><div class="chart-wrap"><div class="bar-track" id="daily-chart"></div></div></div>
+                <div class="card"><div class="card-header"><div class="card-title">Department Workload</div></div><div class="donut-wrap"><svg class="donut-svg" viewBox="0 0 100 100" id="donut-svg"><circle cx="50" cy="50" r="40" fill="none" stroke="#eef1f8" stroke-width="16"/></svg><div class="donut-legend" id="donut-legend"></div></div></div>
+            </div>
+            <div class="two-col">
+                <div class="card"><div class="card-header"><div class="card-title">Top Requested Wires</div><span class="badge badge-status">Top 5</span></div><div class="card-body"><div class="wire-bars" id="top-wires-list"></div></div></div>
+                <div class="card"><div class="card-header"><div class="card-title">Requests by Project</div></div><div class="card-body"><div class="wire-bars" id="project-list"></div></div></div>
+            </div>
+        </div>
+
+        <!-- ASSEMBLY -->
+        <div id="page-assembly" class="page">
+            <div class="dept-banner">
+                <div><div class="dept-banner-title">Assembly Department</div><div class="dept-banner-sub">Create wire requests · Track real-time progress</div></div>
+                <span class="badge badge-normal">Request Only</span>
+            </div>
+            <div class="form-shell">
+                <div class="form-header">
+                    <div><div class="form-header-title">New Wire Request</div><div class="form-header-sub">Fill all required fields — Reference is mandatory</div></div>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <button class="lock-btn" id="ref-lock-btn" onclick="toggleRefLock('assembly')" title="Lock reference for all wires"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Lock Ref</button>
+                        <button class="add-wire-btn" onclick="addWireEntry('assembly')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Wire</button>
+                    </div>
+                </div>
+                <div class="form-body">
+                    <div id="assembly-wire-entries-container"></div>
+                    <hr class="form-divider">
+                    <div class="form-grid">
+                        <div class="field"><label>Urgency Level <span style="color:var(--red)">*</span></label><select id="assembly-urgency"><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="critical">Critical</option></select></div>
+                        <div class="field"><label>Project <span style="color:var(--red)">*</span></label><select id="assembly-project"><option>JCB</option><option>JOHN DEERE</option><option>CLAAS</option><option>VOLVO</option><option>VCE</option><option>HAULLER</option><option>DAF</option><option>IVECO</option><option>MAN</option><option>MAN FPP</option><option>MAN CBP</option></select></div>
+                    </div>
+                    <button class="submit-btn" id="assembly-submit-btn" onclick="submitRequest('assembly')">Submit Request</button>
+                </div>
+            </div>
+            <div class="card"><div class="card-header"><div class="card-title">My Requests</div><span class="badge badge-blue">Real-time</span></div><div class="card-body"><div class="req-list" id="assembly-requests"></div></div></div>
+            <div class="card" style="margin-top:16px;"><div class="card-header"><div class="card-title">Order History</div><span class="badge badge-status">Last 30 days</span></div><div class="card-body" style="padding:0;"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Project</th><th>Completed</th><th>Status</th></tr></thead><tbody id="assembly-history"></tbody></table></div></div>
+        </div>
+
+        <!-- PAGODA -->
+        <div id="page-pagoda" class="page">
+            <div class="dept-banner"><div><div class="dept-banner-title">Pagoda · Central Hub</div><div class="dept-banner-sub">Manage all wire types · Check stock · Route to departments</div></div><span class="badge badge-blue">Hub</span></div>
+            <div class="three-stat">
+                <div class="stat-card pending"><div class="stat-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="stat-value" id="pagoda-pending">0</div><div class="stat-label">Pending</div></div>
+                <div class="stat-card progress"><div class="stat-icon cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><div class="stat-value" id="pagoda-stock">0</div><div class="stat-label">Items in Stock</div></div>
+                <div class="stat-card total"><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="stat-value" id="pagoda-low">0</div><div class="stat-label">Low Stock Alerts</div></div>
+            </div>
+            <div class="two-col">
+                <div>
+                    <div class="card"><div class="card-header"><div class="card-title">Pending Requests</div><span class="badge badge-count" id="pagoda-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-requests"></div></div></div>
+                    <div class="card" style="margin-top:16px;"><div class="card-header"><div class="card-title">Order History</div><span class="badge badge-status">Last 30 days</span></div><div class="card-body" style="padding:0;"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Completed</th><th>Status</th></tr></thead><tbody id="pagoda-history"></tbody></table></div></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                    <div class="card"><div class="card-header"><div class="card-title">Low Stock Alerts</div></div><div class="card-body"><div class="alert-list" id="low-stock-list"></div></div></div>
+                    <div class="card"><div class="card-header"><div class="card-title">Pagoda Metrics</div></div><div class="card-body"><div class="perf-list"><div class="perf-row"><span class="perf-key">Requests Today</span><span class="perf-val" id="requests-today">0</span></div><div class="perf-row"><span class="perf-key">Fulfillment Rate</span><span class="perf-val" id="fulfillment-rate">0%</span></div><div class="perf-row"><span class="perf-key">Avg Response Time</span><span class="perf-val" id="avg-time">12 min</span></div></div><div class="prog-bar"><div class="prog-fill" id="fulfillment-bar" style="width:0%"></div></div></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUTTING -->
+        <div id="page-cutting" class="page">
+            <div class="dept-banner"><div><div class="dept-banner-title">Cutting Area</div><div class="dept-banner-sub">Simple wires · Activated when Pagoda marks Out of Stock</div></div></div>
+            <div class="three-stat">
+                <div class="stat-card pending"><div class="stat-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="stat-value" id="cutting-pending">0</div><div class="stat-label">To Cut</div></div>
+                <div class="stat-card progress"><div class="stat-icon cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="stat-value" id="cutting-progress">0</div><div class="stat-label">In Progress</div></div>
+                <div class="stat-card completed"><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="stat-value" id="cutting-completed">0</div><div class="stat-label">Done Today</div></div>
+            </div>
+            <div class="card"><div class="card-header"><div class="card-title">Simple Wire Requests</div></div><div class="card-body"><div class="req-list" id="cutting-requests"></div></div></div>
+            <div class="card" style="margin-top:16px;"><div class="card-header"><div class="card-title">Order History</div><span class="badge badge-status">Last 30 days</span></div><div class="card-body" style="padding:0;"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Completed</th><th>Status</th></tr></thead><tbody id="cutting-history"></tbody></table></div></div>
+        </div>
+
+        <!-- WPA — has both request form AND fulfillment -->
+        <div id="page-wpa" class="page">
+            <div class="dept-banner wpa-banner">
+                <div><div class="dept-banner-title">Wire Prep Area</div><div class="dept-banner-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div>
+                <span class="badge badge-blue">Request & Fulfill</span>
+            </div>
+
+            <!-- TAB SWITCHER -->
+            <div style="display:flex;gap:8px;margin-bottom:20px;">
+                <button id="wpa-tab-request" class="topbar-btn" style="background:var(--blue);color:#fff;border-color:var(--blue);" onclick="switchWpaTab('request')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    New Request
+                </button>
+                <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchWpaTab('fulfill')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg>
+                    Assigned Work
+                    <span class="nav-badge" id="wpa-fulfill-count" style="background:var(--amber);margin-left:4px;">0</span>
+                </button>
+            </div>
+
+            <!-- WPA REQUEST PANEL -->
+            <div id="wpa-request-panel">
+                <div class="info-banner wpa-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <p>Use this form to request wire components (XE, SP, Simple) from Pagoda. Your request will appear in the Pagoda Hub immediately for processing.</p>
+                </div>
+                <div class="form-shell">
+                    <div class="form-header wpa-header">
+                        <div><div class="form-header-title">New Wire Request — WPA</div><div class="form-header-sub">XE · SP · Simple — all types accepted</div></div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <button class="lock-btn" id="wpa-ref-lock-btn" onclick="toggleRefLock('wpa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Lock Ref</button>
+                            <button class="add-wire-btn" onclick="addWireEntry('wpa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Wire</button>
+                        </div>
+                    </div>
+                    <div class="form-body">
+                        <div id="wpa-wire-entries-container"></div>
+                        <hr class="form-divider">
+                        <div class="form-grid">
+                            <div class="field"><label>Urgency Level <span style="color:var(--red)">*</span></label><select id="wpa-urgency"><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="critical">Critical</option></select></div>
+                            <div class="field"><label>Project <span style="color:var(--red)">*</span></label><select id="wpa-project"><option>JCB</option><option>JOHN DEERE</option><option>CLAAS</option><option>VOLVO</option><option>VCE</option><option>HAULLER</option><option>DAF</option><option>IVECO</option><option>MAN</option><option>MAN FPP</option><option>MAN CBP</option></select></div>
+                        </div>
+                        <button class="submit-btn wpa-btn" id="wpa-submit-btn" onclick="submitRequest('wpa')">Submit Request to Pagoda</button>
+                    </div>
+                </div>
+                <div class="card"><div class="card-header"><div class="card-title">My WPA Requests</div><span class="badge badge-blue">Real-time</span></div><div class="card-body"><div class="req-list" id="wpa-my-requests"></div></div></div>
+            </div>
+
+            <!-- WPA FULFILL PANEL -->
+            <div id="wpa-fulfill-panel" style="display:none;">
+                <div class="three-stat">
+                    <div class="stat-card total"><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="stat-value" id="wpa-xe">0</div><div class="stat-label">XE Wires</div></div>
+                    <div class="stat-card progress"><div class="stat-icon cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/></svg></div><div class="stat-value" id="wpa-sp">0</div><div class="stat-label">SP Wires</div></div>
+                    <div class="stat-card pending"><div class="stat-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="stat-value" id="wpa-progress">0</div><div class="stat-label">In Progress</div></div>
+                </div>
+                <div class="card" style="margin-bottom:16px;"><div class="card-header"><div class="card-title">XE Wire Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-requests"></div></div></div>
+                <div class="card"><div class="card-header"><div class="card-title">SP Wire Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-requests"></div></div></div>
+                <div class="card" style="margin-top:16px;"><div class="card-header"><div class="card-title">Order History</div><span class="badge badge-status">Last 30 days</span></div><div class="card-body" style="padding:0;"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Completed</th><th>Status</th></tr></thead><tbody id="wpa-history"></tbody></table></div></div>
+            </div>
+        </div>
+
+        <!-- TWIST — has both request form AND fulfillment -->
+        <div id="page-twist" class="page">
+            <div class="dept-banner twist-banner">
+                <div><div class="dept-banner-title">Twist Department</div><div class="dept-banner-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div>
+                <span class="badge badge-purple">Request & Fulfill</span>
+            </div>
+
+            <!-- TAB SWITCHER -->
+            <div style="display:flex;gap:8px;margin-bottom:20px;">
+                <button id="twist-tab-request" class="topbar-btn" style="background:var(--purple);color:#fff;border-color:var(--purple);" onclick="switchTwistTab('request')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    New Request
+                </button>
+                <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTwistTab('fulfill')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg>
+                    Assigned Work
+                    <span class="nav-badge purple" id="twist-fulfill-count" style="margin-left:4px;">0</span>
+                </button>
+            </div>
+
+            <!-- TWIST REQUEST PANEL -->
+            <div id="twist-request-panel">
+                <div class="info-banner twist-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <p>Use this form to request wire components (Twist, XE, SP, Simple) from Pagoda. Your request will be sent to the Pagoda Hub immediately for stock check and processing.</p>
+                </div>
+                <div class="form-shell">
+                    <div class="form-header twist-header">
+                        <div><div class="form-header-title">New Wire Request — TWIST</div><div class="form-header-sub">Twisted pairs · Simple · XE · SP — all types accepted</div></div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <button class="lock-btn" id="twist-ref-lock-btn" onclick="toggleRefLock('twist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Lock Ref</button>
+                            <button class="add-wire-btn" onclick="addWireEntry('twist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Wire</button>
+                        </div>
+                    </div>
+                    <div class="form-body">
+                        <div id="twist-wire-entries-container"></div>
+                        <hr class="form-divider">
+                        <div class="form-grid">
+                            <div class="field"><label>Urgency Level <span style="color:var(--red)">*</span></label><select id="twist-urgency"><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="critical">Critical</option></select></div>
+                            <div class="field"><label>Project <span style="color:var(--red)">*</span></label><select id="twist-project"><option>JCB</option><option>JOHN DEERE</option><option>CLAAS</option><option>VOLVO</option><option>VCE</option><option>HAULLER</option><option>DAF</option><option>IVECO</option><option>MAN</option><option>MAN FPP</option><option>MAN CBP</option></select></div>
+                        </div>
+                        <button class="submit-btn twist-btn" id="twist-submit-btn" onclick="submitRequest('twist')">Submit Request to Pagoda</button>
+                    </div>
+                </div>
+                <div class="card"><div class="card-header"><div class="card-title">My Twist Requests</div><span class="badge badge-blue">Real-time</span></div><div class="card-body"><div class="req-list" id="twist-my-requests"></div></div></div>
+            </div>
+
+            <!-- TWIST FULFILL PANEL -->
+            <div id="twist-fulfill-panel" style="display:none;">
+                <div class="three-stat">
+                    <div class="stat-card pending"><div class="stat-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="stat-value" id="twist-pending">0</div><div class="stat-label">To Twist</div></div>
+                    <div class="stat-card progress"><div class="stat-icon cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="stat-value" id="twist-progress">0</div><div class="stat-label">In Progress</div></div>
+                    <div class="stat-card total"><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0M3 12h18"/></svg></div><div class="stat-value" id="twist-pairs">0</div><div class="stat-label">Wire Pairs</div></div>
+                </div>
+                <div class="card"><div class="card-header"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-requests"></div></div></div>
+                <div class="card" style="margin-top:16px;"><div class="card-header"><div class="card-title">Order History</div><span class="badge badge-status">Last 30 days</span></div><div class="card-body" style="padding:0;"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Completed</th><th>Status</th></tr></thead><tbody id="twist-history"></tbody></table></div></div>
+            </div>
+        </div>
+
+    </div><!-- /main-area -->
+</div><!-- /dashboard -->
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+// ══════════════════════ DATA ══════════════════════════════════
+const wireStock = {
+    'WIRE-18-RED':{name:'WIRE-18-RED',stock:5,min:5,location:'A1-3',type:'simple'},
+    'WIRE-18-BLK':{name:'WIRE-18-BLK',stock:8,min:5,location:'A1-4',type:'simple'},
+    'WIRE-20-BLU':{name:'WIRE-20-BLU',stock:2,min:4,location:'A2-1',type:'simple'},
+    'WIRE-22-WHT':{name:'WIRE-22-WHT',stock:6,min:4,location:'A2-2',type:'simple'},
+    'XE1-20-RED':{name:'XE1-20-RED',stock:3,min:3,location:'B1-1',type:'xe'},
+    'XE1-20-BLK':{name:'XE1-20-BLK',stock:4,min:3,location:'B1-2',type:'xe'},
+    'XE2-18-WHT':{name:'XE2-18-WHT',stock:2,min:3,location:'B1-3',type:'xe'},
+    'SP23-18-RED':{name:'SP23-18-RED',stock:3,min:3,location:'C1-1',type:'sp'},
+    'SP23-18-BLK':{name:'SP23-18-BLK',stock:2,min:3,location:'C1-2',type:'sp'},
+    'TW45-24-RB':{name:'TW45-24-RB',stock:4,min:4,location:'D1-1',type:'twist'},
+    'TW45-24-BW':{name:'TW45-24-BW',stock:3,min:4,location:'D1-2',type:'twist'},
+};
+
+let requests = [
+    {id:'REQ-2026-001',items:[{reference:'REF-001',wireName:'WIRE-18-RED',wireType:'simple',quantity:3,pagodaStatus:null}],urgency:'critical',status:'pending',assignedTo:'pagoda',project:'JCB',time:'2026-02-18T08:30:00',requestedBy:'assembly',pagodaStatus:'pending',completedAt:null},
+    {id:'REQ-2026-002',items:[{reference:'REF-002',wireName:'XE1-20-RED',wireType:'xe',quantity:5,tinning:true}],urgency:'urgent',status:'in_progress',assignedTo:'wpa',project:'VOLVO',time:'2026-02-18T09:15:00',requestedBy:'assembly',pagodaStatus:'out_of_stock',completedAt:null},
+    {id:'REQ-2026-003',items:[{reference:'REF-003',wireName:'TW45-24-RB',wireType:'twist',quantity:10,layLength:'80mm'}],urgency:'normal',status:'in_progress',assignedTo:'twist',project:'MAN',time:'2026-02-18T10:00:00',requestedBy:'assembly',pagodaStatus:'out_of_stock',completedAt:null},
+    {id:'REQ-2026-004',items:[{reference:'REF-004',wireName:'WIRE-18-BLK',wireType:'simple',quantity:2}],urgency:'normal',status:'completed',assignedTo:'cutting',project:'DAF',time:'2026-02-17T14:30:00',requestedBy:'assembly',pagodaStatus:'in_stock',completedAt:'2026-02-17T15:45:00'},
+    {id:'REQ-2026-005',items:[{reference:'REF-005',wireName:'WIRE-20-BLU',wireType:'simple',quantity:4}],urgency:'urgent',status:'completed',assignedTo:'pagoda',project:'IVECO',time:'2026-02-17T11:20:00',requestedBy:'assembly',pagodaStatus:'in_stock',completedAt:'2026-02-17T11:45:00'},
+];
+
+// Per-dept wire entry state
+const deptState = {
+    assembly: { count:0, lockedRef:null },
+    wpa:      { count:0, lockedRef:null },
+    twist:    { count:0, lockedRef:null }
+};
+
+let currentPage = 'analytics';
+let currentUser = {username:'ME-001',department:'assembly',name:'Miloud Ezzaky'};
+
+// ══════════════════════ TOAST ════════════════════════════════
+function toast(msg, type='info') {
+    const c = document.getElementById('toast');
+    const el = document.createElement('div');
+    el.className = `toast-item ${type}`;
+    el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0">${type==='success'?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg>${msg}`;
+    c.appendChild(el);
+    setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(20px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},3000);
+}
+
+// ══════════════════════ LOGIN ════════════════════════════════
+function login() {
+    const dept = document.getElementById('dept-select').value;
+    const uname = document.getElementById('username').value;
+    currentUser = {username:uname,department:dept,name:uname==='ME-001'?'Miloud Ezzaky':'Operator'};
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('dashboard-container').style.display='flex';
+    document.getElementById('user-name').textContent = currentUser.name;
+    document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+    document.getElementById('user-dept').textContent = dept.toUpperCase();
+    initWireEntries('assembly');
+    initWireEntries('wpa');
+    initWireEntries('twist');
+    updateSidebarBadges();
+    updateDateTime();
+    setInterval(updateDateTime,1000);
+    setInterval(()=>{refreshAll();},10000);
+    const defaultBtn = document.querySelector(`.nav-btn[onclick*="'${dept}'"]`);
+    if(defaultBtn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
+    loadPage(dept);
+    toast(`Welcome, ${currentUser.name}!`,'success');
+}
+
+// ══════════════════════ NAVIGATION ══════════════════════════
+const pageTitles = {analytics:'Analytics Dashboard',assembly:'Assembly Department',pagoda:'Pagoda · Central Hub',cutting:'Cutting Area',wpa:'Wire Prep Area',twist:'Twist Department'};
+
+function switchPage(page, btn) {
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    if(btn)btn.classList.add('active');
+    loadPage(page);
+}
+
+function loadPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(`page-${page}`).classList.add('active');
+    document.getElementById('topbar-title').textContent = pageTitles[page]||page;
+    if(page==='analytics') updateAnalytics();
+    else if(page==='assembly'){loadAssemblyRequests();loadHistory('assembly-history','assembly','requestedBy');}
+    else if(page==='pagoda'){loadPagodaRequests();loadLowStock();updatePagodaMetrics();loadHistory('pagoda-history','pagoda','assignedTo');}
+    else if(page==='cutting'){loadCuttingRequests();updateCuttingMetrics();loadHistory('cutting-history','cutting','assignedTo');}
+    else if(page==='wpa'){loadWPAPage();}
+    else if(page==='twist'){loadTwistPage();}
+}
+
+function refreshAll(){loadPage(currentPage);updateSidebarBadges();updateAnalytics();}
+
+// ══════════════════════ SIDEBAR BADGES ═══════════════════════
+function updateSidebarBadges() {
+    document.getElementById('badge-assembly').textContent = requests.filter(r=>r.requestedBy==='assembly').length;
+    document.getElementById('badge-pagoda').textContent   = requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;
+    document.getElementById('badge-cutting').textContent  = requests.filter(r=>r.assignedTo==='cutting'&&r.status!=='completed').length;
+    const wpaAssigned = requests.filter(r=>r.assignedTo==='wpa'&&r.status!=='completed').length;
+    const twistAssigned = requests.filter(r=>r.assignedTo==='twist'&&r.status!=='completed').length;
+    document.getElementById('badge-wpa').textContent      = wpaAssigned;
+    document.getElementById('badge-twist').textContent    = twistAssigned;
+    const wpafCount = document.getElementById('wpa-fulfill-count');
+    const twistfCount = document.getElementById('twist-fulfill-count');
+    if(wpafCount) wpafCount.textContent = wpaAssigned;
+    if(twistfCount) twistfCount.textContent = twistAssigned;
+}
+
+// ══════════════════════ ANALYTICS ════════════════════════════
+function updateAnalytics() {
+    document.getElementById('total-requests').textContent       = requests.length;
+    document.getElementById('completed-requests').textContent   = requests.filter(r=>r.status==='completed').length;
+    document.getElementById('pending-requests').textContent     = requests.filter(r=>r.status==='pending').length;
+    document.getElementById('in-progress-requests').textContent = requests.filter(r=>r.status==='in_progress').length;
+    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const counts={};const labels=[];
+    for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toDateString();counts[k]=0;labels.push({label:days[d.getDay()],key:k});}
+    requests.forEach(r=>{const k=new Date(r.time).toDateString();if(counts[k]!==undefined)counts[k]++;});
+    const maxC=Math.max(...Object.values(counts),1);
+    document.getElementById('daily-chart').innerHTML=labels.map(({label,key})=>{const h=Math.round((counts[key]/maxC)*120);return`<div class="bar-col"><div class="bar-fill" style="height:${h}px;"><span class="bar-val">${counts[key]}</span></div><div class="bar-lbl">${label}</div></div>`;}).join('');
+    const depts=['pagoda','cutting','wpa','twist'];
+    const deptColors=['#1e56c8','#16a06a','#0891b2','#7c3aed'];
+    const deptLabels=['Pagoda','Cutting','WPA','Twist'];
+    const deptCounts=depts.map(d=>requests.filter(r=>r.assignedTo===d&&r.status!=='completed').length);
+    const total=deptCounts.reduce((a,b)=>a+b,0)||1;
+    const circumference=2*Math.PI*40;let offset=0;
+    const segments=depts.map((d,i)=>{const pct=deptCounts[i]/total;const dash=pct*circumference;const seg=`<circle cx="50" cy="50" r="40" fill="none" stroke="${deptColors[i]}" stroke-width="16" stroke-dasharray="${dash} ${circumference-dash}" stroke-dashoffset="${-offset}" transform="rotate(-90 50 50)" style="transition:all .5s"/>`;offset+=dash;return seg;}).join('');
+    document.getElementById('donut-svg').innerHTML=`<circle cx="50" cy="50" r="40" fill="none" stroke="#eef1f8" stroke-width="16"/>${segments}`;
+    document.getElementById('donut-legend').innerHTML=depts.map((d,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${deptColors[i]}"></div><span class="legend-name">${deptLabels[i]}</span><span class="legend-count">${deptCounts[i]}</span></div>`).join('');
+    const wireCnt={};requests.forEach(r=>r.items.forEach(it=>{wireCnt[it.wireName]=(wireCnt[it.wireName]||0)+it.quantity;}));
+    const topW=Object.entries(wireCnt).sort((a,b)=>b[1]-a[1]).slice(0,5);const maxW=Math.max(...topW.map(x=>x[1]),1);
+    document.getElementById('top-wires-list').innerHTML=topW.map(([n,c])=>`<div class="wbar-item"><span class="wbar-name">${n}</span><div class="wbar-track"><div class="wbar-fill" style="width:${(c/maxW*100).toFixed(0)}%"></div></div><span class="wbar-count">${c}</span></div>`).join('')||'<div class="empty"><p>No data</p></div>';
+    const projCnt={};requests.forEach(r=>{projCnt[r.project]=(projCnt[r.project]||0)+1;});
+    const topP=Object.entries(projCnt).sort((a,b)=>b[1]-a[1]);const maxP=Math.max(...topP.map(x=>x[1]),1);
+    document.getElementById('project-list').innerHTML=topP.map(([n,c])=>`<div class="wbar-item"><span class="wbar-name">${n}</span><div class="wbar-track"><div class="wbar-fill" style="width:${(c/maxP*100).toFixed(0)}%;background:var(--green)"></div></div><span class="wbar-count">${c}</span></div>`).join('')||'<div class="empty"><p>No data</p></div>';
+}
+
+// ══════════════════════ WIRE ENTRY FORM (SHARED) ═════════════
+function initWireEntries(dept) {
+    deptState[dept].count = 0;
+    deptState[dept].lockedRef = null;
+    const container = document.getElementById(`${dept}-wire-entries-container`);
+    if(container) container.innerHTML = '';
+    addWireEntry(dept);
+}
+
+function getNumClass(dept) {
+    if(dept==='wpa') return 'wpa-num';
+    if(dept==='twist') return 'twist-num';
+    return '';
+}
+
+function addWireEntry(dept) {
+    const state = deptState[dept];
+    state.count++;
+    const n = state.count;
+    const locked = state.lockedRef !== null;
+    const refVal = locked ? state.lockedRef : '';
+    const refReadonly = locked ? 'readonly' : '';
+    const refClass = locked ? 'ref-locked' : '';
+    const numClass = getNumClass(dept);
+
+    // Wire type grid: Assembly sees all 4; WPA sees XE/SP/Simple; Twist sees Twist/XE/SP/Simple
+    let typeGrid = '';
+    if(dept==='wpa'){
+        typeGrid = `
+        <div class="type-grid" id="${dept}-type-selector-${n}">
+            <div class="type-opt sel" onclick="selectType('${dept}',${n},'simple')">SIMPLE</div>
+            <div class="type-opt" onclick="selectType('${dept}',${n},'xe')">XE</div>
+            <div class="type-opt" onclick="selectType('${dept}',${n},'sp')">SP</div>
+        </div>`;
+    } else if(dept==='twist'){
+        typeGrid = `
+        <div class="type-grid" id="${dept}-type-selector-${n}">
+            <div class="type-opt sel" onclick="selectType('${dept}',${n},'twist')">TWIST</div>
+            <div class="type-opt" onclick="selectType('${dept}',${n},'simple')">SIMPLE</div>
+            <div class="type-opt" onclick="selectType('${dept}',${n},'xe')">XE</div>
+            <div class="type-opt" onclick="selectType('${dept}',${n},'sp')">SP</div>
+        </div>`;
+    } else {
+        typeGrid = `
+        <div class="type-grid" id="${dept}-type-selector-${n}">
+            <div class="type-opt sel" onclick="selectType('${dept}',${n},'simple')">SIMPLE</div>
+            <div class="type-opt" onclick="selectType('${dept}',${n},'xe')">XE</div>
+            <div class="type-opt" onclick="selectType('${dept}',${n},'sp')">SP</div>
+            <div class="type-opt" onclick="selectType('${dept}',${n},'twist')">TWIST</div>
+        </div>`;
+    }
+
+    const div = document.createElement('div');
+    div.className='wire-entry'; div.id=`${dept}-wire-entry-${n}`;
+    div.innerHTML=`
+        <div class="wire-entry-head">
+            <span class="wire-entry-num ${numClass}">WIRE · ${n}</span>
+            <button class="remove-btn" onclick="removeWireEntry('${dept}',${n})">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="form-grid">
+            <div class="field">
+                <label>Reference <span style="color:var(--red)">*</span></label>
+                <input type="text" id="${dept}-ref-${n}" class="${refClass}" value="${refVal}" placeholder="REF-12345" ${refReadonly}>
+                <span class="ref-locked-badge" id="${dept}-ref-badge-${n}" style="${locked?'':'display:none'}">${locked?'Locked same as '+refVal:''}</span>
+            </div>
+            <div class="field"><label>Wire Name / Scan</label><input type="text" id="${dept}-scan-${n}" placeholder="Scan or type wire name"></div>
+        </div>
+        ${typeGrid}
+        <div class="field"><label>Quantity</label><input type="number" id="${dept}-qty-${n}" min="1" value="1" style="width:160px"></div>
+        <div id="${dept}-prep-${n}" style="display:none;"><label class="checkbox-row"><input type="checkbox" id="${dept}-tinning-${n}">Tinning Required</label></div>
+        <div id="${dept}-twist-opt-${n}" style="display:none;"><div class="field"><label>Lay Length</label><select id="${dept}-lay-${n}"><option value="60">60 mm</option><option value="80" selected>80 mm</option><option value="100">100 mm</option></select></div></div>`;
+    document.getElementById(`${dept}-wire-entries-container`).appendChild(div);
+
+    // Set initial default state based on dept
+    if(dept==='twist') {
+        // default type is twist for twist dept
+        document.getElementById(`${dept}-twist-opt-${n}`).style.display = 'block';
+    }
+
+    updateSubmitLabel(dept);
+    setTimeout(()=>{
+        attachScanAutoAdd(dept, n);
+        if(n>1) document.getElementById(`${dept}-scan-${n}`)?.focus();
+    },60);
+}
+
+function removeWireEntry(dept, n) {
+    const el = document.getElementById(`${dept}-wire-entry-${n}`); if(!el)return;
+    el.style.opacity='0'; el.style.transform='scale(.97)'; el.style.transition='all .2s';
+    setTimeout(()=>{el.remove();deptState[dept].count--;updateSubmitLabel(dept);},200);
+}
+
+function selectType(dept, n, type) {
+    const opts = document.querySelectorAll(`#${dept}-type-selector-${n} .type-opt`);
+    opts.forEach(o=>{
+        const t = o.textContent.trim().toLowerCase();
+        const matched = (t===type)||(t==='twist'&&type==='twist');
+        o.classList.toggle('sel', t===type);
+    });
+    document.getElementById(`${dept}-prep-${n}`).style.display       = (type==='xe'||type==='sp')?'block':'none';
+    document.getElementById(`${dept}-twist-opt-${n}`).style.display  = type==='twist'?'block':'none';
+}
+
+function updateSubmitLabel(dept) {
+    const btn = document.getElementById(`${dept}-submit-btn`);
+    const cnt = deptState[dept].count;
+    if(btn) btn.textContent = dept==='assembly'
+        ? `Submit Request (${cnt} wire${cnt>1?'s':''})`
+        : `Submit Request to Pagoda (${cnt} wire${cnt>1?'s':''})`;
+}
+
+function attachScanAutoAdd(dept, n) {
+    const scanField = document.getElementById(`${dept}-scan-${n}`);
+    if(!scanField) return;
+    let autoAdded=false, scanTimer=null;
+    scanField.addEventListener('input',function(){
+        clearTimeout(scanTimer);
+        scanTimer=setTimeout(()=>{
+            if(scanField.value.trim()&&!autoAdded){
+                autoAdded=true;
+                addWireEntry(dept);
+                const nextScan=document.getElementById(`${dept}-scan-${deptState[dept].count}`);
+                if(nextScan)nextScan.focus();
+            }
+        },300);
+    });
+}
+
+// ══════════════════════ REF LOCK (SHARED) ════════════════════
+function toggleRefLock(dept) {
+    const firstRef = document.getElementById(`${dept}-ref-1`);
+    if(!firstRef) return;
+    const refVal = firstRef.value.trim();
+    const state = deptState[dept];
+    const btn = document.getElementById(`${dept}-ref-lock-btn`);
+    if(state.lockedRef) {
+        state.lockedRef=null;
+        btn.classList.remove('locked');
+        btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Lock Ref`;
+        document.querySelectorAll(`[id^="${dept}-wire-entry-"]`).forEach(e=>{
+            const id=e.id.split('-').pop();
+            const inp=document.getElementById(`${dept}-ref-${id}`);
+            const badge=document.getElementById(`${dept}-ref-badge-${id}`);
+            if(inp&&id!=='1'){inp.value='';inp.classList.remove('ref-locked');inp.removeAttribute('readonly');}
+            if(badge)badge.style.display='none';
+        });
+        toast('Reference lock removed','info');
+    } else {
+        if(!refVal){toast('Enter a reference first before locking','error');return;}
+        state.lockedRef=refVal;
+        btn.classList.add('locked');
+        btn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>Locked: ${refVal}`;
+        firstRef.classList.add('ref-locked');firstRef.setAttribute('readonly',true);
+        document.querySelectorAll(`[id^="${dept}-wire-entry-"]`).forEach(e=>{
+            const id=e.id.split('-').pop();if(id==='1')return;
+            const inp=document.getElementById(`${dept}-ref-${id}`);
+            const badge=document.getElementById(`${dept}-ref-badge-${id}`);
+            if(inp){inp.value=refVal;inp.classList.add('ref-locked');inp.setAttribute('readonly',true);}
+            if(badge){badge.textContent='Locked same as '+refVal;badge.style.display='inline-flex';}
+        });
+        toast(`Reference locked to: ${refVal}`,'success');
+    }
+}
+
+// ══════════════════════ SUBMIT REQUEST (SHARED) ══════════════
+function submitRequest(dept) {
+    const urgency = document.getElementById(`${dept}-urgency`).value;
+    const project = document.getElementById(`${dept}-project`).value;
+    const items = [];
+    const entries = document.querySelectorAll(`[id^="${dept}-wire-entry-"]`);
+    for(const entry of entries) {
+        const id=entry.id.split('-').pop();
+        const ref=document.getElementById(`${dept}-ref-${id}`)?.value?.trim();
+        const name=document.getElementById(`${dept}-scan-${id}`)?.value?.trim();
+        const qty=parseInt(document.getElementById(`${dept}-qty-${id}`)?.value);
+        if(!ref){toast(`Reference required for Wire ${id}`,'error');return;}
+        if(!name){toast(`Wire name required for Wire ${id}`,'error');return;}
+        if(!qty||qty<1){toast(`Valid quantity required for Wire ${id}`,'error');return;}
+        const selEl=document.querySelector(`#${dept}-type-selector-${id} .type-opt.sel`);
+        const type=(selEl?.textContent?.trim()?.toLowerCase()||'simple');
+        const wireType=type==='twist'?'twist':type==='xe'?'xe':type==='sp'?'sp':'simple';
+        items.push({
+            reference:ref,wireName:name,wireType,quantity:qty,
+            tinning:document.getElementById(`${dept}-tinning-${id}`)?.checked||false,
+            layLength:document.getElementById(`${dept}-lay-${id}`)?.value||null,
+            pagodaStatus:null
+        });
+    }
+    const req={
+        id:`REQ-2026-${String(requests.length+1).padStart(3,'0')}`,
+        items, urgency, status:'pending', assignedTo:'pagoda',
+        project, time:new Date().toISOString(),
+        requestedBy:dept, pagodaStatus:'pending', completedAt:null
+    };
+    requests.push(req);
+    toast(`Request ${req.id} submitted to Pagoda Hub `,'success');
+    initWireEntries(dept);
+    updateSidebarBadges();
+    updateAnalytics();
+    // Reload relevant views
+    if(dept==='assembly') loadAssemblyRequests();
+    if(dept==='wpa') { loadWPAMyRequests(); }
+    if(dept==='twist') { loadTwistMyRequests(); }
+}
+
+// ══════════════════════ WPA TAB SWITCHER ════════════════════
+function switchWpaTab(tab) {
+    const reqPanel=document.getElementById('wpa-request-panel');
+    const fulfillPanel=document.getElementById('wpa-fulfill-panel');
+    const reqBtn=document.getElementById('wpa-tab-request');
+    const fulfillBtn=document.getElementById('wpa-tab-fulfill');
+    if(tab==='request'){
+        reqPanel.style.display='block';fulfillPanel.style.display='none';
+        reqBtn.style.background='var(--blue)';reqBtn.style.color='#fff';reqBtn.style.borderColor='var(--blue)';
+        fulfillBtn.style.background='#fff';fulfillBtn.style.color='var(--text-2)';fulfillBtn.style.borderColor='var(--border)';
+    } else {
+        reqPanel.style.display='none';fulfillPanel.style.display='block';
+        fulfillBtn.style.background='#0891b2';fulfillBtn.style.color='#fff';fulfillBtn.style.borderColor='#0891b2';
+        reqBtn.style.background='#fff';reqBtn.style.color='var(--text-2)';reqBtn.style.borderColor='var(--border)';
+        loadWPAFulfill();
+    }
+}
+
+// ══════════════════════ TWIST TAB SWITCHER ══════════════════
+function switchTwistTab(tab) {
+    const reqPanel=document.getElementById('twist-request-panel');
+    const fulfillPanel=document.getElementById('twist-fulfill-panel');
+    const reqBtn=document.getElementById('twist-tab-request');
+    const fulfillBtn=document.getElementById('twist-tab-fulfill');
+    if(tab==='request'){
+        reqPanel.style.display='block';fulfillPanel.style.display='none';
+        reqBtn.style.background='var(--purple)';reqBtn.style.color='#fff';reqBtn.style.borderColor='var(--purple)';
+        fulfillBtn.style.background='#fff';fulfillBtn.style.color='var(--text-2)';fulfillBtn.style.borderColor='var(--border)';
+    } else {
+        reqPanel.style.display='none';fulfillPanel.style.display='block';
+        fulfillBtn.style.background='var(--purple)';fulfillBtn.style.color='#fff';fulfillBtn.style.borderColor='var(--purple)';
+        reqBtn.style.background='#fff';reqBtn.style.color='var(--text-2)';reqBtn.style.borderColor='var(--border)';
+        loadTwistFulfill();
+    }
+}
+
+// ══════════════════════ WPA PAGE ════════════════════════════
+function loadWPAPage() {
+    loadWPAMyRequests();
+    updateWPAMetrics();
+    // keep current tab
+}
+
+function loadWPAMyRequests() {
+    const reqs=requests.filter(r=>r.requestedBy==='wpa').sort((a,b)=>new Date(b.time)-new Date(a.time));
+    const el=document.getElementById('wpa-my-requests');
+    if(!reqs.length){el.innerHTML=emptyState('No WPA requests yet');return;}
+    el.innerHTML=reqs.map(r=>renderAssemblyStyleCard(r,'wpa')).join('');
+}
+
+function loadWPAFulfill() {
+    const wpa=requests.filter(r=>r.assignedTo==='wpa'&&r.status!=='completed');
+    const xe=wpa.filter(r=>r.items[0]?.wireType==='xe');
+    const sp=wpa.filter(r=>r.items[0]?.wireType==='sp');
+    document.getElementById('wpa-xe-requests').innerHTML=xe.length?renderDeptCards(xe,'START PREP'):emptyState('No XE requests');
+    document.getElementById('wpa-sp-requests').innerHTML=sp.length?renderDeptCards(sp,'START PREP'):emptyState('No SP requests');
+    loadHistory('wpa-history','wpa','assignedTo');
+}
+
+function updateWPAMetrics() {
+    const wpa=requests.filter(r=>r.assignedTo==='wpa'&&r.status!=='completed');
+    document.getElementById('wpa-xe').textContent=wpa.filter(r=>r.items[0]?.wireType==='xe').length;
+    document.getElementById('wpa-sp').textContent=wpa.filter(r=>r.items[0]?.wireType==='sp').length;
+    document.getElementById('wpa-progress').textContent=requests.filter(r=>r.assignedTo==='wpa'&&r.status==='in_progress').length;
+}
+
+// ══════════════════════ TWIST PAGE ══════════════════════════
+function loadTwistPage() {
+    loadTwistMyRequests();
+    updateTwistMetrics();
+}
+
+function loadTwistMyRequests() {
+    const reqs=requests.filter(r=>r.requestedBy==='twist').sort((a,b)=>new Date(b.time)-new Date(a.time));
+    const el=document.getElementById('twist-my-requests');
+    if(!reqs.length){el.innerHTML=emptyState('No Twist requests yet');return;}
+    el.innerHTML=reqs.map(r=>renderAssemblyStyleCard(r,'twist')).join('');
+}
+
+function loadTwistFulfill() {
+    const reqs=requests.filter(r=>r.assignedTo==='twist'&&r.status!=='completed');
+    const el=document.getElementById('twist-requests');
+    if(!reqs.length){el.innerHTML=emptyState('No twist requests');return;}
+    el.innerHTML=renderDeptCards(reqs,'START TWIST');
+    loadHistory('twist-history','twist','assignedTo');
+}
+
+function updateTwistMetrics() {
+    document.getElementById('twist-pending').textContent=requests.filter(r=>r.assignedTo==='twist'&&r.status==='pending').length;
+    document.getElementById('twist-progress').textContent=requests.filter(r=>r.assignedTo==='twist'&&r.status==='in_progress').length;
+    const t=requests.filter(r=>r.assignedTo==='twist');
+    document.getElementById('twist-pairs').textContent=t.reduce((s,r)=>s+r.items.reduce((ss,i)=>ss+i.quantity,0),0);
+}
+
+// ══════════════════════ RENDER HELPERS ══════════════════════
+function timeAgo(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<1)return'just now';if(m<60)return`${m}m ago`;if(m<1440)return`${Math.floor(m/60)}h ago`;return`${Math.floor(m/1440)}d ago`;}
+function urgencyBadge(u){return`<span class="badge badge-${u}">${u.toUpperCase()}</span>`;}
+function emptyState(msg='No requests found'){return`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h8M7 16h5"/></svg><p>${msg}</p></div>`;}
+
+function wireItemStatusBadge(it,reqStatus,pagodaStatus){
+    if(it.pagodaStatus==='in_stock')return'<span class="wire-status-tag wst-in-stock">In Stock</span>';
+    if(it.pagodaStatus==='out_of_stock')return'<span class="wire-status-tag wst-oos">Out of Stock</span>';
+    if(it.deptStatus==='done')return'<span class="wire-status-tag wst-in-stock">Done</span>';
+    if(it.deptStatus==='in_progress')return'<span class="wire-status-tag wst-progress">In Progress</span>';
+    if(it.deptStatus==='issue')return'<span class="wire-status-tag wst-oos">Issue</span>';
+    if(reqStatus==='completed')return'<span class="wire-status-tag wst-in-stock">Completed</span>';
+    if(pagodaStatus==='out_of_stock')return'<span class="wire-status-tag wst-oos">Routed to Dept</span>';
+    if(reqStatus==='in_progress')return'<span class="wire-status-tag wst-progress">In Progress</span>';
+    return'<span class="wire-status-tag" style="background:var(--surface-2);color:var(--text-3);border:1px solid var(--border);">Pending</span>';
+}
+
+// Render card in "my requests" style (like Assembly view) — used for WPA and Twist own requests
+function renderAssemblyStyleCard(r, dept) {
+    let statusTxt='',dotClass='dot-pending';
+    if(r.status==='completed'){statusTxt='Request Completed';dotClass='dot-completed';}
+    else if(r.status==='in_progress'){statusTxt=`In progress at ${r.assignedTo.toUpperCase()}`;dotClass='dot-progress';}
+    else if(r.pagodaStatus==='out_of_stock'){statusTxt=`Routed to ${r.assignedTo.toUpperCase()}`;dotClass='dot-progress';}
+    else statusTxt='Pending at Pagoda';
+    const totalItems=r.items.length;
+    const doneCnt=r.items.filter(it=>it.pagodaStatus==='in_stock'||it.deptStatus==='done').length;
+    const progCnt=r.items.filter(it=>it.deptStatus==='in_progress').length;
+    const issueCnt=r.items.filter(it=>it.deptStatus==='issue'||it.pagodaStatus==='out_of_stock').length;
+    const pendCnt=totalItems-doneCnt-progCnt-issueCnt;
+    const summaryPills=totalItems>1?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+        ${doneCnt?`<span class="wire-status-tag wst-in-stock">${doneCnt} Done</span>`:''}
+        ${progCnt?`<span class="wire-status-tag wst-progress">${progCnt} In Progress</span>`:''}
+        ${issueCnt?`<span class="wire-status-tag wst-oos">${issueCnt} Issue</span>`:''}
+        ${pendCnt>0?`<span class="wire-status-tag" style="background:var(--surface-2);color:var(--text-3);border:1px solid var(--border);">${pendCnt} Pending</span>`:''}
+    </div>`:'';
+    const itemsHtml=r.items.map(it=>{
+        const badge=wireItemStatusBadge(it,r.status,r.pagodaStatus);
+        const itemSt=it.pagodaStatus||it.deptStatus;
+        const bc=(itemSt==='in_stock'||itemSt==='done')?'var(--green)':(itemSt==='out_of_stock'||itemSt==='issue')?'var(--amber)':itemSt==='in_progress'?'var(--blue)':'var(--border)';
+        const bg=(itemSt==='in_stock'||itemSt==='done')?'rgba(22,160,106,.04)':(itemSt==='out_of_stock'||itemSt==='issue')?'rgba(217,119,6,.04)':itemSt==='in_progress'?'rgba(30,86,200,.04)':'#fff';
+        return`<div class="req-item" style="border-color:${bc};background:${bg};"><div><div class="req-item-name">${it.wireName}</div><div class="req-item-detail" style="margin-top:2px;">x${it.quantity} · Ref: ${it.reference}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div></div><div style="display:flex;align-items:center;">${badge}</div></div>`;
+    }).join('');
+    return`<div class="req-card ${r.urgency}"><div class="req-top"><span class="req-id">${r.id}</span><div class="req-meta">${urgencyBadge(r.urgency)}<span class="badge badge-status">${r.project}</span></div></div>${summaryPills}<div class="req-items">${itemsHtml}</div><div class="req-bottom" style="margin-top:10px;"><div class="status-pill"><span class="status-dot ${dotClass}"></span>${statusTxt}</div><span class="time-lbl">${timeAgo(r.time)}</span></div></div>`;
+}
+
+// ══════════════════════ ASSEMBLY REQUESTS ═══════════════════
+function loadAssemblyRequests() {
+    const reqs=requests.filter(r=>r.requestedBy==='assembly').sort((a,b)=>new Date(b.time)-new Date(a.time));
+    const el=document.getElementById('assembly-requests');
+    if(!reqs.length){el.innerHTML=emptyState('No requests yet');return;}
+    el.innerHTML=reqs.map(r=>renderAssemblyStyleCard(r,'assembly')).join('');
+}
+
+// ══════════════════════ PAGODA ═══════════════════════════════
+function loadPagodaRequests() {
+    const reqs=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending');
+    const el=document.getElementById('pagoda-requests');
+    document.getElementById('pagoda-req-count').textContent=reqs.length;
+    if(!reqs.length){el.innerHTML=emptyState('No pending requests');return;}
+    el.innerHTML=reqs.map(r=>{
+        const multi=r.items.length>1;
+        const doneCount=r.items.filter(it=>it.pagodaStatus).length;
+        const progressPct=multi?Math.round(doneCount/r.items.length*100):0;
+        const sourceLabel=r.requestedBy.toUpperCase();
+        if(multi){
+            return`<div class="req-card ${r.urgency}">
+                <div class="req-top"><span class="req-id">${r.id}</span><div class="req-meta">${urgencyBadge(r.urgency)}<span class="badge badge-status">${r.project}</span><span class="badge badge-blue">from ${sourceLabel}</span></div></div>
+                <div class="req-title">${r.items.length} Wires · Review each individually</div>
+                <div class="req-items">${renderItemsReadonly(r.items)}</div>
+                ${doneCount>0?`<div style="margin:10px 0 4px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-bottom:4px;"><span>${doneCount}/${r.items.length} actioned</span><span>${progressPct}%</span></div><div class="modal-progress-bar" style="height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden;"><div style="width:${progressPct}%;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:3px;transition:width .3s;"></div></div></div>`:''}
+                <div class="req-bottom"><div class="status-pill"><span class="status-dot dot-pending"></span>Awaiting item review</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
+                <div class="btn-row"><button class="btn btn-primary" onclick="openWireModal('${r.id}')">Review Items (${r.items.length})</button></div>
+            </div>`;
+        } else {
+            return`<div class="req-card ${r.urgency}">
+                <div class="req-top"><span class="req-id">${r.id}</span><div class="req-meta">${urgencyBadge(r.urgency)}<span class="badge badge-status">${r.project}</span><span class="badge badge-blue">from ${sourceLabel}</span></div></div>
+                <div class="req-items">${renderItemsReadonly(r.items)}</div>
+                <div class="req-bottom"><div class="status-pill"><span class="status-dot dot-pending"></span>Awaiting action</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
+                <div class="btn-row"><button class="btn btn-success" onclick="markInStock('${r.id}')">Mark In Stock</button><button class="btn btn-amber" onclick="markOutOfStock('${r.id}')">Out of Stock</button></div>
+            </div>`;
+        }
+    }).join('');
+}
+
+function renderItemsReadonly(items){
+    return items.map(it=>{
+        let tag='';
+        if(it.pagodaStatus==='in_stock')tag='<span class="wire-status-tag wst-in-stock">In Stock</span>';
+        else if(it.pagodaStatus==='out_of_stock')tag='<span class="wire-status-tag wst-oos">Out of Stock</span>';
+        return`<div class="req-item" style="${it.pagodaStatus==='in_stock'?'border-color:var(--green);background:rgba(22,160,106,.04)':it.pagodaStatus==='out_of_stock'?'border-color:var(--amber);background:rgba(217,119,6,.04)':''}">
+            <span class="req-item-name">${it.wireName}</span>
+            <div style="display:flex;align-items:center;gap:8px;">${tag}<span class="req-item-detail">x${it.quantity} · ${it.reference} · ${it.wireType.toUpperCase()}</span></div>
+        </div>`;
+    }).join('');
+}
+
+// PAGODA WIRE MODAL
+function openWireModal(reqId){
+    const r=requests.find(x=>x.id===reqId);if(!r)return;
+    document.getElementById('wire-modal')?.remove();
+    const modal=document.createElement('div');modal.className='modal-overlay';modal.id='wire-modal';
+    modal.onclick=e=>{if(e.target===modal)closeWireModal();};
+    const doneCount=()=>r.items.filter(it=>it.pagodaStatus).length;
+    function renderModalBody(){
+        const done=doneCount();const pct=Math.round(done/r.items.length*100);
+        return`<div class="modal-progress"><span>${done} of ${r.items.length} wires actioned</span><div class="modal-progress-bar"><div class="modal-progress-fill" style="width:${pct}%"></div></div><span style="font-weight:700;color:var(--text-1)">${pct}%</span></div>
+        ${r.items.map((it,idx)=>{
+            const st=it.pagodaStatus;const rowClass=st==='in_stock'?'in_stock':st==='out_of_stock'?'out_of_stock':'';
+            const statusTag=st==='in_stock'?'<span class="wire-status-tag wst-in-stock">In Stock</span>':st==='out_of_stock'?'<span class="wire-status-tag wst-oos">Out of Stock</span>':'';
+            const btns=!st?`<button class="wbtn wbtn-ok" onclick="setItemStatus('${reqId}',${idx},'in_stock')">In Stock</button><button class="wbtn wbtn-oos" onclick="setItemStatus('${reqId}',${idx},'out_of_stock')">OOS</button>`:`<button class="wbtn wbtn-undo" onclick="setItemStatus('${reqId}',${idx},null)">Undo</button>`;
+            return`<div class="wire-action-row ${rowClass}"><div class="wire-action-info"><div class="wire-action-name">${it.wireName}</div><div class="wire-action-detail">x${it.quantity} · Ref: ${it.reference} · ${it.wireType.toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div></div><div style="display:flex;align-items:center;gap:8px;">${statusTag}<div class="wire-action-btns">${btns}</div></div></div>`;
+        }).join('')}`;
+    }
+    function refreshModal(){
+        document.getElementById('wire-modal-body').innerHTML=renderModalBody();
+        const done=doneCount();const finalBtn=document.getElementById('modal-finalize-btn');
+        if(finalBtn){finalBtn.disabled=done<r.items.length;finalBtn.style.opacity=done<r.items.length?'0.4':'1';finalBtn.textContent=done<r.items.length?`Finalize (${done}/${r.items.length} done)`:'Finalize All & Route';}
+        loadPagodaRequests();
+    }
+    modal.innerHTML=`<div class="modal"><div class="modal-header"><div><div class="modal-title">${r.id} · Wire Review</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · from ${r.requestedBy.toUpperCase()} · Mark each wire in stock or out of stock</div></div><button class="modal-close" onclick="closeWireModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="wire-modal-body">${renderModalBody()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closeWireModal()" style="flex:0;padding:9px 20px;">Cancel</button><button class="btn btn-success" id="modal-finalize-btn" onclick="finalizeMultiRequest('${r.id}')" style="flex:1;opacity:0.4;" disabled>Finalize</button></div></div>`;
+    modal._refresh=refreshModal;document.body.appendChild(modal);refreshModal();
+}
+
+function closeWireModal(){const m=document.getElementById('wire-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>m.remove(),150);}}
+
+function setItemStatus(reqId,itemIdx,status){
+    const r=requests.find(x=>x.id===reqId);if(!r)return;
+    r.items[itemIdx].pagodaStatus=status;
+    const modal=document.getElementById('wire-modal');if(modal?._refresh)modal._refresh();
+}
+
+function finalizeMultiRequest(reqId){
+    const r=requests.find(x=>x.id===reqId);if(!r)return;
+    const inStockItems=r.items.filter(it=>it.pagodaStatus==='in_stock');
+    const oosItems=r.items.filter(it=>it.pagodaStatus==='out_of_stock');
+    if(inStockItems.length===r.items.length){
+        r.status='completed';r.pagodaStatus='in_stock';r.completedAt=new Date().toISOString();
+        toast(`All ${r.items.length} wires in stock for ${reqId}`,'success');
+    } else if(oosItems.length===r.items.length){
+        r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;
+        r.assignedTo=t==='simple'?'cutting':(t==='twist'?'twist':'wpa');r.status='pending';
+        toast(`All wires OOS — routed to ${r.assignedTo.toUpperCase()}`,'info');
+    } else {
+        const typeGroups={};
+        oosItems.forEach(it=>{const dept=it.wireType==='simple'?'cutting':it.wireType==='twist'?'twist':'wpa';if(!typeGroups[dept])typeGroups[dept]=[];typeGroups[dept].push(it);});
+        Object.entries(typeGroups).forEach(([dept,items])=>{
+            requests.push({id:`${reqId}-OOS-${dept.toUpperCase()}`,items,urgency:r.urgency,status:'pending',assignedTo:dept,project:r.project,time:new Date().toISOString(),requestedBy:'assembly',pagodaStatus:'out_of_stock',completedAt:null});
+        });
+        r.status='completed';r.pagodaStatus='partial';r.completedAt=new Date().toISOString();
+        toast(`${inStockItems.length} in stock · ${oosItems.length} routed to production`,'success');
+    }
+    closeWireModal();loadPage('pagoda');updateSidebarBadges();updateAnalytics();
+}
+
+function markInStock(id){
+    const r=requests.find(x=>x.id===id);if(!r)return;
+    r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();
+    toast(`Request ${id} marked as In Stock`,'success');
+    loadPage('pagoda');updateSidebarBadges();updateAnalytics();
+}
+
+function markOutOfStock(id){
+    const r=requests.find(x=>x.id===id);if(!r)return;
+    r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;
+    r.assignedTo=t==='simple'?'cutting':(t==='twist'?'twist':'wpa');r.status='pending';
+    toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');
+    loadPage('pagoda');updateSidebarBadges();updateAnalytics();
+}
+
+function loadLowStock(){
+    let html='',low=0;
+    for(const[,w] of Object.entries(wireStock)){if(w.stock<w.min){low++;html+=`<div class="alert-item"><div><div class="alert-name">${w.name}</div><div class="alert-loc">${w.location}</div></div><div class="alert-stock">${w.stock}/${w.min}</div></div>`;}}
+    document.getElementById('low-stock-list').innerHTML=html||`<div class="alert-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg>All stock levels OK</div>`;
+    document.getElementById('pagoda-low').textContent=low;
+}
+
+function updatePagodaMetrics(){
+    document.getElementById('pagoda-pending').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;
+    document.getElementById('pagoda-stock').textContent=Object.values(wireStock).reduce((s,w)=>s+w.stock,0);
+    const today=new Date().toDateString();
+    document.getElementById('requests-today').textContent=requests.filter(r=>new Date(r.time).toDateString()===today).length;
+    const comp=requests.filter(r=>r.status==='completed').length;const rate=requests.length?Math.round(comp/requests.length*100):0;
+    document.getElementById('fulfillment-rate').textContent=rate+'%';document.getElementById('fulfillment-bar').style.width=rate+'%';
+}
+
+// ══════════════════════ CUTTING ═════════════════════════════
+function loadCuttingRequests(){
+    const reqs=requests.filter(r=>r.assignedTo==='cutting'&&r.status!=='completed');
+    const el=document.getElementById('cutting-requests');
+    if(!reqs.length){el.innerHTML=emptyState('No cutting requests');return;}
+    el.innerHTML=renderDeptCards(reqs,'START CUTTING');
+}
+
+function updateCuttingMetrics(){
+    document.getElementById('cutting-pending').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='pending').length;
+    document.getElementById('cutting-progress').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='in_progress').length;
+    document.getElementById('cutting-completed').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='completed').length;
+}
+
+// ══════════════════════ DEPT CARD RENDERER ══════════════════
+function renderDeptCards(reqs, startLabel) {
+    return reqs.map(r=>{
+        const multi=r.items.length>1;const inProg=r.status==='in_progress';
+        const doneCount=r.items.filter(it=>it.deptStatus==='done').length;
+        const progressPct=multi?Math.round(doneCount/r.items.length*100):0;
+        if(multi){
+            return`<div class="req-card ${r.urgency}">
+                <div class="req-top"><span class="req-id">${r.id}</span><div class="req-meta">${urgencyBadge(r.urgency)}<span class="badge badge-status">${r.project}</span></div></div>
+                <div class="req-title">${r.items.length} Wires · Mark each individually</div>
+                <div class="req-items">${renderItemsDept(r.items)}</div>
+                ${doneCount>0?`<div style="margin:10px 0 4px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-bottom:4px;"><span>${doneCount}/${r.items.length} completed</span><span>${progressPct}%</span></div><div style="height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden;"><div style="width:${progressPct}%;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:3px;transition:width .3s;"></div></div></div>`:''}
+                <div class="req-bottom"><div class="status-pill"><span class="status-dot ${inProg?'dot-progress':'dot-pending'}"></span>${inProg?'In Progress':'Pending'}</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
+                <div class="btn-row">
+                    ${!inProg?`<button class="btn btn-primary" onclick="startReq('${r.id}')">${startLabel}</button>`:''}
+                    <button class="btn btn-success" style="background:var(--blue);color:#fff;" onclick="openDeptModal('${r.id}','${startLabel}')">Review Items (${r.items.length})</button>
+                </div>
+            </div>`;
+        } else {
+            return`<div class="req-card ${r.urgency}">
+                <div class="req-top"><span class="req-id">${r.id}</span><div class="req-meta">${urgencyBadge(r.urgency)}<span class="badge badge-status">${r.project}</span></div></div>
+                <div class="req-items">${renderItemsDept(r.items)}</div>
+                <div class="req-bottom"><div class="status-pill"><span class="status-dot ${inProg?'dot-progress':'dot-pending'}"></span>${inProg?'In Progress':'Pending'}</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
+                <div class="btn-row">
+                    ${inProg?`<button class="btn btn-disabled" disabled>In Progress…</button>`:`<button class="btn btn-primary" onclick="startReq('${r.id}')">${startLabel}</button>`}
+                    <button class="btn btn-success" onclick="completeReq('${r.id}')">Complete</button>
+                </div>
+            </div>`;
+        }
+    }).join('');
+}
+
+function renderItemsDept(items){
+    return items.map(it=>{
+        const st=it.deptStatus;let statusTag='',bs='';
+        if(st==='in_progress'){statusTag='<span class="wire-status-tag wst-progress">In Progress</span>';bs='border-color:var(--blue);background:rgba(30,86,200,.04)';}
+        else if(st==='done'){statusTag='<span class="wire-status-tag wst-in-stock">Done</span>';bs='border-color:var(--green);background:rgba(22,160,106,.04)';}
+        else if(st==='issue'){statusTag='<span class="wire-status-tag wst-oos">Issue</span>';bs='border-color:var(--amber);background:rgba(217,119,6,.04)';}
+        return`<div class="req-item" style="${bs}"><span class="req-item-name">${it.wireName}</span><div style="display:flex;align-items:center;gap:8px;">${statusTag}<span class="req-item-detail">x${it.quantity} · ${it.reference}</span></div></div>`;
+    }).join('');
+}
+
+// DEPT ITEM MODAL
+function openDeptModal(reqId, deptLabel){
+    const r=requests.find(x=>x.id===reqId);if(!r)return;
+    document.getElementById('dept-modal')?.remove();
+    const modal=document.createElement('div');modal.className='modal-overlay';modal.id='dept-modal';
+    modal.onclick=e=>{if(e.target===modal)closeDeptModal();};
+    function doneCount(){return r.items.filter(it=>it.deptStatus==='done').length;}
+    function renderBody(){
+        const done=doneCount();const inProgCount=r.items.filter(it=>it.deptStatus==='in_progress').length;const pct=Math.round(done/r.items.length*100);
+        return`<div class="modal-progress"><span>${done} of ${r.items.length} wires done${inProgCount>0?' · <span style="color:var(--blue)">'+inProgCount+' in progress</span>':''}</span><div class="modal-progress-bar"><div class="modal-progress-fill" style="width:${pct}%"></div></div><span style="font-weight:700;color:var(--text-1)">${pct}%</span></div>
+        ${r.items.map((it,idx)=>{
+            const st=it.deptStatus;const rowClass=st==='done'?'in_stock':st==='out_of_stock'?'out_of_stock':'';
+            const statusTag=st==='done'?'<span class="wire-status-tag wst-in-stock">Done</span>':st==='in_progress'?'<span class="wire-status-tag wst-progress">In Progress</span>':st==='issue'?'<span class="wire-status-tag wst-oos">Issue</span>':'';
+            const btns=!st?`<button class="wbtn wbtn-prog" onclick="setDeptItemStatus('${reqId}',${idx},'in_progress')">Start</button><button class="wbtn wbtn-ok" onclick="setDeptItemStatus('${reqId}',${idx},'done')">Done</button><button class="wbtn wbtn-oos" onclick="setDeptItemStatus('${reqId}',${idx},'issue')">Issue</button>`:st==='in_progress'?`<button class="wbtn wbtn-ok" onclick="setDeptItemStatus('${reqId}',${idx},'done')">Done</button><button class="wbtn wbtn-oos" onclick="setDeptItemStatus('${reqId}',${idx},'issue')">Issue</button><button class="wbtn wbtn-undo" onclick="setDeptItemStatus('${reqId}',${idx},null)">Reset</button>`:`<button class="wbtn wbtn-undo" onclick="setDeptItemStatus('${reqId}',${idx},null)">Undo</button>`;
+            return`<div class="wire-action-row ${rowClass}" style="${st==='in_progress'?'border-color:var(--blue);background:rgba(30,86,200,.05)':''}"><div class="wire-action-info"><div class="wire-action-name">${it.wireName}</div><div class="wire-action-detail">x${it.quantity} · Ref: ${it.reference} · ${it.wireType.toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">${statusTag}<div class="wire-action-btns">${btns}</div></div></div>`;
+        }).join('')}`;
+    }
+    function refresh(){
+        document.getElementById('dept-modal-body').innerHTML=renderBody();
+        const done=doneCount();const actioned=r.items.filter(it=>it.deptStatus==='done'||it.deptStatus==='issue').length;
+        const finalBtn=document.getElementById('dept-finalize-btn');
+        if(finalBtn){const can=actioned===r.items.length;finalBtn.disabled=!can;finalBtn.style.opacity=can?'1':'0.4';finalBtn.textContent=can?'Finalize All':`Finalize (${actioned}/${r.items.length} actioned)`;}
+        loadPage(currentPage);
+    }
+    modal.innerHTML=`<div class="modal"><div class="modal-header"><div><div class="modal-title">${r.id} · Item Review</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · ${deptLabel}</div></div><button class="modal-close" onclick="closeDeptModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="dept-modal-body">${renderBody()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closeDeptModal()" style="flex:0;padding:9px 20px;">Cancel</button><button class="btn btn-success" id="dept-finalize-btn" onclick="finalizeDeptRequest('${reqId}')" style="flex:1;opacity:0.4;" disabled>Finalize</button></div></div>`;
+    modal._refresh=refresh;document.body.appendChild(modal);refresh();
+}
+
+function closeDeptModal(){const m=document.getElementById('dept-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>m.remove(),150);}}
+
+function setDeptItemStatus(reqId,itemIdx,status){
+    const r=requests.find(x=>x.id===reqId);if(!r)return;
+    r.items[itemIdx].deptStatus=status;
+    const modal=document.getElementById('dept-modal');if(modal?._refresh)modal._refresh();
+}
+
+function finalizeDeptRequest(reqId){
+    const r=requests.find(x=>x.id===reqId);if(!r)return;
+    r.status='completed';r.completedAt=new Date().toISOString();
+    const issues=r.items.filter(it=>it.deptStatus==='issue').length;
+    if(issues>0){toast(`${r.items.length-issues} wires completed · ${issues} flagged with issues`,'info');}
+    else{toast(`All ${r.items.length} wires completed for ${reqId}`,'success');}
+    closeDeptModal();loadPage(currentPage);updateSidebarBadges();updateAnalytics();
+}
+
+function startReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='in_progress';toast(`Started working on ${id}`,'info');loadPage(currentPage);updateSidebarBadges();}
+function completeReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();toast(`Request ${id} completed!`,'success');loadPage(currentPage);updateSidebarBadges();updateAnalytics();}
+
+// ══════════════════════ HISTORY TABLE ═══════════════════════
+function loadHistory(tbodyId,dept,field){
+    const tbody=document.getElementById(tbodyId);if(!tbody)return;
+    const comp=requests.filter(r=>r[field]===dept&&r.status==='completed').sort((a,b)=>new Date(b.completedAt||b.time)-new Date(a.completedAt||a.time));
+    if(!comp.length){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-3)">No completed orders yet</td></tr>`;return;}
+    tbody.innerHTML=comp.map(r=>{
+        const dt=r.completedAt?new Date(r.completedAt):new Date(r.time);
+        return`<tr><td class="mono">${r.id}</td><td>${r.items.map(i=>`${i.quantity}x ${i.wireName}`).join(', ')}</td>${field==='requestedBy'?`<td><span class="badge badge-status">${r.project}</span></td>`:''}<td>${dt.toLocaleDateString()} ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td><span class="badge badge-normal">Completed</span></td></tr>`;
+    }).join('');
+}
+
+// ══════════════════════ CLOCK ════════════════════════════════
+function updateDateTime(){
+    const now=new Date();
+    document.getElementById('current-time').textContent=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('current-date').textContent=now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+    const h=now.getHours();document.getElementById('current-shift').textContent=h>=6&&h<14?'Morning 06–14':h>=14&&h<22?'Afternoon 14–22':'Night 22–06';
+}
+
+// ══════════════════════ SIDEBAR MOBILE ══════════════════════
+function toggleSidebar(){const s=document.querySelector('.sidebar');const o=document.getElementById('sidebar-overlay');if(s.classList.contains('open')){closeSidebar();}else{s.classList.add('open');o.classList.add('show');document.body.style.overflow='hidden';}}
+function closeSidebar(){document.querySelector('.sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('show');document.body.style.overflow='';}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.nav-btn').forEach(btn=>{btn.addEventListener('click',()=>{if(window.innerWidth<=900)closeSidebar();});});});
+</script>
+</body>
+</html>
