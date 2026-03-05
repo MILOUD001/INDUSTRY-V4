@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MILOUD EZZAKY INDUSTRY V.6 — Secure Access Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<!-- ═══════════════════════════════════════════════════
+     SUPABASE — loaded ONCE here, used everywhere below
+     ════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -33,17 +37,19 @@
   --shadow-card:0 32px 80px rgba(0,0,0,0.5);
 }
 
-html{height:100%;overflow:hidden}
+html{min-height:100%;overflow-x:hidden;scroll-behavior:smooth;}
 body{
   font-family:'Instrument Sans',sans-serif;
   background:var(--navy);
   color:var(--text-primary);
-  height:100%;
-  overflow:hidden;
+  min-height:100vh;
+  overflow-x:hidden;
+  overflow-y:auto;
   -webkit-font-smoothing:antialiased;
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:center;
+  padding:32px 16px;
 }
 
 /* ── BACKGROUND ── */
@@ -83,7 +89,7 @@ body{
 .portal{
   position:relative;z-index:1;
   width:100%;max-width:480px;
-  padding:24px 20px;
+  padding:0;
   display:flex;flex-direction:column;align-items:center;
   gap:0;
 }
@@ -414,7 +420,7 @@ body{
 
 /* ── RESPONSIVE ── */
 @media(max-width:500px){
-  .portal{padding:16px 12px}
+  body{padding:16px 10px;}
   .panel{padding:20px 20px 24px}
   .dept-grid{grid-template-columns:1fr 1fr}
   .brand-name{font-size:17px}
@@ -422,7 +428,6 @@ body{
 @media(max-height:700px){
   .brand{margin-bottom:20px}
   .brand-mark{width:52px;height:52px}
-  .portal{padding:12px 20px}
 }
 </style>
 </head>
@@ -719,30 +724,51 @@ body{
 <script>
 'use strict';
 
-// ── DEMO ACCOUNTS (replace with Supabase auth calls) ──────────
-const DEMO_ACCOUNTS = [
-  {empId:'ME-001', password:'123456', name:'Miloud Ezzaky',    dept:'assembly', email:'m.ezzaky@meiw.ma'},
-  {empId:'PG-001', password:'pagoda', name:'Pagoda Manager',   dept:'pagoda',   email:'pagoda@meiw.ma'},
-  {empId:'CU-001', password:'cutting',name:'Cutting Lead',     dept:'cutting',  email:'cutting@meiw.ma'},
-  {empId:'WP-001', password:'wireprep',name:'Wire Prep Chief', dept:'wpa',      email:'wpa@meiw.ma'},
-  {empId:'TW-001', password:'twist',  name:'Twist Supervisor', dept:'twist',    email:'twist@meiw.ma'},
-];
+// ════════════════════════════════════════════════════════════════
+// SUPABASE — initialised ONCE here, used by every function below
+// ════════════════════════════════════════════════════════════════
+const SUPABASE_URL  = 'https://efwxxpglyhczwrlfaqoz.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmd3h4cGdseWhjendybGZhcW96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMDk5OTAsImV4cCI6MjA4Nzg4NTk5MH0.lWCW8oeIwOpLTDAGwh2ha6duG6LW9x-Ps7-NeAy2AtE';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+// ════════════════════════════════════════════════════════════════
 
+// ── DEPARTMENT METADATA ────────────────────────────────────────
 const DEPT_META = {
-  assembly:{name:'Assembly',     color:'#16a06a', role:'Request Only'},
-  pagoda:  {name:'Pagoda Hub',   color:'#2563eb', role:'Central Control'},
-  cutting: {name:'Cutting Area', color:'#10b981', role:'Processing'},
-  wpa:     {name:'Wire Prep',    color:'#06b6d4', role:'Request & Fulfill'},
-  twist:   {name:'Twist Dept',   color:'#8b5cf6', role:'Request & Fulfill'},
+  assembly: { name:'Assembly',     color:'#16a06a', role:'Request Only'        },
+  pagoda:   { name:'Pagoda Hub',   color:'#2563eb', role:'Central Control'     },
+  cutting:  { name:'Cutting Area', color:'#10b981', role:'Processing'          },
+  wpa:      { name:'Wire Prep',    color:'#06b6d4', role:'Request & Fulfill'   },
+  twist:    { name:'Twist Dept',   color:'#8b5cf6', role:'Request & Fulfill'   },
 };
+
+// Redirect map — change these paths to match your actual page filenames
+const DEPT_REDIRECTS = {
+  assembly: 'dashboard.html',   // or index.html?dept=assembly
+  pagoda:   'dashboard.html',
+  cutting:  'dashboard.html',
+  wpa:      'dashboard.html',
+  twist:    'dashboard.html',
+};
+
+// ── ON PAGE LOAD — if already logged in, redirect directly ─────
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('department, full_name')
+      .eq('id', session.user.id)
+      .single();
+    if (profile) redirectToDashboard(profile.department, profile.full_name, false);
+  }
+})();
 
 // ── TAB SWITCHING ──────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
-  const panel = document.getElementById(`panel-${tab}`);
-  panel.classList.add('active');
+  document.getElementById(`panel-${tab}`).classList.add('active');
   clearMessages();
 }
 
@@ -763,21 +789,28 @@ function showForgot(show = true) {
 function clearMessages() {
   ['signin-msg','signup-msg','forgot-msg'].forEach(id => {
     const el = document.getElementById(id);
-    if(el) el.innerHTML = '';
+    if (el) el.innerHTML = '';
   });
 }
 
 function showMsg(id, text, type = 'error') {
   const icons = {
-    error: '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    error:   '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
     success: '<polyline points="20 6 9 17 4 12"/>',
-    info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+    info:    '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
   };
   document.getElementById(id).innerHTML = `
     <div class="msg-bar msg-${type}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[type]}</svg>
       ${text}
     </div>`;
+}
+
+function setLoading(btnId, loading, label) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.innerHTML = loading ? `<span class="spinner"></span>${label}` : label;
+  btn.classList.toggle('loading', loading);
 }
 
 // ── PASSWORD TOGGLE ────────────────────────────────────────────
@@ -790,7 +823,7 @@ function togglePw(inputId, btn) {
     : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 }
 
-// ── STRENGTH METER ─────────────────────────────────────────────
+// ── PASSWORD STRENGTH ──────────────────────────────────────────
 function checkStrength(pw) {
   const bar = document.getElementById('strength-bar');
   const lbl = document.getElementById('strength-label');
@@ -800,135 +833,190 @@ function checkStrength(pw) {
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
   const levels = [
-    {w:'0%',   c:'transparent', t:'Enter a password'},
-    {w:'25%',  c:'#ef4444',     t:'Weak'},
-    {w:'50%',  c:'#f59e0b',     t:'Fair'},
-    {w:'75%',  c:'#06b6d4',     t:'Good'},
-    {w:'100%', c:'#10b981',     t:'Strong ✓'},
+    { w:'0%',   c:'transparent', t:'Enter a password' },
+    { w:'25%',  c:'#ef4444',     t:'Weak'             },
+    { w:'50%',  c:'#f59e0b',     t:'Fair'             },
+    { w:'75%',  c:'#06b6d4',     t:'Good'             },
+    { w:'100%', c:'#10b981',     t:'Strong ✓'         },
   ];
   const l = levels[score];
-  bar.style.width = l.w; bar.style.background = l.c; lbl.textContent = l.t;
-  lbl.style.color = l.c;
+  bar.style.width = l.w; bar.style.background = l.c;
+  lbl.textContent = l.t; lbl.style.color = l.c;
 }
 
-// ── SET LOADING STATE ──────────────────────────────────────────
-function setLoading(btnId, loading, label) {
-  const btn = document.getElementById(btnId);
-  if (!btn) return;
-  btn.innerHTML = loading ? `<span class="spinner"></span>${label}` : label;
-  btn.classList.toggle('loading', loading);
-}
-
-// ── SIGN IN ────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// SIGN IN  ── real Supabase auth
+// ════════════════════════════════════════════════════════════════
 async function doSignIn() {
-  const empId = document.getElementById('signin-empid').value.trim();
+  const empId = document.getElementById('signin-empid').value.trim().toUpperCase();
   const pw    = document.getElementById('signin-pw').value;
   const dept  = document.querySelector('input[name="signin-dept"]:checked')?.value;
 
   if (!empId || !pw) { showMsg('signin-msg', 'Please fill in all required fields.'); return; }
-  if (!dept)         { showMsg('signin-msg', 'Please select your department.'); return; }
+  if (!dept)         { showMsg('signin-msg', 'Please select your department.');       return; }
 
   setLoading('signin-btn', true, 'Verifying Identity…');
 
-  // ── SUPABASE INTEGRATION POINT ──────────────────────────────
-  // Replace the setTimeout block below with:
-  //
-  // const { data, error } = await supabase.auth.signInWithPassword({
-  //   email: `${empId.toLowerCase()}@meiw.ma`,
-  //   password: pw,
-  // });
-  // if (error) { showMsg('signin-msg', error.message); return; }
-  //
-  // Then verify department match from profiles table:
-  // const { data: profile } = await supabase
-  //   .from('profiles')
-  //   .select('department, full_name')
-  //   .eq('id', data.user.id)
-  //   .single();
-  // if (profile.department !== dept) {
-  //   showMsg('signin-msg', 'This account is not registered for the selected department.');
-  //   await supabase.auth.signOut(); return;
-  // }
-  //
-  // Log login event:
-  // await supabase.from('access_logs').insert({
-  //   user_id: data.user.id, employee_id: empId, department: dept,
-  //   action: 'login', ip: null, user_agent: navigator.userAgent
-  // });
-  // ────────────────────────────────────────────────────────────
+  // Supabase requires an email — we derive it from Employee ID
+  // Format: me-001@meiw.internal  (lowercase, internal domain)
+  const email = `${empId.toLowerCase()}@meiw.internal`;
 
-  await fakeDelay(1400);
+  // 1. Sign in with Supabase Auth
+  const { data: authData, error: authError } =
+    await supabase.auth.signInWithPassword({ email, password: pw });
 
-  const account = DEMO_ACCOUNTS.find(a => a.empId === empId && a.password === pw && a.dept === dept);
-
-  if (!account) {
+  if (authError) {
     setLoading('signin-btn', false, 'Sign In to Dashboard');
-    const doc = DEMO_ACCOUNTS.find(a => a.empId === empId);
-    if (doc && doc.dept !== dept)
-      showMsg('signin-msg', `Account "${empId}" is registered under <strong>${DEPT_META[doc.dept]?.name}</strong>, not ${DEPT_META[dept]?.name}.`);
-    else
-      showMsg('signin-msg', 'Invalid Employee ID or Password. Please try again.');
+    // Map Supabase error messages to friendly text
+    const msg = authError.message.includes('Invalid login')
+      ? 'Invalid Employee ID or password. Please try again.'
+      : authError.message;
+    showMsg('signin-msg', msg);
     document.getElementById('signin-empid').classList.add('error');
     document.getElementById('signin-pw').classList.add('error');
     return;
   }
 
-  // Save session
-  sessionStorage.setItem('me_session', JSON.stringify({
-    empId: account.empId,
-    name: account.name,
-    dept: account.dept,
-    loginAt: new Date().toISOString(),
+  // 2. Fetch this user's profile (department lives here)
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('department, full_name, employee_id, is_active')
+    .eq('id', authData.user.id)
+    .single();
+
+  if (profileError || !profile) {
+    await supabase.auth.signOut();
+    setLoading('signin-btn', false, 'Sign In to Dashboard');
+    showMsg('signin-msg', 'Account profile not found. Contact your administrator.');
+    return;
+  }
+
+  // 3. Check account is active
+  if (!profile.is_active) {
+    await supabase.auth.signOut();
+    setLoading('signin-btn', false, 'Sign In to Dashboard');
+    showMsg('signin-msg', 'This account has been deactivated. Contact your supervisor.');
+    return;
+  }
+
+  // 4. Verify the user belongs to the selected department
+  if (profile.department !== dept) {
+    await supabase.auth.signOut();
+    setLoading('signin-btn', false, 'Sign In to Dashboard');
+    showMsg('signin-msg',
+      `Account <strong>${empId}</strong> is registered under
+       <strong>${DEPT_META[profile.department]?.name || profile.department}</strong>,
+       not ${DEPT_META[dept]?.name}.`
+    );
+    return;
+  }
+
+  // 5. Log the successful login event
+  await supabase.from('access_logs').insert({
+    user_id:    authData.user.id,
+    employee_id: empId,
+    department: dept,
+    action:     'login',
+    user_agent: navigator.userAgent,
+    metadata:   { timestamp: new Date().toISOString() }
+  });
+
+  // 6. Update last_login_at on profile
+  await supabase.from('profiles')
+    .update({ last_login_at: new Date().toISOString() })
+    .eq('id', authData.user.id);
+
+  // 7. Store minimal session info for the dashboard to read
+  sessionStorage.setItem('me_profile', JSON.stringify({
+    id:         authData.user.id,
+    empId:      profile.employee_id,
+    name:       profile.full_name,
+    dept:       profile.department,
+    email:      authData.user.email,
+    loginAt:    new Date().toISOString(),
   }));
 
-  // Show success panel
   setLoading('signin-btn', false, 'Sign In to Dashboard');
-  showSuccessPanel(account.dept, account.name);
+  redirectToDashboard(profile.department, profile.full_name, true);
 }
 
-// ── SIGN UP ────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// SIGN UP  ── real Supabase auth
+// ════════════════════════════════════════════════════════════════
 async function doSignUp() {
   const name  = document.getElementById('signup-name').value.trim();
-  const empId = document.getElementById('signup-empid').value.trim();
+  const empId = document.getElementById('signup-empid').value.trim().toUpperCase();
   const email = document.getElementById('signup-email').value.trim();
   const pw    = document.getElementById('signup-pw').value;
   const pw2   = document.getElementById('signup-pw2').value;
   const dept  = document.querySelector('input[name="signup-dept"]:checked')?.value;
 
-  if (!name || !empId || !pw) { showMsg('signup-msg', 'Please fill in all required fields.'); return; }
-  if (pw !== pw2)             { showMsg('signup-msg', 'Passwords do not match.'); return; }
-  if (pw.length < 8)          { showMsg('signup-msg', 'Password must be at least 8 characters.'); return; }
-  if (!dept)                  { showMsg('signup-msg', 'Please select your department.'); return; }
+  // Validation
+  if (!name || !empId || !pw)  { showMsg('signup-msg', 'Please fill in Name, Employee ID and Password.'); return; }
+  if (pw !== pw2)               { showMsg('signup-msg', 'Passwords do not match.');                        return; }
+  if (pw.length < 8)            { showMsg('signup-msg', 'Password must be at least 8 characters.');        return; }
+  if (!dept)                    { showMsg('signup-msg', 'Please select your department.');                  return; }
 
   setLoading('signup-btn', true, 'Creating Account…');
 
-  // ── SUPABASE INTEGRATION POINT ──────────────────────────────
-  // const emailToUse = email || `${empId.toLowerCase()}@meiw.ma`;
-  //
-  // const { data, error } = await supabase.auth.signUp({
-  //   email: emailToUse,
-  //   password: pw,
-  //   options: {
-  //     data: { full_name: name, employee_id: empId, department: dept }
-  //   }
-  // });
-  // if (error) { showMsg('signup-msg', error.message); return; }
-  //
-  // The trigger handle_new_user (in SQL below) auto-creates the profile row.
-  // ────────────────────────────────────────────────────────────
+  // Use provided email, or auto-generate an internal one from Employee ID
+  const emailToUse = email || `${empId.toLowerCase()}@meiw.internal`;
 
-  await fakeDelay(1600);
+  // 1. Create auth user — the SQL trigger handle_new_user auto-creates the profile row
+  const { data, error } = await supabase.auth.signUp({
+    email:    emailToUse,
+    password: pw,
+    options: {
+      data: {
+        full_name:   name,
+        employee_id: empId,
+        department:  dept,
+      }
+    }
+  });
 
   setLoading('signup-btn', false, 'Create Account');
+
+  if (error) {
+    const msg = error.message.includes('already registered')
+      ? `Employee ID <strong>${empId}</strong> already has an account. Try signing in.`
+      : error.message;
+    showMsg('signup-msg', msg);
+    return;
+  }
+
+  // 2. If email confirmation is disabled in Supabase (Settings → Auth → Email),
+  //    the user is signed in immediately — log the event
+  if (data.session) {
+    await supabase.from('access_logs').insert({
+      user_id:    data.user.id,
+      employee_id: empId,
+      department: dept,
+      action:     'login',
+      user_agent: navigator.userAgent,
+    });
+    sessionStorage.setItem('me_profile', JSON.stringify({
+      id: data.user.id, empId, name, dept,
+      email: emailToUse, loginAt: new Date().toISOString(),
+    }));
+    redirectToDashboard(dept, name, true);
+    return;
+  }
+
+  // 3. Email confirmation is ON — show success message
   showMsg('signup-msg',
-    `✓ Account created for <strong>${name}</strong> in <strong>${DEPT_META[dept]?.name}</strong>. Check your email to confirm.`,
+    `✓ Account created for <strong>${name}</strong> in
+     <strong>${DEPT_META[dept]?.name}</strong>.
+     Check <strong>${emailToUse}</strong> to confirm your account before signing in.`,
     'success'
   );
 }
 
-// ── FORGOT PASSWORD ────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// FORGOT PASSWORD  ── real Supabase reset email
+// ════════════════════════════════════════════════════════════════
 async function doForgot() {
-  const empId = document.getElementById('forgot-empid').value.trim();
+  const empId = document.getElementById('forgot-empid').value.trim().toUpperCase();
   const email = document.getElementById('forgot-email').value.trim();
 
   if (!empId || !email) { showMsg('forgot-msg', 'Please enter your Employee ID and email.'); return; }
@@ -936,54 +1024,70 @@ async function doForgot() {
 
   setLoading('forgot-btn', true, 'Sending Reset Email…');
 
-  // ── SUPABASE INTEGRATION POINT ──────────────────────────────
-  // const { error } = await supabase.auth.resetPasswordForEmail(email, {
-  //   redirectTo: `${window.location.origin}/reset-password`
-  // });
-  // if (error) { showMsg('forgot-msg', error.message); return; }
-  // ────────────────────────────────────────────────────────────
+  // Log the reset attempt
+  await supabase.from('access_logs').insert({
+    employee_id: empId,
+    action:      'password_reset',
+    user_agent:  navigator.userAgent,
+    metadata:    { email_provided: email }
+  });
 
-  await fakeDelay(1800);
+  // Send Supabase password reset email
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/reset-password.html'
+  });
+
   setLoading('forgot-btn', false, 'Send Reset Link');
 
+  if (error) {
+    showMsg('forgot-msg', error.message);
+    return;
+  }
+
+  // Show success state
   document.getElementById('forgot-form').style.display = 'none';
   document.getElementById('forgot-success').style.display = 'block';
 }
 
-// ── SUCCESS PANEL ──────────────────────────────────────────────
-function showSuccessPanel(dept, name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-nav').style.display = 'none';
-  document.getElementById('panel-success').classList.add('active');
+// ════════════════════════════════════════════════════════════════
+// REDIRECT TO DASHBOARD
+// ════════════════════════════════════════════════════════════════
+function redirectToDashboard(dept, name, animate = true) {
+  if (animate) {
+    // Show the animated success panel first, then redirect
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-nav').style.display = 'none';
+    document.getElementById('panel-success').classList.add('active');
 
-  const meta = DEPT_META[dept];
-  document.getElementById('success-dept-name').textContent = meta.name;
-  document.getElementById('success-dot').style.background = meta.color;
-  document.getElementById('success-dept-tag').style.borderColor = meta.color + '55';
+    const meta = DEPT_META[dept] || { name: dept, color: '#1e56c8' };
+    document.getElementById('success-dept-name').textContent = meta.name;
+    document.getElementById('success-dot').style.background  = meta.color;
+    document.getElementById('success-dept-tag').style.borderColor = meta.color + '55';
 
-  // In real app: window.location.href = `/${dept}/dashboard`
-  // Demo: just show message then reset
-  setTimeout(() => {
-    alert(`Demo mode: Would redirect to /${dept}/dashboard\nLogged in as: ${name}`);
-    location.reload();
-  }, 2800);
+    setTimeout(() => {
+      const target = DEPT_REDIRECTS[dept] || 'dashboard.html';
+      // Pass department as a URL param so the dashboard knows which view to show
+      window.location.href = `${target}?dept=${dept}`;
+    }, 2200);
+  } else {
+    // Already logged in — redirect immediately without animation
+    const target = DEPT_REDIRECTS[dept] || 'dashboard.html';
+    window.location.href = `${target}?dept=${dept}`;
+  }
 }
 
-// ── HELPERS ───────────────────────────────────────────────────
-function fakeDelay(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-// Keyboard submit
+// ── KEYBOARD SUBMIT ────────────────────────────────────────────
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
   const active = document.querySelector('.panel.active');
   if (!active) return;
   const id = active.id;
-  if (id === 'panel-signin') doSignIn();
-  else if (id === 'panel-signup') doSignUp();
+  if (id === 'panel-signin')  doSignIn();
+  else if (id === 'panel-signup')  doSignUp();
   else if (id === 'panel-forgot') doForgot();
 });
 
-// Remove error class on input
+// ── REMOVE ERROR STYLE ON INPUT ────────────────────────────────
 document.addEventListener('input', e => {
   if (e.target.classList.contains('fi')) e.target.classList.remove('error');
 });
