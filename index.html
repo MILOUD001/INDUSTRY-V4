@@ -3,1488 +3,990 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MILOUD EZZAKY INDUSTRY V.6 — Wire Request System</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<title>MILOUD EZZAKY INDUSTRY V.6 — Secure Access Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --navy:#0a1628;--navy-mid:#112040;--navy-soft:#1a3060;
-  --blue:#1e56c8;--blue-lt:#2d6ae0;
-  --gold:#e8b84b;--gold-lt:#f5d06e;--gold-dk:#c49a2a;
-  --green:#16a06a;--green-lt:#1dc47e;
-  --amber:#d97706;--red:#dc2626;--red-lt:#ef4444;
-  --cyan:#0891b2;--purple:#7c3aed;
-  --surface:#f7f8fc;--surface-2:#eef1f8;--surface-3:#e4e8f3;
-  --border:#d8dce8;--border-dk:#b8bdd4;
-  --text-1:#0d1626;--text-2:#3d4a6a;--text-3:#6b7898;
-  --shadow-sm:0 1px 3px rgba(10,22,40,.07),0 1px 2px rgba(10,22,40,.04);
-  --shadow-md:0 4px 16px rgba(10,22,40,.10);
-  --shadow-lg:0 12px 40px rgba(10,22,40,.14);
-  --shadow-xl:0 24px 64px rgba(10,22,40,.18);
-  --r-sm:8px;--r-md:14px;--r-lg:20px;--r-xl:28px;
+  --navy:#07111f;
+  --navy-2:#0d1e35;
+  --navy-3:#152847;
+  --gold:#e8b84b;
+  --gold-lt:#f5d47a;
+  --gold-dk:#c49830;
+  --blue:#2563eb;
+  --blue-lt:#3b82f6;
+  --cyan:#06b6d4;
+  --green:#10b981;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --purple:#8b5cf6;
+  --white:#ffffff;
+  --glass:rgba(255,255,255,0.04);
+  --glass-border:rgba(255,255,255,0.09);
+  --text-primary:#f1f5f9;
+  --text-secondary:rgba(255,255,255,0.5);
+  --text-muted:rgba(255,255,255,0.25);
+  --input-bg:rgba(255,255,255,0.05);
+  --input-border:rgba(255,255,255,0.1);
+  --shadow-gold:0 0 60px rgba(232,184,75,0.12);
+  --shadow-card:0 32px 80px rgba(0,0,0,0.5);
 }
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text-1);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-dk);border-radius:10px}
 
-/* ══ LOGIN ══════════════════════════════════════════════════ */
-#login-screen{position:fixed;inset:0;z-index:999;background:var(--navy);display:flex;align-items:center;justify-content:center;overflow:hidden}
-#login-screen::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(30,86,200,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(30,86,200,.08) 1px,transparent 1px);background-size:48px 48px;animation:gridDrift 20s linear infinite}
-@keyframes gridDrift{0%{transform:translateY(0)}100%{transform:translateY(48px)}}
-#login-screen::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(30,86,200,.15),transparent 70%)}
-.login-wrap{position:relative;z-index:1;width:100%;max-width:440px;padding:20px}
-.login-logo{text-align:center;margin-bottom:32px}
-.login-logo-mark{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:var(--gold);border-radius:16px;margin-bottom:16px;box-shadow:0 8px 24px rgba(232,184,75,.35)}
-.login-logo-mark svg{width:32px;height:32px}
-.login-logo h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:.5px}
-.login-logo p{font-size:11px;font-weight:500;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-top:6px}
-.login-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:var(--r-xl);padding:36px;backdrop-filter:blur(12px)}
-.login-card h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
-.login-card>p{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:28px}
-.fl{margin-bottom:14px}
-.fl label{display:block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:7px}
-.fi{width:100%;padding:13px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md);color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;transition:all .2s;outline:none}
-.fi::placeholder{color:rgba(255,255,255,.25)}
-.fi:focus{border-color:var(--gold);background:rgba(255,255,255,.09);box-shadow:0 0 0 3px rgba(232,184,75,.12)}
-.fi option{background:var(--navy-mid);color:#fff}
-.login-btn{width:100%;margin-top:20px;padding:15px;background:var(--gold);color:var(--navy);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:none;border-radius:var(--r-md);cursor:pointer;transition:all .2s}
-.login-btn:hover{background:var(--gold-lt);transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,184,75,.35)}
-.login-footer{text-align:center;margin-top:24px;font-size:11px;color:rgba(255,255,255,.2)}
+html{height:100%;overflow:hidden}
+body{
+  font-family:'Instrument Sans',sans-serif;
+  background:var(--navy);
+  color:var(--text-primary);
+  height:100%;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-/* ══ DASHBOARD SHELL ════════════════════════════════════════ */
-#app{display:none;min-height:100vh}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:var(--navy);z-index:100;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.06)}
-.sb-brand{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
-.sb-badge{display:flex;align-items:center;gap:10px}
-.sb-icon{width:36px;height:36px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sb-icon svg{width:20px;height:20px}
-.sb-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff}
-.sb-ver{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3)}
-.sb-user{padding:14px 20px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06)}
-.sb-avatar{width:34px;height:34px;background:linear-gradient(135deg,var(--blue-lt),var(--blue));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
-.sb-uname{font-size:12px;font-weight:600;color:#fff}
-.sb-udept{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px}
-.sb-nav{flex:1;padding:14px 10px;overflow-y:auto}
-.nav-lbl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:0 8px;margin-bottom:6px;margin-top:14px}
-.nav-lbl:first-child{margin-top:0}
-.nb{width:100%;display:flex;align-items:center;gap:9px;padding:9px 11px;border:none;border-radius:var(--r-md);background:transparent;color:rgba(255,255,255,.45);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;text-align:left;position:relative}
-.nb:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85)}
-.nb.active{background:rgba(30,86,200,.25);color:#fff;font-weight:600}
-.nb.active::before{content:'';position:absolute;left:0;top:25%;bottom:25%;width:3px;background:var(--gold);border-radius:0 3px 3px 0}
-.nb svg{width:15px;height:15px;flex-shrink:0}
-.nbadge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;min-width:18px;text-align:center}
-.nbadge.gold{background:var(--gold);color:var(--navy)}
-.nbadge.red{background:var(--red);color:#fff}
-.nbadge.blue{background:var(--blue);color:#fff}
-.nbadge.purple{background:var(--purple);color:#fff}
-.nbadge.cyan{background:var(--cyan);color:#fff}
-.sb-clock{padding:14px 20px;border-top:1px solid rgba(255,255,255,.06)}
-.clk-time{font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:#fff;letter-spacing:2px}
-.clk-date{font-size:11px;color:rgba(255,255,255,.3);margin-top:3px}
-.shift-tag{display:inline-flex;align-items:center;gap:5px;margin-top:7px;background:rgba(232,184,75,.12);border:1px solid rgba(232,184,75,.22);color:var(--gold-lt);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:5px}
-.sdot{width:5px;height:5px;background:var(--gold);border-radius:50%;animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
-.main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column}
-.topbar{position:sticky;top:0;z-index:50;background:rgba(247,248,252,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 26px;height:58px;display:flex;align-items:center;gap:12px}
-.topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text-1);flex:1}
-.tb-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text-2);transition:all .15s;font-family:'DM Sans',sans-serif}
-.tb-btn:hover{border-color:var(--blue);color:var(--blue)}
-.tb-btn svg{width:13px;height:13px}
-.menu-toggle{display:none;width:36px;height:36px;background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-.menu-toggle svg{width:17px;height:17px;color:var(--text-2)}
-.page{display:none;padding:26px;animation:fadein .2s ease}
-.page.active{display:block}
-@keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+/* ── BACKGROUND ── */
+.bg-layer{position:fixed;inset:0;z-index:0;overflow:hidden}
 
-/* ══ COMMON COMPONENTS ══════════════════════════════════════ */
-.card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
-.card-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
-.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text-1)}
-.card-body{padding:18px 20px}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
-.badge-blue{background:rgba(30,86,200,.1);color:var(--blue);border:1px solid rgba(30,86,200,.18)}
-.badge-green{background:rgba(22,160,106,.1);color:var(--green);border:1px solid rgba(22,160,106,.18)}
-.badge-amber{background:rgba(217,119,6,.1);color:var(--amber);border:1px solid rgba(217,119,6,.18)}
-.badge-red{background:rgba(220,38,38,.1);color:var(--red);border:1px solid rgba(220,38,38,.18)}
-.badge-grey{background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
-.badge-gold{background:rgba(232,184,75,.15);color:var(--gold-dk);border:1px solid rgba(232,184,75,.3)}
-.badge-purple{background:rgba(124,58,237,.1);color:var(--purple);border:1px solid rgba(124,58,237,.18)}
-.badge-cyan{background:rgba(8,145,178,.1);color:var(--cyan);border:1px solid rgba(8,145,178,.18)}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
-.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;position:relative;overflow:hidden;transition:box-shadow .2s}
-.stat-card:hover{box-shadow:var(--shadow-md)}
-.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
-.sc-blue::after{background:var(--blue)}.sc-green::after{background:var(--green)}.sc-amber::after{background:var(--amber)}.sc-cyan::after{background:var(--cyan)}
-.sc-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
-.sc-icon svg{width:17px;height:17px}
-.sc-val{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:var(--text-1);line-height:1;margin-bottom:4px;letter-spacing:-.5px}
-.sc-lbl{font-size:11px;font-weight:500;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px}
-.two-col{display:grid;grid-template-columns:1fr 360px;gap:18px}
-.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
-.empty-state{text-align:center;padding:44px 20px;color:var(--text-3)}
-.empty-state svg{width:36px;height:36px;margin:0 auto 10px;display:block;opacity:.35}
-.empty-state p{font-size:13px}
-.req-list{display:flex;flex-direction:column;gap:9px;max-height:540px;overflow-y:auto;padding-right:3px}
-.req-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid;border-radius:var(--r-md);padding:14px 16px;transition:all .15s}
-.req-card:hover{box-shadow:var(--shadow-sm);transform:translateX(2px)}
-.rc-critical{border-left-color:var(--red)}.rc-urgent{border-left-color:var(--amber)}.rc-normal{border-left-color:var(--green)}
-.rc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:5px}
-.rc-id{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--blue)}
-.rc-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.rc-items{display:flex;flex-direction:column;gap:4px;margin:8px 0}
-.rc-item{background:#fff;border:1px solid var(--border);border-radius:6px;padding:7px 11px;font-size:12px;display:flex;justify-content:space-between;align-items:center}
-.rc-item-name{font-weight:600;color:var(--text-1)}
-.rc-item-det{color:var(--text-3)}
-.rc-foot{display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid var(--border);margin-top:9px}
-.status-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--text-2)}
-.sdot2{width:6px;height:6px;border-radius:50%}
-.sp-pending{background:var(--amber)}.sp-progress{background:var(--blue);animation:pulse 1.5s ease-in-out infinite}.sp-done{background:var(--green)}
-.time-lbl{font-size:11px;color:var(--text-3)}
-.btn-row{display:flex;gap:7px;margin-top:10px}
-.btn{flex:1;padding:8px 12px;border:none;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.3px;text-align:center}
-.btn:hover{transform:translateY(-1px)}
-.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{background:var(--blue-lt);box-shadow:0 4px 12px rgba(30,86,200,.3)}
-.btn-success{background:var(--green);color:#fff}.btn-success:hover{background:var(--green-lt)}
-.btn-amber{background:rgba(217,119,6,.1);color:var(--amber);border:1px solid rgba(217,119,6,.2)}.btn-amber:hover{background:var(--amber);color:#fff}
-.btn-outline{background:#fff;border:1px solid var(--border);color:var(--text-2)}.btn-outline:hover{border-color:var(--red);color:var(--red)}
-.btn-disabled{background:var(--surface-2);color:var(--text-3);cursor:not-allowed}.btn-disabled:hover{transform:none}
-.hist-table{width:100%;border-collapse:collapse}
-.hist-table th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-3);padding:8px 12px;border-bottom:1px solid var(--border)}
-.hist-table td{padding:9px 12px;font-size:12px;color:var(--text-2);border-bottom:1px solid var(--surface-2)}
-.hist-table tr:last-child td{border-bottom:none}
-.hist-table tr:hover td{background:var(--surface)}
-.hist-table .mono{font-family:'DM Mono',monospace;color:var(--blue);font-size:11px}
-.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,22,40,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadein .15s ease}
-.modal{background:#fff;border-radius:var(--r-xl);width:100%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-xl);animation:mIn .2s ease}
-@keyframes mIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-hd{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.modal-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff}
-.modal-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
-.modal-close{width:30px;height:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:7px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.modal-close:hover{background:rgba(255,255,255,.2)}
-.modal-close svg{width:13px;height:13px}
-.modal-body{padding:18px 22px;overflow-y:auto;flex:1}
-.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:9px;flex-shrink:0;background:var(--surface)}
-.wire-action-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 14px;margin-bottom:9px;display:flex;align-items:center;gap:10px;transition:all .15s}
-.war-in{border-color:var(--green);background:rgba(22,160,106,.05)}
-.war-oos{border-color:var(--amber);background:rgba(217,119,6,.05)}
-.war-info{flex:1;min-width:0}
-.war-name{font-size:13px;font-weight:700;color:var(--text-1)}
-.war-det{font-size:11px;color:var(--text-3);margin-top:2px}
-.war-btns{display:flex;gap:5px;flex-shrink:0}
-.wbtn{padding:5px 11px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
-.wbtn:hover{transform:translateY(-1px)}
-.wbtn-ok{background:var(--green);color:#fff}
-.wbtn-oos{background:rgba(217,119,6,.1);color:var(--amber);border:1px solid rgba(217,119,6,.25)}.wbtn-oos:hover{background:var(--amber);color:#fff}
-.wbtn-undo{background:var(--surface-2);color:var(--text-3);border:1px solid var(--border)}
-.wst{font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:4px;text-transform:uppercase}
-.wst-in{background:rgba(22,160,106,.12);color:var(--green)}
-.wst-oos{background:rgba(217,119,6,.12);color:var(--amber)}
-.mbar{display:flex;align-items:center;gap:10px;padding:10px 0;margin-bottom:14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-3)}
-.mbar-track{flex:1;height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden}
-.mbar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:3px;transition:width .3s}
-#toast{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
-.toast-item{background:var(--navy);color:#fff;padding:11px 16px;border-radius:var(--r-md);font-size:13px;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow-lg);animation:toastIn .3s ease;border-left:4px solid var(--gold);min-width:240px;pointer-events:auto}
-.toast-item.success{border-left-color:var(--green)}.toast-item.error{border-left-color:var(--red)}
-@keyframes toastIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
-.sb-overlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(10,22,40,.5);backdrop-filter:blur(2px)}
-.sb-overlay.show{display:block}
+.bg-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px);
+  background-size:60px 60px;
+  animation:gridPan 40s linear infinite;
+}
+@keyframes gridPan{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
 
-/* ══ 3-LEVEL HIERARCHY STYLES ═══════════════════════════════ */
+.bg-glow{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  animation:glowPulse 6s ease-in-out infinite alternate;
+}
+.bg-glow-1{width:600px;height:600px;background:radial-gradient(circle,rgba(232,184,75,0.08),transparent 70%);top:-10%;left:-5%}
+.bg-glow-2{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,0.1),transparent 70%);bottom:-15%;right:0%;animation-delay:-3s}
+.bg-glow-3{width:300px;height:300px;background:radial-gradient(circle,rgba(6,182,212,0.06),transparent 70%);top:40%;right:20%;animation-delay:-1.5s}
+@keyframes glowPulse{0%{opacity:.6;transform:scale(1)}100%{opacity:1;transform:scale(1.1)}}
 
-/* Breadcrumb */
-.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap}
-.bc-item{font-size:12px;font-weight:600;color:var(--text-3);cursor:pointer;padding:4px 10px;border-radius:6px;transition:all .15s;border:1px solid transparent}
-.bc-item:hover{color:var(--blue);background:rgba(30,86,200,.06);border-color:rgba(30,86,200,.15)}
-.bc-item.active{color:var(--text-1);cursor:default;background:var(--surface-2);border-color:var(--border)}
-.bc-sep{color:var(--border-dk);font-size:14px}
+/* Animated wire-like lines */
+.wire-line{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(232,184,75,0.3),transparent);animation:wireSweep 8s linear infinite;opacity:0}
+.wire-line:nth-child(1){width:40%;top:20%;animation-delay:0s}
+.wire-line:nth-child(2){width:60%;top:55%;animation-delay:-2.5s}
+.wire-line:nth-child(3){width:30%;top:80%;animation-delay:-5s}
+@keyframes wireSweep{0%{left:-40%;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:100%;opacity:0}}
 
-/* Department banner */
-.dept-banner{border-radius:var(--r-lg);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.db-asm{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-soft) 100%)}
-.db-wpa{background:linear-gradient(135deg,#0e3a5c 0%,#0f6b9a 100%)}
-.db-twist{background:linear-gradient(135deg,#3b1060 0%,#6d28d9 100%)}
-.db-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff}
-.db-sub{font-size:12px;color:rgba(255,255,255,.45);margin-top:3px}
+.noise{position:absolute;inset:0;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
 
-/* LEVEL 1 — Projects Grid */
-.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px}
-.project-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:0;cursor:pointer;transition:all .2s;overflow:hidden;position:relative}
-.project-card:hover{border-color:var(--blue);box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.project-card.has-data{border-color:rgba(22,160,106,.3)}
-.project-card.has-data .pc-bar{background:var(--green)}
-.project-card.volvo-main{border-color:rgba(232,184,75,.4);background:linear-gradient(135deg,rgba(232,184,75,.04),#fff)}
-.project-card.volvo-main:hover{border-color:var(--gold-dk)}
-.project-card.volvo-main .pc-bar{background:var(--gold)}
-.pc-bar{height:4px;width:100%;background:var(--border)}
-.pc-body{padding:16px}
-.pc-logo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
-.pc-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text-1);margin-bottom:4px;line-height:1.3}
-.pc-sub{font-size:11px;color:var(--text-3)}
-.pc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--surface-2)}
-.pc-count{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--text-3)}
-.pc-count.has{color:var(--green);font-weight:700}
-.pc-arrow{width:24px;height:24px;background:var(--surface-2);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-3);transition:all .2s}
-.project-card:hover .pc-arrow{background:var(--blue);color:#fff}
-.pc-arrow svg{width:12px;height:12px}
+/* ── LAYOUT ── */
+.portal{
+  position:relative;z-index:1;
+  width:100%;max-width:480px;
+  padding:24px 20px;
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;
+}
 
-/* Volvo sub-projects */
-.volvo-subs{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px}
-.vsub-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:14px;cursor:pointer;transition:all .2s;border-left:3px solid var(--gold)}
-.vsub-card:hover{border-color:var(--gold-dk);box-shadow:var(--shadow-sm);transform:translateY(-1px)}
-.vsub-card.has-data{background:rgba(232,184,75,.04)}
-.vsub-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text-1);margin-bottom:3px}
-.vsub-meta{font-size:11px;color:var(--text-3)}
-.volvo-header{background:linear-gradient(135deg,rgba(232,184,75,.15),rgba(232,184,75,.05));border:1px solid rgba(232,184,75,.3);border-radius:var(--r-lg);padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:14px}
-.volvo-logo{width:48px;height:48px;background:var(--gold);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--navy);flex-shrink:0}
-.volvo-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text-1)}
-.volvo-sub{font-size:12px;color:var(--text-3);margin-top:3px}
+/* ── BRAND HEADER ── */
+.brand{
+  display:flex;flex-direction:column;align-items:center;
+  margin-bottom:32px;
+  animation:fadeSlideDown 0.6s ease both;
+}
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
 
-/* LEVEL 2 — References Table */
-.ref-section{margin-bottom:20px}
-.level-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
-.level-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text-1);display:flex;align-items:center;gap:8px}
-.level-actions{display:flex;align-items:center;gap:8px}
-.upload-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;font-family:'DM Sans',sans-serif}
-.upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-btn-primary{background:var(--blue);color:#fff;border:none}.upload-btn-primary:hover{background:var(--blue-lt)}
-.upload-btn-outline{background:#fff;color:var(--text-2);border:1px solid var(--border)}.upload-btn-outline:hover{border-color:var(--blue);color:var(--blue)}
-.upload-btn svg{width:13px;height:13px;pointer-events:none;flex-shrink:0}
-.ref-search-input{padding:8px 12px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-1);outline:none;width:210px;transition:all .15s}
-.ref-search-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,86,200,.07)}
-/* Upload drop zone */
-.drop-zone{border:2px dashed var(--border-dk);border-radius:var(--r-lg);padding:32px 24px;text-align:center;background:#fff;transition:all .2s;cursor:pointer;position:relative}
-.drop-zone:hover,.drop-zone.drag-over{border-color:var(--blue);background:rgba(30,86,200,.03)}
-.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.dz-icon{width:48px;height:48px;background:rgba(30,86,200,.08);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--blue)}
-.dz-icon svg{width:24px;height:24px}
-.dz-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text-1);margin-bottom:5px}
-.dz-sub{font-size:12px;color:var(--text-3);line-height:1.6}
-.dz-hint{display:inline-flex;align-items:center;gap:5px;margin-top:12px;font-size:11px;color:var(--blue);font-weight:600;background:rgba(30,86,200,.07);padding:5px 12px;border-radius:20px}
-/* Data table */
-.data-table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
-.dt-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
-.dt-title{font-size:12px;font-weight:700;color:var(--text-2);display:flex;align-items:center;gap:7px}
-.dt-scroll{overflow-x:auto;max-height:320px;overflow-y:auto}
-.dt{width:100%;border-collapse:collapse;min-width:500px}
-.dt th{position:sticky;top:0;text-align:left;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-3);padding:9px 13px;border-bottom:1px solid var(--border);background:#fff;white-space:nowrap;z-index:2}
-.dt td{padding:9px 13px;font-size:12px;color:var(--text-2);border-bottom:1px solid var(--surface-2);white-space:nowrap}
-.dt tr:last-child td{border-bottom:none}
-.dt tr:hover td{background:var(--surface)}
-.dt td.mono{font-family:'DM Mono',monospace;color:var(--blue);font-size:11px;font-weight:500}
-.row-pill{font-family:'DM Mono',monospace;font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;background:var(--surface-2);color:var(--text-3)}
-.row-pill.has{background:rgba(22,160,106,.1);color:var(--green)}
-.action-cell{display:flex;align-items:center;gap:6px}
-.icon-btn{width:30px;height:30px;background:#fff;border:1px solid var(--border);border-radius:7px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3);transition:all .15s;flex-shrink:0;position:relative;overflow:hidden}
-.icon-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.icon-btn:hover{border-color:var(--blue);color:var(--blue)}
-.icon-btn.has-data{border-color:var(--green);color:var(--green);background:rgba(22,160,106,.05)}
-.icon-btn svg{width:13px;height:13px;pointer-events:none}
-.select-arrow-btn{padding:5px 14px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.3px;font-family:'DM Sans',sans-serif}
-.select-arrow-btn:hover{opacity:.85}
+.brand-mark{
+  width:68px;height:68px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dk));
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;
+  box-shadow:0 12px 40px rgba(232,184,75,0.3),0 0 0 1px rgba(232,184,75,0.2),inset 0 1px 0 rgba(255,255,255,0.3);
+  position:relative;overflow:hidden;
+}
+.brand-mark::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent);
+}
+.brand-mark svg{width:36px;height:36px;position:relative;z-index:1}
 
-/* LEVEL 3 — Wire selection */
-.wire-select-section{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px}
-.ws-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.ws-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff}
-.ws-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
-.ws-body{padding:18px 20px}
-.sel-ref-banner{background:rgba(30,86,200,.06);border:1px solid rgba(30,86,200,.18);border-radius:var(--r-md);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.srb-info{display:flex;align-items:center;gap:10px}
-.srb-icon{width:30px;height:30px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.srb-icon svg{width:13px;height:13px;color:#fff}
-.srb-id{font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--blue)}
-.srb-meta{font-size:11px;color:var(--text-3);margin-top:1px}
-.srb-clear{width:26px;height:26px;background:#fff;border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3);transition:all .15s;flex-shrink:0}
-.srb-clear:hover{border-color:var(--red);color:var(--red)}
-.srb-clear svg{width:11px;height:11px}
-/* Wire items table */
-.wit-wrap{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin-bottom:16px}
-.wit-header{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:7px}
-.wit-title{font-size:12px;font-weight:700;color:var(--text-2)}
-.sel-count{font-size:12px;font-weight:600;color:var(--blue)}
-.wit-actions{display:flex;gap:6px}
-.small-btn{padding:4px 10px;background:#fff;border:1px solid var(--border);border-radius:5px;font-size:11px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
-.small-btn:hover{border-color:var(--blue);color:var(--blue)}
-.wit-scroll{max-height:300px;overflow-y:auto}
-.wit{width:100%;border-collapse:collapse}
-.wit th{position:sticky;top:0;text-align:left;font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text-3);padding:8px 11px;border-bottom:1px solid var(--border);background:#fff;white-space:nowrap;z-index:1}
-.wit td{padding:8px 11px;font-size:12px;border-bottom:1px solid var(--surface-2);vertical-align:middle}
-.wit tr:last-child td{border-bottom:none}
-.wit tr.selected-wire td{background:rgba(30,86,200,.04)}
-.wit tr:hover td{background:var(--surface)}
-.wt-type{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.4px}
-.wt-simple{background:rgba(22,160,106,.1);color:var(--green)}
-.wt-xe{background:rgba(30,86,200,.1);color:var(--blue)}
-.wt-sp{background:rgba(8,145,178,.1);color:var(--cyan)}
-.wt-twist{background:rgba(124,58,237,.1);color:var(--purple)}
-.wire-cb{width:15px;height:15px;accent-color:var(--blue);cursor:pointer}
-.wire-all-cb{width:15px;height:15px;accent-color:var(--blue);cursor:pointer}
-.qty-override{width:60px;padding:5px 7px;border:1px solid var(--border);border-radius:5px;font-size:12px;font-family:'DM Mono',monospace;text-align:center;outline:none;transition:all .15s}
-.qty-override:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(30,86,200,.08)}
-/* Form row at bottom */
-.req-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-.field{margin-bottom:0}
-.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
-.field select,.field input{width:100%;padding:9px 12px;background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-1);outline:none;transition:all .15s}
-.field select:focus,.field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(30,86,200,.07)}
-.submit-btn{width:100%;padding:13px;color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:var(--r-md);cursor:pointer;transition:all .2s;margin-top:6px}
-.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(10,22,40,.25)}
-.sb-asm{background:linear-gradient(135deg,var(--navy),var(--navy-soft))}
-.sb-wpa{background:linear-gradient(135deg,#0e3a5c,#0891b2)}
-.sb-twist{background:linear-gradient(135deg,#3b1060,#7c3aed)}
-/* Wire detail columns */
-.wire-detail-col{max-width:140px;overflow:hidden;text-overflow:ellipsis;color:var(--text-2)}
-.wire-name-col{font-weight:600;color:var(--text-1);max-width:180px;overflow:hidden;text-overflow:ellipsis}
-/* Tab row */
-.tab-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
-/* Charts for analytics */
-.bar-track{display:flex;align-items:flex-end;gap:9px;height:130px}
-.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
-.bar-fill{width:100%;background:linear-gradient(to top,var(--blue),rgba(30,86,200,.4));border-radius:4px 4px 0 0;min-height:3px;position:relative}
-.bar-val{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--blue);white-space:nowrap}
-.bar-lbl{font-size:11px;color:var(--text-3)}
-.donut-wrap{display:flex;align-items:center;gap:22px;padding:18px 20px}
-.legend-item{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-size:12px}
-.legend-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
-.wbar-item{display:flex;align-items:center;gap:9px;font-size:12px;margin-bottom:9px}
-.wbar-name{flex:1;color:var(--text-2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wbar-track{width:75px;height:5px;background:var(--surface-2);border-radius:3px;overflow:hidden}
-.wbar-fill{height:100%;border-radius:3px}
-.wbar-count{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--text-2);min-width:18px;text-align:right}
-/* Pagoda metrics */
-.perf-row{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--surface-2);margin-bottom:10px}
-.perf-row:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
-.perf-k{font-size:12px;color:var(--text-3)}
-.perf-v{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--text-1)}
-.prog-bar{background:var(--surface-2);border-radius:4px;height:4px;overflow:hidden;margin-top:14px}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:4px}
-/* Alert */
-.alert-item{display:flex;align-items:center;justify-content:space-between;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:9px 13px;margin-bottom:7px}
-.alert-name{font-size:12px;font-weight:600;color:#92400e}
-.alert-stock{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--red)}
-.alert-ok{font-size:12px;color:var(--green);font-weight:500;display:flex;align-items:center;gap:5px}
+.brand-name{
+  font-family:'Syne',sans-serif;
+  font-size:20px;font-weight:800;
+  color:var(--white);
+  letter-spacing:0.5px;
+  text-align:center;
+}
+.brand-tag{
+  font-size:10px;font-weight:500;
+  letter-spacing:3px;text-transform:uppercase;
+  color:var(--text-muted);
+  margin-top:5px;text-align:center;
+}
+.brand-divider{
+  width:40px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin-top:12px;opacity:0.6;
+}
 
-/* ── responsive ──────────────────────────────────── */
-@media(max-width:1200px){.sidebar{width:200px}.main{margin-left:200px}.stats-row{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}}
-@media(max-width:900px){.sidebar{width:260px;transform:translateX(-100%);transition:transform .25s ease;z-index:200}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.menu-toggle{display:flex}.topbar{padding:0 14px}.page{padding:14px}.stats-row{grid-template-columns:repeat(2,1fr)}.projects-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}.two-col{grid-template-columns:1fr}.three-col{grid-template-columns:repeat(2,1fr)}.req-form-row{grid-template-columns:1fr}}
-@media(max-width:600px){.sidebar{width:80vw;max-width:300px}.page{padding:10px}.topbar{height:52px}.stats-row{grid-template-columns:1fr 1fr}.projects-grid{grid-template-columns:repeat(2,1fr)}.modal{max-width:100vw;max-height:95vh;border-radius:var(--r-lg) var(--r-lg) 0 0;align-self:flex-end}.modal-overlay{align-items:flex-end;padding:0}#toast{bottom:10px;right:10px;left:10px}.req-form-row{grid-template-columns:1fr}}
+/* ── CARD ── */
+.auth-card{
+  width:100%;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:24px;
+  backdrop-filter:blur(24px);
+  overflow:hidden;
+  box-shadow:var(--shadow-card),inset 0 1px 0 rgba(255,255,255,0.07);
+  animation:cardIn 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  animation-delay:0.1s;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Card top gradient bar */
+.card-stripe{height:3px;width:100%;background:linear-gradient(90deg,var(--gold-dk),var(--gold),var(--cyan),var(--blue));background-size:200% 100%;animation:stripeShift 4s linear infinite}
+@keyframes stripeShift{0%{background-position:0% 0}100%{background-position:200% 0}}
+
+/* ── TAB SWITCHER ── */
+.tab-nav{
+  display:flex;gap:0;
+  padding:16px 20px 0;
+  border-bottom:1px solid var(--glass-border);
+}
+.tab-btn{
+  flex:1;padding:10px 8px;
+  background:transparent;border:none;
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:600;
+  letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--text-muted);
+  cursor:pointer;
+  position:relative;
+  transition:color 0.2s;
+}
+.tab-btn::after{
+  content:'';
+  position:absolute;bottom:-1px;left:0;right:0;
+  height:2px;background:var(--gold);
+  transform:scaleX(0);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.tab-btn.active{color:var(--gold)}
+.tab-btn.active::after{transform:scaleX(1)}
+.tab-btn:hover:not(.active){color:var(--text-secondary)}
+
+/* ── PANELS ── */
+.panel{display:none;padding:24px 28px 28px;animation:panelIn 0.3s ease both}
+.panel.active{display:block}
+@keyframes panelIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+
+.panel-title{
+  font-family:'Syne',sans-serif;font-size:17px;font-weight:700;
+  color:var(--white);margin-bottom:4px;
+}
+.panel-sub{font-size:12px;color:var(--text-secondary);margin-bottom:22px;line-height:1.5}
+
+/* ── FORM ELEMENTS ── */
+.field-group{display:flex;flex-direction:column;gap:13px;margin-bottom:20px}
+
+.field{position:relative}
+.field label{
+  display:block;
+  font-size:10px;font-weight:600;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--text-secondary);
+  margin-bottom:7px;
+}
+.field label .req{color:var(--gold);margin-left:2px}
+
+.fi{
+  width:100%;padding:12px 14px;
+  background:var(--input-bg);
+  border:1px solid var(--input-border);
+  border-radius:12px;
+  color:var(--white);
+  font-family:'Instrument Sans',sans-serif;
+  font-size:13px;
+  outline:none;
+  transition:all 0.2s;
+  -webkit-appearance:none;
+}
+.fi::placeholder{color:var(--text-muted);font-size:12px}
+.fi:focus{
+  border-color:rgba(232,184,75,0.5);
+  background:rgba(255,255,255,0.07);
+  box-shadow:0 0 0 3px rgba(232,184,75,0.08),0 4px 12px rgba(0,0,0,0.2);
+}
+.fi.error{border-color:rgba(239,68,68,0.5);box-shadow:0 0 0 3px rgba(239,68,68,0.08)}
+.fi option{background:#0d1e35;color:#fff}
+
+/* Input with icon */
+.fi-wrap{position:relative}
+.fi-wrap .fi{padding-left:40px}
+.fi-icon{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  color:var(--text-muted);pointer-events:none;
+  transition:color 0.2s;
+}
+.fi-wrap:focus-within .fi-icon{color:var(--gold)}
+.fi-icon svg{width:15px;height:15px}
+
+/* Password toggle */
+.pw-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:var(--text-muted);padding:4px;
+  transition:color 0.2s;
+}
+.pw-toggle:hover{color:var(--text-secondary)}
+.pw-toggle svg{width:14px;height:14px}
+
+/* Dept select grid */
+.dept-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;
+  margin-bottom:0;
+}
+.dept-option{
+  position:relative;
+}
+.dept-option input[type=radio]{position:absolute;opacity:0;width:0;height:0}
+.dept-label{
+  display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+  padding:11px 13px;
+  background:var(--input-bg);
+  border:1px solid var(--input-border);
+  border-radius:11px;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+}
+.dept-label::before{
+  content:'';position:absolute;inset:0;
+  opacity:0;transition:opacity 0.2s;
+}
+.dept-label:hover{border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.07)}
+.dept-option input:checked + .dept-label{
+  border-color:var(--gold);
+  background:rgba(232,184,75,0.08);
+  box-shadow:0 0 0 1px rgba(232,184,75,0.2),inset 0 1px 0 rgba(232,184,75,0.1);
+}
+.dept-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dept-row{display:flex;align-items:center;gap:7px}
+.dept-name{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--white)}
+.dept-role{font-size:10px;color:var(--text-muted);letter-spacing:0.3px}
+.dept-check{
+  position:absolute;top:9px;right:9px;
+  width:16px;height:16px;
+  background:var(--gold);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity 0.2s;
+}
+.dept-option input:checked + .dept-label .dept-check{opacity:1}
+.dept-check svg{width:9px;height:9px;color:var(--navy)}
+
+/* ── SUBMIT BUTTON ── */
+.submit-btn{
+  width:100%;padding:14px;
+  border:none;border-radius:13px;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.25s;
+  position:relative;overflow:hidden;
+  color:var(--navy);
+}
+.submit-btn-signin{
+  background:linear-gradient(135deg,var(--gold),var(--gold-dk));
+  box-shadow:0 8px 24px rgba(232,184,75,0.25),inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.submit-btn-signup{
+  background:linear-gradient(135deg,var(--blue-lt),var(--blue));
+  box-shadow:0 8px 24px rgba(37,99,235,0.25),inset 0 1px 0 rgba(255,255,255,0.1);
+  color:#fff;
+}
+.submit-btn-reset{
+  background:linear-gradient(135deg,var(--cyan),#0284c7);
+  box-shadow:0 8px 24px rgba(6,182,212,0.2),inset 0 1px 0 rgba(255,255,255,0.1);
+  color:#fff;
+}
+.submit-btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent);
+  opacity:0;transition:opacity 0.2s;
+}
+.submit-btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.submit-btn:hover::after{opacity:1}
+.submit-btn:active{transform:translateY(0)}
+.submit-btn.loading{pointer-events:none;opacity:0.7}
+
+/* ── SECONDARY LINKS ── */
+.alt-links{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:14px;
+}
+.alt-link{
+  font-size:12px;color:var(--text-secondary);
+  background:none;border:none;cursor:pointer;
+  text-decoration:none;transition:color 0.2s;
+  font-family:'Instrument Sans',sans-serif;
+}
+.alt-link:hover{color:var(--gold)}
+
+/* ── MESSAGES ── */
+.msg-bar{
+  display:flex;align-items:center;gap:9px;
+  padding:10px 14px;border-radius:10px;
+  font-size:12px;font-weight:500;
+  margin-bottom:16px;
+  animation:msgIn 0.3s ease;
+}
+@keyframes msgIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.msg-error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5}
+.msg-success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7}
+.msg-info{background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);color:#67e8f9}
+.msg-bar svg{width:14px;height:14px;flex-shrink:0}
+
+/* ── DIVIDER ── */
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:16px 0;color:var(--text-muted);font-size:11px;
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--glass-border)}
+
+/* ── FORGOT PW section ── */
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:none;border:none;cursor:pointer;
+  color:var(--text-secondary);font-size:12px;
+  font-family:'Instrument Sans',sans-serif;
+  margin-bottom:16px;transition:color 0.2s;
+  padding:0;
+}
+.back-btn:hover{color:var(--gold)}
+.back-btn svg{width:13px;height:13px}
+
+/* ── STRENGTH METER ── */
+.strength-wrap{margin-top:7px}
+.strength-track{height:3px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+.strength-fill{height:100%;border-radius:3px;transition:width 0.3s,background 0.3s;width:0%}
+.strength-label{font-size:10px;color:var(--text-muted);margin-top:4px;letter-spacing:0.3px}
+
+/* ── FOOTER ── */
+.portal-footer{
+  margin-top:18px;
+  font-size:10px;color:var(--text-muted);
+  letter-spacing:0.5px;text-align:center;
+  animation:fadeSlideDown 0.8s ease both;animation-delay:0.3s;
+}
+
+/* ── LOADING SPINNER ── */
+.spinner{
+  display:inline-block;width:14px;height:14px;
+  border:2px solid rgba(255,255,255,0.2);
+  border-top-color:currentColor;border-radius:50%;
+  animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SUCCESS STATE ── */
+.success-state{
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;padding:16px 0 8px;
+  animation:panelIn 0.4s ease;
+}
+.success-ring{
+  width:72px;height:72px;
+  background:rgba(16,185,129,0.1);
+  border:2px solid rgba(16,185,129,0.3);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;
+  animation:successPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes successPop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+.success-ring svg{width:32px;height:32px;color:var(--green)}
+.success-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:6px}
+.success-text{font-size:12px;color:var(--text-secondary);line-height:1.6;max-width:280px}
+.success-dept{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:14px;padding:8px 16px;
+  background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.25);
+  border-radius:20px;font-size:12px;font-weight:600;color:var(--gold);
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:500px){
+  .portal{padding:16px 12px}
+  .panel{padding:20px 20px 24px}
+  .dept-grid{grid-template-columns:1fr 1fr}
+  .brand-name{font-size:17px}
+}
+@media(max-height:700px){
+  .brand{margin-bottom:20px}
+  .brand-mark{width:52px;height:52px}
+  .portal{padding:12px 20px}
+}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════ LOGIN ═══════════════════════════════════ -->
-<div id="login-screen">
-  <div class="login-wrap">
-    <div class="login-logo">
-      <div class="login-logo-mark">
-        <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#0a1628"/><circle cx="10" cy="16" r="4" fill="#0a1628"/><circle cx="22" cy="16" r="4" fill="#0a1628"/><path d="M6 10L16 6l10 4" stroke="#0a1628" stroke-width="2" stroke-linecap="round"/><path d="M6 22l10 4 10-4" stroke="#0a1628" stroke-width="2" stroke-linecap="round"/></svg>
-      </div>
-      <h1>MILOUD EZZAKY</h1>
-      <p>Industry V.6 · Wire Harness Manufacturing</p>
-    </div>
-    <div class="login-card">
-      <h2>Secure Access</h2>
-      <p>Select your department and enter credentials</p>
-      <div class="fl"><label>Department</label>
-        <select id="dept-select" class="fi">
-          <option value="assembly">ASSEMBLY — Request Only</option>
-          <option value="pagoda">PAGODA — Central Hub</option>
-          <option value="cutting">CUTTING AREA</option>
-          <option value="wpa">WIRE PREP AREA — Request & Fulfill</option>
-          <option value="twist">TWIST DEPARTMENT — Request & Fulfill</option>
-        </select>
-      </div>
-      <div class="fl"><label>Employee ID</label><input type="text" class="fi" id="login-uid" value="ME-001" placeholder="ME-001"></div>
-      <div class="fl"><label>Password</label><input type="password" class="fi" id="login-pw" value="123456" placeholder="******"></div>
-      <button class="login-btn" onclick="doLogin()">Access System →</button>
-    </div>
-    <div class="login-footer">© 2026 Miloud Ezzaky Industry V.6 · Project → Reference → Wire</div>
-  </div>
+<div class="bg-layer">
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+  <div class="wire-line"></div>
+  <div class="wire-line"></div>
+  <div class="wire-line"></div>
+  <div class="noise"></div>
 </div>
 
-<!-- ═══════════════ APP ══════════════════════════════════════ -->
-<div id="app">
-  <div class="sb-overlay" id="sb-overlay" onclick="closeSB()"></div>
-  <aside class="sidebar">
-    <div class="sb-brand">
-      <div class="sb-badge">
-        <div class="sb-icon"><svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#0a1628"/><circle cx="10" cy="16" r="4" fill="#0a1628"/><circle cx="22" cy="16" r="4" fill="#0a1628"/></svg></div>
-        <div><div class="sb-name">MILOUD EZZAKY</div><div class="sb-ver">Industry V.6</div></div>
-      </div>
-    </div>
-    <div class="sb-user">
-      <div class="sb-avatar" id="sb-avatar">M</div>
-      <div><div class="sb-uname" id="sb-uname">Operator</div><div class="sb-udept" id="sb-udept">Assembly</div></div>
-    </div>
-    <nav class="sb-nav">
-      <div class="nav-lbl">Overview</div>
-      <button class="nb active" onclick="switchPage('analytics',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Analytics
-      </button>
-      <div class="nav-lbl">Departments</div>
-      <button class="nb" onclick="switchPage('assembly',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Assembly
-        <span class="nbadge gold" id="b-assembly">0</span>
-      </button>
-      <button class="nb" onclick="switchPage('pagoda',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>Pagoda Hub
-        <span class="nbadge red" id="b-pagoda">0</span>
-      </button>
-      <button class="nb" onclick="switchPage('cutting',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>Cutting
-        <span class="nbadge blue" id="b-cutting">0</span>
-      </button>
-      <button class="nb" onclick="switchPage('wpa',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Wire Prep Area
-        <span class="nbadge cyan" id="b-wpa">0</span>
-      </button>
-      <button class="nb" onclick="switchPage('twist',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg>Twist
-        <span class="nbadge purple" id="b-twist">0</span>
-      </button>
-    </nav>
-    <div class="sb-clock">
-      <div class="clk-time" id="clk-time">--:--:--</div>
-      <div class="clk-date" id="clk-date">…</div>
-      <div class="shift-tag"><span class="sdot"></span><span id="clk-shift">—</span></div>
-    </div>
-  </aside>
+<div class="portal">
 
-  <div class="main">
-    <header class="topbar">
-      <button class="menu-toggle" onclick="toggleSB()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-      <div class="topbar-title" id="topbar-title">Analytics Dashboard</div>
-      <button class="tb-btn" onclick="refreshAll()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg><span>Refresh</span></button>
-    </header>
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 36 36" fill="none">
+        <rect x="5" y="16" width="26" height="4" rx="2" fill="#07111f"/>
+        <circle cx="11" cy="18" r="5" fill="#07111f"/>
+        <circle cx="25" cy="18" r="5" fill="#07111f"/>
+        <path d="M7 11L18 7l11 4" stroke="#07111f" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M7 25l11 4 11-4" stroke="#07111f" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand-name">MILOUD EZZAKY</div>
+    <div class="brand-tag">Industry V.6 · Wire Harness Manufacturing</div>
+    <div class="brand-divider"></div>
+  </div>
 
-    <!-- ─── ANALYTICS ──────────────────────────────────────── -->
-    <div id="page-analytics" class="page active">
-      <div class="stats-row">
-        <div class="stat-card sc-blue"><div class="sc-icon" style="background:rgba(30,86,200,.1);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="sc-val" id="a-total">0</div><div class="sc-lbl">Total Requests</div></div>
-        <div class="stat-card sc-green"><div class="sc-icon" style="background:rgba(22,160,106,.1);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sc-val" id="a-done">0</div><div class="sc-lbl">Completed</div></div>
-        <div class="stat-card sc-amber"><div class="sc-icon" style="background:rgba(217,119,6,.1);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="sc-val" id="a-pending">0</div><div class="sc-lbl">Pending</div></div>
-        <div class="stat-card sc-cyan"><div class="sc-icon" style="background:rgba(8,145,178,.1);color:var(--cyan)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="sc-val" id="a-prog">0</div><div class="sc-lbl">In Progress</div></div>
-      </div>
-      <div class="two-col" style="margin-bottom:18px">
-        <div class="card"><div class="card-hd"><div class="card-title">Daily Requests — Last 7 Days</div><span class="badge badge-blue">Live</span></div><div style="padding:18px 20px"><div class="bar-track" id="daily-chart"></div></div></div>
-        <div class="card"><div class="card-hd"><div class="card-title">Department Workload</div></div><div class="donut-wrap"><svg width="100" height="100" viewBox="0 0 100 100" id="donut-svg"><circle cx="50" cy="50" r="38" fill="none" stroke="#eef1f8" stroke-width="14"/></svg><div id="donut-legend"></div></div></div>
-      </div>
-      <div class="two-col">
-        <div class="card"><div class="card-hd"><div class="card-title">Top Requested Wires</div></div><div class="card-body" id="top-wires"></div></div>
-        <div class="card"><div class="card-hd"><div class="card-title">Requests by Project</div></div><div class="card-body" id="proj-chart"></div></div>
-      </div>
+  <!-- Card -->
+  <div class="auth-card" id="main-card">
+    <div class="card-stripe"></div>
+
+    <!-- Tabs -->
+    <div class="tab-nav" id="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('signin')">Sign In</button>
+      <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
     </div>
 
-    <!-- ─── ASSEMBLY ───────────────────────────────────────── -->
-    <div id="page-assembly" class="page">
-      <div class="dept-banner db-asm">
-        <div><div class="db-title">Assembly Department</div><div class="db-sub">Project → Reference → Wire → Submit Request</div></div>
-        <span class="badge badge-green">Request Only</span>
-      </div>
-      <div id="asm-request-area"></div>
-      <div class="card" style="margin-top:18px"><div class="card-hd"><div class="card-title">My Requests</div><span class="badge badge-blue">Real-time</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div>
-      <div class="card" style="margin-top:14px"><div class="card-hd"><div class="card-title">Order History</div></div><div class="card-body" style="padding:0"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Project</th><th>Completed</th><th>Status</th></tr></thead><tbody id="asm-hist"></tbody></table></div></div>
-    </div>
+    <!-- ── SIGN IN PANEL ── -->
+    <div class="panel active" id="panel-signin">
+      <div id="signin-msg"></div>
+      <div class="panel-title">Welcome back</div>
+      <div class="panel-sub">Sign in with your employee credentials to access your department</div>
 
-    <!-- ─── PAGODA ─────────────────────────────────────────── -->
-    <div id="page-pagoda" class="page">
-      <div class="dept-banner" style="background:linear-gradient(135deg,#0a2a5c,#1e56c8)">
-        <div><div class="db-title">Pagoda · Central Hub</div><div class="db-sub">Review all incoming requests · Mark In Stock or Out of Stock</div></div>
-        <span class="badge badge-blue">Hub</span>
-      </div>
-      <div class="three-col">
-        <div class="stat-card sc-amber"><div class="sc-icon" style="background:rgba(217,119,6,.1);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="sc-val" id="p-pending">0</div><div class="sc-lbl">Pending</div></div>
-        <div class="stat-card sc-cyan"><div class="sc-icon" style="background:rgba(8,145,178,.1);color:var(--cyan)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><div class="sc-val" id="p-stock">0</div><div class="sc-lbl">Stock Items</div></div>
-        <div class="stat-card sc-blue"><div class="sc-icon" style="background:rgba(30,86,200,.1);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="sc-val" id="p-low">0</div><div class="sc-lbl">Low Stock</div></div>
-      </div>
-      <div class="two-col">
-        <div>
-          <div class="card"><div class="card-hd"><div class="card-title">Pending Requests</div><span class="badge badge-gold" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div>
-          <div class="card" style="margin-top:14px"><div class="card-hd"><div class="card-title">Order History</div></div><div class="card-body" style="padding:0"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Completed</th><th>Status</th></tr></thead><tbody id="pagoda-hist"></tbody></table></div></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div class="card"><div class="card-hd"><div class="card-title">Low Stock Alerts</div></div><div class="card-body" id="low-stock-list"></div></div>
-          <div class="card"><div class="card-hd"><div class="card-title">Metrics</div></div><div class="card-body"><div class="perf-row"><span class="perf-k">Requests Today</span><span class="perf-v" id="p-today">0</span></div><div class="perf-row"><span class="perf-k">Fulfillment Rate</span><span class="perf-v" id="p-rate">0%</span></div><div class="prog-bar"><div class="prog-fill" id="p-rate-bar" style="width:0%"></div></div></div></div>
+      <!-- Department Select -->
+      <div class="field" style="margin-bottom:16px">
+        <label>Department <span class="req">*</span></label>
+        <div class="dept-grid">
+          <div class="dept-option">
+            <input type="radio" name="signin-dept" id="sd-assembly" value="assembly" checked>
+            <label class="dept-label" for="sd-assembly">
+              <div class="dept-row"><div class="dept-dot" style="background:#16a06a"></div><div class="dept-name">Assembly</div></div>
+              <div class="dept-role">Request Only</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
+          <div class="dept-option">
+            <input type="radio" name="signin-dept" id="sd-pagoda" value="pagoda">
+            <label class="dept-label" for="sd-pagoda">
+              <div class="dept-row"><div class="dept-dot" style="background:#2563eb"></div><div class="dept-name">Pagoda Hub</div></div>
+              <div class="dept-role">Central Control</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
+          <div class="dept-option">
+            <input type="radio" name="signin-dept" id="sd-cutting" value="cutting">
+            <label class="dept-label" for="sd-cutting">
+              <div class="dept-row"><div class="dept-dot" style="background:#10b981"></div><div class="dept-name">Cutting</div></div>
+              <div class="dept-role">Processing</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
+          <div class="dept-option">
+            <input type="radio" name="signin-dept" id="sd-wpa" value="wpa">
+            <label class="dept-label" for="sd-wpa">
+              <div class="dept-row"><div class="dept-dot" style="background:#06b6d4"></div><div class="dept-name">Wire Prep</div></div>
+              <div class="dept-role">Request & Fulfill</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
+          <div class="dept-option">
+            <input type="radio" name="signin-dept" id="sd-twist" value="twist">
+            <label class="dept-label" for="sd-twist">
+              <div class="dept-row"><div class="dept-dot" style="background:#8b5cf6"></div><div class="dept-name">Twist Dept</div></div>
+              <div class="dept-role">Request & Fulfill</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ─── CUTTING ────────────────────────────────────────── -->
-    <div id="page-cutting" class="page">
-      <div class="dept-banner" style="background:linear-gradient(135deg,#064e3b,#065f46)">
-        <div><div class="db-title">Cutting Area</div><div class="db-sub">Simple wires routed from Pagoda when Out of Stock</div></div>
-      </div>
-      <div class="three-col">
-        <div class="stat-card sc-amber"><div class="sc-icon" style="background:rgba(217,119,6,.1);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="sc-val" id="c-pending">0</div><div class="sc-lbl">To Cut</div></div>
-        <div class="stat-card sc-cyan"><div class="sc-icon" style="background:rgba(8,145,178,.1);color:var(--cyan)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="sc-val" id="c-prog">0</div><div class="sc-lbl">In Progress</div></div>
-        <div class="stat-card sc-green"><div class="sc-icon" style="background:rgba(22,160,106,.1);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="sc-val" id="c-done">0</div><div class="sc-lbl">Done Today</div></div>
-      </div>
-      <div class="card"><div class="card-hd"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div>
-      <div class="card" style="margin-top:14px"><div class="card-hd"><div class="card-title">History</div></div><div class="card-body" style="padding:0"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Completed</th><th>Status</th></tr></thead><tbody id="cutting-hist"></tbody></table></div></div>
-    </div>
-
-    <!-- ─── WPA ───────────────────────────────────────────── -->
-    <div id="page-wpa" class="page">
-      <div class="dept-banner db-wpa">
-        <div><div class="db-title">Wire Prep Area</div><div class="db-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div>
-        <span class="badge badge-cyan">Request & Fulfill</span>
-      </div>
-      <div class="tab-row">
-        <button id="wpa-tab-req" class="tb-btn" style="background:var(--cyan);color:#fff;border-color:var(--cyan)" onclick="switchTab('wpa','req')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request
-        </button>
-        <button id="wpa-tab-fulfill" class="tb-btn" onclick="switchTab('wpa','fulfill')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work
-          <span class="nbadge cyan" id="wpa-fc" style="margin-left:4px">0</span>
-        </button>
-      </div>
-      <div id="wpa-req-panel">
-        <div id="wpa-request-area"></div>
-        <div class="card"><div class="card-hd"><div class="card-title">My WPA Requests</div></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div>
-      </div>
-      <div id="wpa-fulfill-panel" style="display:none">
-        <div class="three-col">
-          <div class="stat-card sc-blue"><div class="sc-icon" style="background:rgba(30,86,200,.1);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="sc-val" id="wpa-xe-cnt">0</div><div class="sc-lbl">XE Wires</div></div>
-          <div class="stat-card sc-cyan"><div class="sc-icon" style="background:rgba(8,145,178,.1);color:var(--cyan)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0"/></svg></div><div class="sc-val" id="wpa-sp-cnt">0</div><div class="sc-lbl">SP Wires</div></div>
-          <div class="stat-card sc-amber"><div class="sc-icon" style="background:rgba(217,119,6,.1);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="sc-val" id="wpa-prog-cnt">0</div><div class="sc-lbl">In Progress</div></div>
+      <div class="field-group">
+        <div class="field">
+          <label>Employee ID <span class="req">*</span></label>
+          <div class="fi-wrap">
+            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg></span>
+            <input type="text" class="fi" id="signin-empid" placeholder="ME-001" autocomplete="username">
+          </div>
         </div>
-        <div class="card" style="margin-bottom:14px"><div class="card-hd"><div class="card-title">XE Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-list"></div></div></div>
-        <div class="card"><div class="card-hd"><div class="card-title">SP Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-list"></div></div></div>
-      </div>
-    </div>
-
-    <!-- ─── TWIST ──────────────────────────────────────────── -->
-    <div id="page-twist" class="page">
-      <div class="dept-banner db-twist">
-        <div><div class="db-title">Twist Department</div><div class="db-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div>
-        <span class="badge badge-purple">Request & Fulfill</span>
-      </div>
-      <div class="tab-row">
-        <button id="twist-tab-req" class="tb-btn" style="background:var(--purple);color:#fff;border-color:var(--purple)" onclick="switchTab('twist','req')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request
-        </button>
-        <button id="twist-tab-fulfill" class="tb-btn" onclick="switchTab('twist','fulfill')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work
-          <span class="nbadge purple" id="twist-fc" style="margin-left:4px">0</span>
-        </button>
-      </div>
-      <div id="twist-req-panel">
-        <div id="twist-request-area"></div>
-        <div class="card"><div class="card-hd"><div class="card-title">My Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div>
-      </div>
-      <div id="twist-fulfill-panel" style="display:none">
-        <div class="three-col">
-          <div class="stat-card sc-amber"><div class="sc-icon" style="background:rgba(217,119,6,.1);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="sc-val" id="twist-pend-cnt">0</div><div class="sc-lbl">To Twist</div></div>
-          <div class="stat-card sc-cyan"><div class="sc-icon" style="background:rgba(8,145,178,.1);color:var(--cyan)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="sc-val" id="twist-prog-cnt">0</div><div class="sc-lbl">In Progress</div></div>
-          <div class="stat-card sc-blue"><div class="sc-icon" style="background:rgba(30,86,200,.1);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0M3 12h18"/></svg></div><div class="sc-val" id="twist-pairs-cnt">0</div><div class="sc-lbl">Wire Pairs</div></div>
+        <div class="field">
+          <label>Password <span class="req">*</span></label>
+          <div class="fi-wrap">
+            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <input type="password" class="fi" id="signin-pw" placeholder="••••••••" autocomplete="current-password">
+            <button class="pw-toggle" type="button" onclick="togglePw('signin-pw',this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="card"><div class="card-hd"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-fulfill-list"></div></div></div>
+      </div>
+
+      <button class="submit-btn submit-btn-signin" id="signin-btn" onclick="doSignIn()">Sign In to Dashboard</button>
+
+      <div class="alt-links">
+        <button class="alt-link" onclick="switchTab('signup')">Don't have an account?</button>
+        <button class="alt-link" onclick="showForgot()">Forgot password?</button>
       </div>
     </div>
 
-  </div><!-- /main -->
-</div><!-- /app -->
+    <!-- ── SIGN UP PANEL ── -->
+    <div class="panel" id="panel-signup">
+      <div id="signup-msg"></div>
+      <div class="panel-title">Create Account</div>
+      <div class="panel-sub">Register with your department to access the wire management system</div>
 
-<div id="toast"></div>
+      <div class="field" style="margin-bottom:16px">
+        <label>Department <span class="req">*</span></label>
+        <div class="dept-grid">
+          <div class="dept-option">
+            <input type="radio" name="signup-dept" id="up-assembly" value="assembly" checked>
+            <label class="dept-label" for="up-assembly">
+              <div class="dept-row"><div class="dept-dot" style="background:#16a06a"></div><div class="dept-name">Assembly</div></div>
+              <div class="dept-role">Request Only</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
+          <div class="dept-option">
+            <input type="radio" name="signup-dept" id="up-pagoda" value="pagoda">
+            <label class="dept-label" for="up-pagoda">
+              <div class="dept-row"><div class="dept-dot" style="background:#2563eb"></div><div class="dept-name">Pagoda Hub</div></div>
+              <div class="dept-role">Central Control</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
+          <div class="dept-option">
+            <input type="radio" name="signup-dept" id="up-cutting" value="cutting">
+            <label class="dept-label" for="up-cutting">
+              <div class="dept-row"><div class="dept-dot" style="background:#10b981"></div><div class="dept-name">Cutting</div></div>
+              <div class="dept-role">Processing</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
+          <div class="dept-option">
+            <input type="radio" name="signup-dept" id="up-wpa" value="wpa">
+            <label class="dept-label" for="up-wpa">
+              <div class="dept-row"><div class="dept-dot" style="background:#06b6d4"></div><div class="dept-name">Wire Prep</div></div>
+              <div class="dept-role">Request & Fulfill</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
+          <div class="dept-option">
+            <input type="radio" name="signup-dept" id="up-twist" value="twist">
+            <label class="dept-label" for="up-twist">
+              <div class="dept-row"><div class="dept-dot" style="background:#8b5cf6"></div><div class="dept-name">Twist Dept</div></div>
+              <div class="dept-role">Request & Fulfill</div>
+              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field">
+          <label>Full Name <span class="req">*</span></label>
+          <div class="fi-wrap">
+            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <input type="text" class="fi" id="signup-name" placeholder="Miloud Ezzaky" autocomplete="name">
+          </div>
+        </div>
+        <div class="field">
+          <label>Employee ID <span class="req">*</span></label>
+          <div class="fi-wrap">
+            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg></span>
+            <input type="text" class="fi" id="signup-empid" placeholder="ME-001" autocomplete="username">
+          </div>
+        </div>
+        <div class="field">
+          <label>Work Email</label>
+          <div class="fi-wrap">
+            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+            <input type="email" class="fi" id="signup-email" placeholder="m.ezzaky@company.ma" autocomplete="email">
+          </div>
+        </div>
+        <div class="field">
+          <label>Password <span class="req">*</span></label>
+          <div class="fi-wrap">
+            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <input type="password" class="fi" id="signup-pw" placeholder="Min. 8 characters" autocomplete="new-password" oninput="checkStrength(this.value)">
+            <button class="pw-toggle" type="button" onclick="togglePw('signup-pw',this)" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="strength-wrap">
+            <div class="strength-track"><div class="strength-fill" id="strength-bar"></div></div>
+            <div class="strength-label" id="strength-label">Enter a password</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Confirm Password <span class="req">*</span></label>
+          <div class="fi-wrap">
+            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><polyline points="20 6 9 17 4 12" style="stroke:#10b981" stroke-width="2.5"/></svg></span>
+            <input type="password" class="fi" id="signup-pw2" placeholder="Repeat password" autocomplete="new-password">
+          </div>
+        </div>
+      </div>
+
+      <button class="submit-btn submit-btn-signup" id="signup-btn" onclick="doSignUp()">Create Account</button>
+      <div class="alt-links">
+        <button class="alt-link" onclick="switchTab('signin')">← Back to Sign In</button>
+      </div>
+    </div>
+
+    <!-- ── FORGOT PASSWORD PANEL ── -->
+    <div class="panel" id="panel-forgot">
+      <button class="back-btn" onclick="showForgot(false)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back to Sign In
+      </button>
+      <div id="forgot-msg"></div>
+      <div class="panel-title">Reset Password</div>
+      <div class="panel-sub">Enter your Employee ID and registered email — we'll send you a secure reset link</div>
+
+      <div id="forgot-form">
+        <div class="field-group">
+          <div class="field">
+            <label>Employee ID <span class="req">*</span></label>
+            <div class="fi-wrap">
+              <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg></span>
+              <input type="text" class="fi" id="forgot-empid" placeholder="ME-001">
+            </div>
+          </div>
+          <div class="field">
+            <label>Work Email <span class="req">*</span></label>
+            <div class="fi-wrap">
+              <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+              <input type="email" class="fi" id="forgot-email" placeholder="m.ezzaky@company.ma">
+            </div>
+          </div>
+        </div>
+        <button class="submit-btn submit-btn-reset" id="forgot-btn" onclick="doForgot()">Send Reset Link</button>
+      </div>
+
+      <div id="forgot-success" style="display:none">
+        <div class="success-state">
+          <div class="success-ring">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="success-title">Reset Email Sent!</div>
+          <div class="success-text">Check your work email inbox for the password reset link. It expires in 30 minutes.</div>
+          <button class="alt-link" onclick="showForgot(false)" style="margin-top:16px;color:var(--gold)">← Return to Sign In</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LOGIN SUCCESS PANEL ── -->
+    <div class="panel" id="panel-success">
+      <div class="success-state">
+        <div class="success-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="success-title">Access Granted</div>
+        <div class="success-text">Identity verified. Redirecting you to your department dashboard…</div>
+        <div class="success-dept" id="success-dept-tag">
+          <div class="dept-dot" id="success-dot" style="background:#16a06a;flex-shrink:0"></div>
+          <span id="success-dept-name">Assembly</span>
+        </div>
+        <div style="margin-top:20px;display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:11px">
+          <span class="spinner" style="border-top-color:var(--gold)"></span>Loading dashboard…
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /auth-card -->
+
+  <div class="portal-footer">© 2026 MILOUD EZZAKY INDUSTRY V.6 — All access is monitored and logged</div>
+
+</div><!-- /portal -->
 
 <script>
 'use strict';
 
-// ═══════════════ PROJECT DEFINITIONS ════════════════════════
-const PROJECTS = [
-  {id:'VOLVO',       name:'VOLVO',       color:'#c49a2a', isMain:true,
-   subs:['SMALL','MDEP','AFTER MARKET','STEP E','C1','C2','C3','DAL','VCE']},
-  {id:'CLAAS',       name:'CLAAS',       color:'#16a06a'},
-  {id:'JOHN_DEERE',  name:'JOHN DEERE',  color:'#15803d'},
-  {id:'JCB',         name:'JCB',         color:'#d97706'},
-  {id:'VCE_HAULLER', name:'VCE HAULLER', color:'#0891b2'},
-  {id:'IVECO',       name:'IVECO',       color:'#1e56c8'},
-  {id:'MAN',         name:'MAN',         color:'#7c3aed'},
-  {id:'MAN_FPP',     name:'MAN FPP',     color:'#9333ea'},
-  {id:'MAN_CBP',     name:'MAN CBP',     color:'#6d28d9'},
-  {id:'FALCON',      name:'FALCON',      color:'#0f766e'},
-  {id:'PPAP',        name:'PPAP',        color:'#1d4ed8'},
-  {id:'DAF',         name:'DAF',         color:'#b45309'},
+// ── DEMO ACCOUNTS (replace with Supabase auth calls) ──────────
+const DEMO_ACCOUNTS = [
+  {empId:'ME-001', password:'123456', name:'Miloud Ezzaky',    dept:'assembly', email:'m.ezzaky@meiw.ma'},
+  {empId:'PG-001', password:'pagoda', name:'Pagoda Manager',   dept:'pagoda',   email:'pagoda@meiw.ma'},
+  {empId:'CU-001', password:'cutting',name:'Cutting Lead',     dept:'cutting',  email:'cutting@meiw.ma'},
+  {empId:'WP-001', password:'wireprep',name:'Wire Prep Chief', dept:'wpa',      email:'wpa@meiw.ma'},
+  {empId:'TW-001', password:'twist',  name:'Twist Supervisor', dept:'twist',    email:'twist@meiw.ma'},
 ];
 
-// ═══════════════ STATE ═══════════════════════════════════════
-// store[dept][projectKey] = { refs: [], refData: { refId: [wires] } }
-// For VOLVO sub: projectKey = 'VOLVO__SMALL' etc.
-const store = { assembly:{}, wpa:{}, twist:{} };
-
-// navState[dept] = { level: 'projects'|'volvo_subs'|'refs'|'wires', projectKey, refId }
-const navState = {
-  assembly: { level:'projects', projectKey:null, refId:null },
-  wpa:      { level:'projects', projectKey:null, refId:null },
-  twist:    { level:'projects', projectKey:null, refId:null }
+const DEPT_META = {
+  assembly:{name:'Assembly',     color:'#16a06a', role:'Request Only'},
+  pagoda:  {name:'Pagoda Hub',   color:'#2563eb', role:'Central Control'},
+  cutting: {name:'Cutting Area', color:'#10b981', role:'Processing'},
+  wpa:     {name:'Wire Prep',    color:'#06b6d4', role:'Request & Fulfill'},
+  twist:   {name:'Twist Dept',   color:'#8b5cf6', role:'Request & Fulfill'},
 };
 
-// form state per dept
-const formState = { assembly:{}, wpa:{}, twist:{} };
-
-let requests = [];
-let currentUser = { username:'ME-001', department:'assembly', name:'Miloud Ezzaky' };
-let currentPage = 'analytics';
-
-const wireStock = {
-  'WIRE-18-RED':{name:'WIRE-18-RED',stock:5,min:5,loc:'A1-3'},
-  'WIRE-18-BLK':{name:'WIRE-18-BLK',stock:8,min:5,loc:'A1-4'},
-  'WIRE-20-BLU':{name:'WIRE-20-BLU',stock:2,min:4,loc:'A2-1'},
-  'XE1-20-RED':{name:'XE1-20-RED',stock:3,min:3,loc:'B1-1'},
-  'SP23-18-RED':{name:'SP23-18-RED',stock:3,min:3,loc:'C1-1'},
-  'TW45-24-RB':{name:'TW45-24-RB',stock:4,min:4,loc:'D1-1'},
-};
-
-// ═══════════════ TOAST ═══════════════════════════════════════
-function toast(msg, type='info'){
-  const c=document.getElementById('toast');
-  const el=document.createElement('div');
-  el.className=`toast-item ${type}`;
-  el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0">${type==='success'?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg>${msg}`;
-  c.appendChild(el);
-  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(18px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},3500);
+// ── TAB SWITCHING ──────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+  const panel = document.getElementById(`panel-${tab}`);
+  panel.classList.add('active');
+  clearMessages();
 }
 
-// ═══════════════ LOGIN ════════════════════════════════════════
-function doLogin(){
-  const dept=document.getElementById('dept-select').value;
-  const uid=document.getElementById('login-uid').value;
-  currentUser={username:uid,department:dept,name:uid==='ME-001'?'Miloud Ezzaky':'Operator'};
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app').style.display='flex';
-  document.getElementById('sb-uname').textContent=currentUser.name;
-  document.getElementById('sb-avatar').textContent=currentUser.name[0].toUpperCase();
-  document.getElementById('sb-udept').textContent=dept.toUpperCase();
-  // init store
-  ['assembly','wpa','twist'].forEach(d=>{
-    PROJECTS.forEach(p=>{
-      if(p.isMain){
-        p.subs.forEach(s=>{ store[d][p.id+'__'+s.replace(/ /g,'_')]={refs:[],refData:{}}; });
-        store[d][p.id]={refs:[],refData:{}};
-      } else {
-        store[d][p.id]={refs:[],refData:{}};
-      }
-    });
-  });
-  updateClock();setInterval(updateClock,1000);
-  setInterval(refreshAll,12000);
-  const defaultBtn=document.querySelector(`.nb[onclick*="'${dept}'"]`);
-  if(defaultBtn){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
-  loadPage(dept);
-  updateBadges();
-  toast(`Welcome, ${currentUser.name}! Select a project to get started.`,'success');
+function showForgot(show = true) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  if (show) {
+    document.getElementById('panel-forgot').classList.add('active');
+    document.getElementById('forgot-form').style.display = '';
+    document.getElementById('forgot-success').style.display = 'none';
+    document.getElementById('tab-nav').style.opacity = '0.4';
+  } else {
+    document.getElementById('tab-nav').style.opacity = '1';
+    switchTab('signin');
+  }
 }
 
-// ═══════════════ NAVIGATION ══════════════════════════════════
-const PAGE_TITLES={analytics:'Analytics Dashboard',assembly:'Assembly Department',pagoda:'Pagoda · Central Hub',cutting:'Cutting Area',wpa:'Wire Prep Area',twist:'Twist Department'};
-function switchPage(page,btn){
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');
-  loadPage(page);
-}
-function loadPage(page){
-  currentPage=page;
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(`page-${page}`).classList.add('active');
-  document.getElementById('topbar-title').textContent=PAGE_TITLES[page]||page;
-  if(page==='analytics') renderAnalytics();
-  else if(page==='assembly'){renderRequestArea('assembly');renderReqList('assembly');}
-  else if(page==='pagoda'){renderPagodaRequests();loadLowStock();updatePagodaMetrics();}
-  else if(page==='cutting'){renderCuttingRequests();updateCuttingMetrics();}
-  else if(page==='wpa'){renderRequestArea('wpa');renderReqList('wpa');}
-  else if(page==='twist'){renderRequestArea('twist');renderReqList('twist');}
-}
-function refreshAll(){loadPage(currentPage);updateBadges();renderAnalytics();}
-
-// ═══════════════ SIDEBAR BADGES ══════════════════════════════
-function updateBadges(){
-  document.getElementById('b-assembly').textContent=requests.filter(r=>r.requestedBy==='assembly').length;
-  document.getElementById('b-pagoda').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;
-  document.getElementById('b-cutting').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status!=='completed').length;
-  const wa=requests.filter(r=>r.assignedTo==='wpa'&&r.status!=='completed').length;
-  const ta=requests.filter(r=>r.assignedTo==='twist'&&r.status!=='completed').length;
-  document.getElementById('b-wpa').textContent=wa;document.getElementById('b-twist').textContent=ta;
-  const wfc=document.getElementById('wpa-fc');const tfc=document.getElementById('twist-fc');
-  if(wfc)wfc.textContent=wa;if(tfc)tfc.textContent=ta;
-}
-
-// ═══════════════ EXCEL PARSER ════════════════════════════════
-function parseExcel(file){
-  return new Promise((res,rej)=>{
-    const r=new FileReader();
-    r.onload=e=>{
-      try{
-        const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
-        const ws=wb.Sheets[wb.SheetNames[0]];
-        res(XLSX.utils.sheet_to_json(ws,{defval:''}));
-      }catch(err){rej(err);}
-    };
-    r.onerror=()=>rej(new Error('Read error'));
-    r.readAsArrayBuffer(file);
+function clearMessages() {
+  ['signin-msg','signup-msg','forgot-msg'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.innerHTML = '';
   });
 }
-function normalizeRef(row){
-  const keys=Object.keys(row);
-  const find=(...a)=>{for(const al of a){const k=keys.find(k=>k.toLowerCase().replace(/[\s_\-]/g,'').includes(al));if(k)return String(row[k]).trim();}return '';};
-  return {
-    id: find('reference','ref','id','code','numero','num')||String(Object.values(row)[0]).trim()||'',
-    desc: find('description','desc','name','designation','label')||String(Object.values(row)[1]||'').trim(),
-    project: find('project','projet','customer'),
-    _raw: row, _cols: keys
+
+function showMsg(id, text, type = 'error') {
+  const icons = {
+    error: '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    success: '<polyline points="20 6 9 17 4 12"/>',
+    info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
   };
-}
-function normalizeWire(row){
-  const keys=Object.keys(row);
-  const find=(...a)=>{for(const al of a){const k=keys.find(k=>k.toLowerCase().replace(/[\s_\-]/g,'').includes(al));if(k)return String(row[k]).trim();}return '';};
-  const nameStr=find('wire','name','designation','fil','libelle','article','reference','ref')||String(Object.values(row)[0]||'').trim();
-  const typeStr=find('type','category','categorie','wiretype')||nameStr;
-  return {
-    wireName: nameStr,
-    wireType: detectType(typeStr),
-    quantity: parseInt(find('quantity','qty','quantite','qte','nb','nbr'))||1,
-    section: find('section','gauge','crosssection','mm','cross'),
-    color: find('color','colour','couleur'),
-    tinning: ['yes','oui','true','1','x'].includes((find('tinning','etamage','tin')+'').toLowerCase()),
-    layLength: find('laylength','lay','pas','torsade'),
-    _raw: row, _cols: keys
-  };
-}
-function detectType(s){
-  s=s.toLowerCase();
-  if(s.includes('twist')||s.includes('torsad')||s.includes('paire'))return'twist';
-  if(s.includes('xe')||s.includes('shield')||s.includes('ecran'))return'xe';
-  if(s.includes('sp')&&!s.includes('spec')||s.includes(' sp '))return'sp';
-  if(s.includes('sp'))return'sp';
-  return'simple';
-}
-function typeTag(t){const map={simple:'wt-simple',xe:'wt-xe',sp:'wt-sp',twist:'wt-twist'};return`<span class="wt-type ${map[t]||'wt-simple'}">${t.toUpperCase()}</span>`;}
-
-// ═══════════════ PROJECT KEY HELPERS ═════════════════════════
-function projectLabel(key){
-  if(key.includes('__')){
-    const[pid,sid]=key.split('__');
-    const p=PROJECTS.find(x=>x.id===pid);
-    return `${p?p.name:'VOLVO'} · ${sid.replace(/_/g,' ')}`;
-  }
-  const p=PROJECTS.find(x=>x.id===key);
-  return p?p.name:key;
-}
-function projectColor(key){
-  const pid=key.split('__')[0];
-  const p=PROJECTS.find(x=>x.id===pid);
-  return p?p.color:'#1e56c8';
-}
-
-// ═══════════════ RENDER REQUEST AREA (3 LEVELS) ══════════════
-function renderRequestArea(dept){
-  const areaId = dept==='assembly'?'asm-request-area': dept==='wpa'?'wpa-request-area':'twist-request-area';
-  const el=document.getElementById(areaId);
-  if(!el)return;
-  const ns=navState[dept];
-
-  if(ns.level==='projects') el.innerHTML=renderProjectsLevel(dept);
-  else if(ns.level==='volvo_subs') el.innerHTML=renderVolvoSubsLevel(dept);
-  else if(ns.level==='refs') el.innerHTML=renderRefsLevel(dept);
-  else if(ns.level==='wires') el.innerHTML=renderWiresLevel(dept);
-}
-
-// ─── LEVEL 1: Projects ───────────────────────────────────────
-function renderProjectsLevel(dept){
-  const deptStore=store[dept];
-  const getCount=(key)=>(deptStore[key]||{refs:[]}).refs.length;
-  const ns=navState[dept];
-
-  let html=`<div style="margin-bottom:20px">
-    <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:5px">Select a Project</div>
-    <div style="font-size:12px;color:var(--text-3)">Choose a project to upload its reference list and create wire requests</div>
-  </div>
-  <div class="projects-grid">`;
-
-  PROJECTS.forEach(p=>{
-    const isVolvo=p.isMain;
-    const count=isVolvo?
-      p.subs.reduce((s,sub)=>s+(deptStore[p.id+'__'+sub.replace(/ /g,'_')]||{refs:[]}).refs.length,0)+getCount(p.id)
-      :getCount(p.id);
-    const hasData=count>0;
-    const initials=p.name.split(' ').map(w=>w[0]).join('').slice(0,3);
-    html+=`<div class="project-card ${hasData?'has-data':''} ${isVolvo?'volvo-main':''}" onclick="selectProject('${dept}','${p.id}')">
-      <div class="pc-bar"></div>
-      <div class="pc-body">
-        <div class="pc-logo" style="background:${p.color}">${initials}</div>
-        <div class="pc-name">${p.name}</div>
-        <div class="pc-sub">${isVolvo?'9 sub-projects':'Project'}</div>
-        <div class="pc-foot">
-          <span class="pc-count ${hasData?'has':''}">${hasData?count+' ref'+(count>1?'s':''):isVolvo?'Click to expand':'No refs yet'}</span>
-          <div class="pc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
-        </div>
-      </div>
+  document.getElementById(id).innerHTML = `
+    <div class="msg-bar msg-${type}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[type]}</svg>
+      ${text}
     </div>`;
-  });
-  html+=`</div>`;
-  return html;
 }
 
-// ─── LEVEL 1b: VOLVO Sub-projects ────────────────────────────
-function renderVolvoSubsLevel(dept){
-  const deptStore=store[dept];
-  const volvo=PROJECTS.find(p=>p.isMain);
-  let html=`${renderBreadcrumb(dept)}
-  <div class="volvo-header">
-    <div class="volvo-logo">V</div>
-    <div>
-      <div class="volvo-title">VOLVO Projects</div>
-      <div class="volvo-sub">Select a sub-project to manage its references and wire lists</div>
-    </div>
-  </div>
-  <div class="volvo-subs">`;
-
-  volvo.subs.forEach(sub=>{
-    const key='VOLVO__'+sub.replace(/ /g,'_');
-    const count=(deptStore[key]||{refs:[]}).refs.length;
-    const hasData=count>0;
-    html+=`<div class="vsub-card ${hasData?'has-data':''}" onclick="selectProject('${dept}','${key}')">
-      <div class="vsub-name">${sub}</div>
-      <div class="vsub-meta">${hasData?count+' reference'+(count>1?'s':''):'No references yet'}</div>
-    </div>`;
-  });
-  html+=`</div>`;
-  return html;
+// ── PASSWORD TOGGLE ────────────────────────────────────────────
+function togglePw(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  btn.innerHTML = isHidden
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 }
 
-// ─── LEVEL 2: References ─────────────────────────────────────
-function renderRefsLevel(dept){
-  const ns=navState[dept];
-  const key=ns.projectKey;
-  const pStore=store[dept][key]||{refs:[],refData:{}};
-  const color=projectColor(key);
-  const label=projectLabel(key);
-  const searchTerm=formState[dept].refSearch||'';
-  const filteredRefs=pStore.refs.filter(r=>!searchTerm||r.id.toLowerCase().includes(searchTerm.toLowerCase())||r.desc.toLowerCase().includes(searchTerm.toLowerCase()));
+// ── STRENGTH METER ─────────────────────────────────────────────
+function checkStrength(pw) {
+  const bar = document.getElementById('strength-bar');
+  const lbl = document.getElementById('strength-label');
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const levels = [
+    {w:'0%',   c:'transparent', t:'Enter a password'},
+    {w:'25%',  c:'#ef4444',     t:'Weak'},
+    {w:'50%',  c:'#f59e0b',     t:'Fair'},
+    {w:'75%',  c:'#06b6d4',     t:'Good'},
+    {w:'100%', c:'#10b981',     t:'Strong ✓'},
+  ];
+  const l = levels[score];
+  bar.style.width = l.w; bar.style.background = l.c; lbl.textContent = l.t;
+  lbl.style.color = l.c;
+}
 
-  let html=`${renderBreadcrumb(dept)}
-  <div class="ref-section">
-    <div class="level-header">
-      <div class="level-title">
-        <div style="width:28px;height:28px;background:${color};border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:'Syne',sans-serif;font-size:10px;font-weight:800">${label.split(' ')[0].slice(0,2)}</div>
-        ${label} — References
-        ${pStore.refs.length>0?`<span class="badge badge-green">${pStore.refs.length} loaded</span>`:''}
-      </div>
-      <div class="level-actions">`;
+// ── SET LOADING STATE ──────────────────────────────────────────
+function setLoading(btnId, loading, label) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.innerHTML = loading ? `<span class="spinner"></span>${label}` : label;
+  btn.classList.toggle('loading', loading);
+}
 
-  if(pStore.refs.length>0){
-    html+=`<input type="text" class="ref-search-input" placeholder="Search references…" value="${searchTerm}" oninput="searchRefs(event,'${dept}')">
-    <label class="upload-btn upload-btn-outline">
-      <input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Replace Excel
-    </label>
-    <button onclick="clearProjectRefs('${dept}','${key}')" class="upload-btn upload-btn-outline" style="border-color:var(--red);color:var(--red)">Clear</button>`;
+// ── SIGN IN ────────────────────────────────────────────────────
+async function doSignIn() {
+  const empId = document.getElementById('signin-empid').value.trim();
+  const pw    = document.getElementById('signin-pw').value;
+  const dept  = document.querySelector('input[name="signin-dept"]:checked')?.value;
+
+  if (!empId || !pw) { showMsg('signin-msg', 'Please fill in all required fields.'); return; }
+  if (!dept)         { showMsg('signin-msg', 'Please select your department.'); return; }
+
+  setLoading('signin-btn', true, 'Verifying Identity…');
+
+  // ── SUPABASE INTEGRATION POINT ──────────────────────────────
+  // Replace the setTimeout block below with:
+  //
+  // const { data, error } = await supabase.auth.signInWithPassword({
+  //   email: `${empId.toLowerCase()}@meiw.ma`,
+  //   password: pw,
+  // });
+  // if (error) { showMsg('signin-msg', error.message); return; }
+  //
+  // Then verify department match from profiles table:
+  // const { data: profile } = await supabase
+  //   .from('profiles')
+  //   .select('department, full_name')
+  //   .eq('id', data.user.id)
+  //   .single();
+  // if (profile.department !== dept) {
+  //   showMsg('signin-msg', 'This account is not registered for the selected department.');
+  //   await supabase.auth.signOut(); return;
+  // }
+  //
+  // Log login event:
+  // await supabase.from('access_logs').insert({
+  //   user_id: data.user.id, employee_id: empId, department: dept,
+  //   action: 'login', ip: null, user_agent: navigator.userAgent
+  // });
+  // ────────────────────────────────────────────────────────────
+
+  await fakeDelay(1400);
+
+  const account = DEMO_ACCOUNTS.find(a => a.empId === empId && a.password === pw && a.dept === dept);
+
+  if (!account) {
+    setLoading('signin-btn', false, 'Sign In to Dashboard');
+    const doc = DEMO_ACCOUNTS.find(a => a.empId === empId);
+    if (doc && doc.dept !== dept)
+      showMsg('signin-msg', `Account "${empId}" is registered under <strong>${DEPT_META[doc.dept]?.name}</strong>, not ${DEPT_META[dept]?.name}.`);
+    else
+      showMsg('signin-msg', 'Invalid Employee ID or Password. Please try again.');
+    document.getElementById('signin-empid').classList.add('error');
+    document.getElementById('signin-pw').classList.add('error');
+    return;
   }
-  html+=`</div></div>`;
 
-  if(pStore.refs.length===0){
-    // Drop zone
-    html+=`<div class="drop-zone" id="${dept}-${key}-dropzone">
-      <input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')">
-      <div class="dz-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-      <div class="dz-title">Upload References List for ${label}</div>
-      <div class="dz-sub">Drop an Excel file (.xlsx / .xls / .csv) with your reference list<br>Columns: Reference ID, Description (optional)</div>
-      <div class="dz-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Any column named "Reference", "Ref", "ID", "Code" will be detected automatically</div>
-    </div>`;
-  } else {
-    // References table
-    html+=`<div class="data-table-wrap">
-      <div class="dt-header">
-        <div class="dt-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          ${filteredRefs.length} of ${pStore.refs.length} references
-        </div>
-      </div>
-      <div class="dt-scroll">
-        <table class="dt">
-          <thead><tr>
-            <th>Reference ID</th><th>Description</th><th>Wire List</th><th>Action</th>
-          </tr></thead>
-          <tbody>`;
+  // Save session
+  sessionStorage.setItem('me_session', JSON.stringify({
+    empId: account.empId,
+    name: account.name,
+    dept: account.dept,
+    loginAt: new Date().toISOString(),
+  }));
 
-    filteredRefs.forEach(ref=>{
-      const wires=pStore.refData[ref.id]||[];
-      const hasWires=wires.length>0;
-      html+=`<tr>
-        <td class="mono">${ref.id}</td>
-        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis">${ref.desc||'—'}</td>
-        <td>
-          <div class="action-cell">
-            <span class="row-pill ${hasWires?'has':''}">${hasWires?wires.length+' wires':'No data'}</span>
-            ${hasWires?`<button class="icon-btn" onclick="viewWireList('${dept}','${key}','${ref.id}')" title="Preview wire list">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>`:''}
-            <label class="icon-btn ${hasWires?'has-data':''}" title="Upload wire Excel for ${ref.id}">
-              <input type="file" accept=".xlsx,.xls,.csv" onchange="handleWireUpload(event,'${dept}','${key}','${ref.id}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            </label>
-          </div>
-        </td>
-        <td>
-          <button class="select-arrow-btn" style="background:${color};color:#fff" onclick="selectRef('${dept}','${ref.id}')">
-            Select →
-          </button>
-        </td>
-      </tr>`;
-    });
-
-    if(filteredRefs.length===0){
-      html+=`<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-3)">No references match your search</td></tr>`;
-    }
-    html+=`</tbody></table></div></div>`;
-  }
-  html+=`</div>`;
-  return html;
+  // Show success panel
+  setLoading('signin-btn', false, 'Sign In to Dashboard');
+  showSuccessPanel(account.dept, account.name);
 }
 
-// ─── LEVEL 3: Wire Selection ─────────────────────────────────
-function renderWiresLevel(dept){
-  const ns=navState[dept];
-  const key=ns.projectKey;
-  const refId=ns.refId;
-  const pStore=store[dept][key]||{refs:[],refData:{}};
-  const wires=pStore.refData[refId]||[];
-  const ref=pStore.refs.find(r=>r.id===refId);
-  const color=projectColor(key);
-  const label=projectLabel(key);
-  const hdrBg=dept==='wpa'?'linear-gradient(135deg,#0e3a5c,#0891b2)':dept==='twist'?'linear-gradient(135deg,#3b1060,#7c3aed)':'linear-gradient(135deg,var(--navy),var(--navy-soft))';
-  const submitClass=dept==='wpa'?'sb-wpa':dept==='twist'?'sb-twist':'sb-asm';
+// ── SIGN UP ────────────────────────────────────────────────────
+async function doSignUp() {
+  const name  = document.getElementById('signup-name').value.trim();
+  const empId = document.getElementById('signup-empid').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pw    = document.getElementById('signup-pw').value;
+  const pw2   = document.getElementById('signup-pw2').value;
+  const dept  = document.querySelector('input[name="signup-dept"]:checked')?.value;
 
-  const cols=wires.length>0?wires[0]._cols:[];
+  if (!name || !empId || !pw) { showMsg('signup-msg', 'Please fill in all required fields.'); return; }
+  if (pw !== pw2)             { showMsg('signup-msg', 'Passwords do not match.'); return; }
+  if (pw.length < 8)          { showMsg('signup-msg', 'Password must be at least 8 characters.'); return; }
+  if (!dept)                  { showMsg('signup-msg', 'Please select your department.'); return; }
 
-  let html=`${renderBreadcrumb(dept)}
-  <div class="wire-select-section">
-    <div class="ws-header" style="background:${hdrBg}">
-      <div>
-        <div class="ws-title">Step 3 — Select Wires & Submit Request</div>
-        <div class="ws-sub">Project: ${label} · Reference: ${refId}${ref?.desc?' · '+ref.desc:''}</div>
-      </div>
-    </div>
-    <div class="ws-body">
-      <!-- selected ref banner -->
-      <div class="sel-ref-banner">
-        <div class="srb-info">
-          <div class="srb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-          <div>
-            <div class="srb-id">${refId}</div>
-            <div class="srb-meta">${label} · ${wires.length>0?wires.length+' wires available':'No wire data'}</div>
-          </div>
-        </div>
-        <button class="srb-clear" onclick="navTo('${dept}','refs')" title="Change reference">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>`;
+  setLoading('signup-btn', true, 'Creating Account…');
 
-  if(wires.length===0){
-    html+=`<div style="background:rgba(217,119,6,.06);border:1px solid rgba(217,119,6,.25);border-radius:var(--r-md);padding:14px 16px;display:flex;align-items:flex-start;gap:10px;margin-bottom:16px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      <div>
-        <div style="font-size:13px;font-weight:600;color:var(--amber);margin-bottom:3px">No wire data for ${refId}</div>
-        <div style="font-size:12px;color:var(--text-2)">Go back to the reference table and upload an Excel file for this reference first.</div>
-      </div>
-    </div>
-    <button onclick="navTo('${dept}','refs')" class="btn btn-primary" style="flex:unset;padding:10px 20px">← Back to References</button>`;
-  } else {
-    html+=`<div class="wit-wrap">
-      <div class="wit-header">
-        <div class="wit-title">Wire Items from reference ${refId}</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="sel-count" id="${dept}-sel-count">0 selected</span>
-          <div class="wit-actions">
-            <button class="small-btn" onclick="selectAll('${dept}')">All</button>
-            <button class="small-btn" onclick="deselectAll('${dept}')">None</button>
-          </div>
-        </div>
-      </div>
-      <div class="wit-scroll">
-        <table class="wit" id="${dept}-wit">
-          <thead><tr>
-            <th style="width:34px"><input type="checkbox" class="wire-all-cb" id="${dept}-all-cb" onchange="toggleAll('${dept}',this.checked)"></th>
-            <th>#</th>`;
+  // ── SUPABASE INTEGRATION POINT ──────────────────────────────
+  // const emailToUse = email || `${empId.toLowerCase()}@meiw.ma`;
+  //
+  // const { data, error } = await supabase.auth.signUp({
+  //   email: emailToUse,
+  //   password: pw,
+  //   options: {
+  //     data: { full_name: name, employee_id: empId, department: dept }
+  //   }
+  // });
+  // if (error) { showMsg('signup-msg', error.message); return; }
+  //
+  // The trigger handle_new_user (in SQL below) auto-creates the profile row.
+  // ────────────────────────────────────────────────────────────
 
-    // Render all original columns from Excel
-    cols.forEach(col=>{ html+=`<th>${col}</th>`; });
-    html+=`<th>Type</th><th style="width:80px">Qty</th></tr></thead>
-          <tbody id="${dept}-wit-body">`;
+  await fakeDelay(1600);
 
-    wires.forEach((w,i)=>{
-      html+=`<tr id="${dept}-wrow-${i}" onclick="toggleRow('${dept}',${i})">
-        <td onclick="event.stopPropagation()"><input type="checkbox" class="wire-cb ${dept}-wcb" data-idx="${i}" onchange="updateSelCount('${dept}')"></td>
-        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-3)">${i+1}</td>`;
-      cols.forEach(col=>{
-        const val=w._raw[col]!==undefined?w._raw[col]:'';
-        html+=`<td class="wire-detail-col" title="${String(val).replace(/"/g,'&quot;')}">${val}</td>`;
-      });
-      html+=`<td>${typeTag(w.wireType)}</td>
-        <td onclick="event.stopPropagation()"><input type="number" class="qty-override" id="${dept}-qty-${i}" value="${w.quantity}" min="1"></td>
-      </tr>`;
-    });
-    html+=`</tbody></table></div></div>`;
-
-    // Form row
-    html+=`<div class="req-form-row">
-      <div class="field"><label>Urgency <span style="color:var(--red)">*</span></label>
-        <select id="${dept}-urgency"><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="critical">Critical</option></select>
-      </div>
-      <div class="field"><label>Confirm Project</label>
-        <input type="text" id="${dept}-proj-display" value="${label}" readonly style="background:var(--surface-2);color:var(--text-3);cursor:default">
-      </div>
-    </div>
-    <button class="submit-btn ${submitClass}" onclick="submitRequest('${dept}')">
-      Submit Request to Pagoda
-    </button>`;
-  }
-  html+=`</div></div>`;
-  return html;
+  setLoading('signup-btn', false, 'Create Account');
+  showMsg('signup-msg',
+    `✓ Account created for <strong>${name}</strong> in <strong>${DEPT_META[dept]?.name}</strong>. Check your email to confirm.`,
+    'success'
+  );
 }
 
-// ─── BREADCRUMB ──────────────────────────────────────────────
-function renderBreadcrumb(dept){
-  const ns=navState[dept];
-  let items=[];
-  items.push({label:'Projects',level:'projects'});
-  if(ns.level==='volvo_subs'){
-    items.push({label:'VOLVO',level:'volvo_subs',active:true});
-  } else if(ns.level==='refs'||ns.level==='wires'){
-    const pk=ns.projectKey;
-    if(pk&&pk.startsWith('VOLVO__')){
-      items.push({label:'VOLVO',level:'volvo_subs'});
-      items.push({label:pk.split('__')[1].replace(/_/g,' '),level:'refs',active:ns.level==='refs'});
-    } else {
-      items.push({label:projectLabel(pk),level:'refs',active:ns.level==='refs'});
-    }
-    if(ns.level==='wires'){
-      items.push({label:ns.refId,level:'wires',active:true});
-    }
-  }
-  return `<div class="breadcrumb">${items.map((it,i)=>`
-    ${i>0?'<span class="bc-sep">›</span>':''}
-    <span class="bc-item ${it.active?'active':''}" onclick="navTo('${dept}','${it.level}')">${it.label}</span>
-  `).join('')}</div>`;
+// ── FORGOT PASSWORD ────────────────────────────────────────────
+async function doForgot() {
+  const empId = document.getElementById('forgot-empid').value.trim();
+  const email = document.getElementById('forgot-email').value.trim();
+
+  if (!empId || !email) { showMsg('forgot-msg', 'Please enter your Employee ID and email.'); return; }
+  if (!/\S+@\S+\.\S+/.test(email)) { showMsg('forgot-msg', 'Please enter a valid email address.'); return; }
+
+  setLoading('forgot-btn', true, 'Sending Reset Email…');
+
+  // ── SUPABASE INTEGRATION POINT ──────────────────────────────
+  // const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  //   redirectTo: `${window.location.origin}/reset-password`
+  // });
+  // if (error) { showMsg('forgot-msg', error.message); return; }
+  // ────────────────────────────────────────────────────────────
+
+  await fakeDelay(1800);
+  setLoading('forgot-btn', false, 'Send Reset Link');
+
+  document.getElementById('forgot-form').style.display = 'none';
+  document.getElementById('forgot-success').style.display = 'block';
 }
 
-// ═══════════════ NAVIGATION ACTIONS ══════════════════════════
-function selectProject(dept, projectId){
-  const p=PROJECTS.find(x=>x.id===projectId);
-  if(p&&p.isMain&&!projectId.includes('__')){
-    navState[dept].level='volvo_subs';
-    navState[dept].projectKey='VOLVO';
-  } else {
-    navState[dept].level='refs';
-    navState[dept].projectKey=projectId;
-    formState[dept].refSearch='';
-  }
-  navState[dept].refId=null;
-  renderRequestArea(dept);
+// ── SUCCESS PANEL ──────────────────────────────────────────────
+function showSuccessPanel(dept, name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-nav').style.display = 'none';
+  document.getElementById('panel-success').classList.add('active');
+
+  const meta = DEPT_META[dept];
+  document.getElementById('success-dept-name').textContent = meta.name;
+  document.getElementById('success-dot').style.background = meta.color;
+  document.getElementById('success-dept-tag').style.borderColor = meta.color + '55';
+
+  // In real app: window.location.href = `/${dept}/dashboard`
+  // Demo: just show message then reset
+  setTimeout(() => {
+    alert(`Demo mode: Would redirect to /${dept}/dashboard\nLogged in as: ${name}`);
+    location.reload();
+  }, 2800);
 }
 
-function selectRef(dept, refId){
-  navState[dept].level='wires';
-  navState[dept].refId=refId;
-  renderRequestArea(dept);
-}
+// ── HELPERS ───────────────────────────────────────────────────
+function fakeDelay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-function navTo(dept, level){
-  if(level==='projects'){
-    navState[dept].level='projects';
-    navState[dept].projectKey=null;
-    navState[dept].refId=null;
-  } else if(level==='volvo_subs'){
-    navState[dept].level='volvo_subs';
-    navState[dept].refId=null;
-  } else if(level==='refs'){
-    navState[dept].level='refs';
-    navState[dept].refId=null;
-  }
-  renderRequestArea(dept);
-}
+// Keyboard submit
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const active = document.querySelector('.panel.active');
+  if (!active) return;
+  const id = active.id;
+  if (id === 'panel-signin') doSignIn();
+  else if (id === 'panel-signup') doSignUp();
+  else if (id === 'panel-forgot') doForgot();
+});
 
-function searchRefs(e, dept){
-  formState[dept].refSearch=e.target.value;
-  renderRequestArea(dept);
-}
-
-// ═══════════════ EXCEL UPLOAD HANDLERS ═══════════════════════
-async function handleRefsUpload(e, dept, key){
-  const file=e.target.files[0];if(!file)return;
-  try{
-    const rows=await parseExcel(file);
-    if(!rows.length){toast('File appears empty','error');return;}
-    const refs=rows.map(normalizeRef).filter(r=>r.id&&r.id!=='undefined');
-    if(!refs.length){toast('Could not detect a reference column. Add a column named "Reference" or "ID".','error');return;}
-    store[dept][key].refs=refs;
-    formState[dept].refSearch='';
-    toast(`${refs.length} references loaded for ${projectLabel(key)}`,'success');
-    renderRequestArea(dept);
-  }catch(err){toast('Error reading file: '+err.message,'error');}
-  e.target.value='';
-}
-
-async function handleWireUpload(e, dept, key, refId){
-  const file=e.target.files[0];if(!file)return;
-  try{
-    const rows=await parseExcel(file);
-    if(!rows.length){toast('File appears empty','error');return;}
-    const wires=rows.map(normalizeWire).filter(w=>w.wireName&&w.wireName!=='undefined');
-    if(!wires.length){toast('Could not detect wire data.','error');return;}
-    store[dept][key].refData[refId]=wires;
-    toast(`${wires.length} wires loaded for reference ${refId}`,'success');
-    renderRequestArea(dept);
-  }catch(err){toast('Error reading file: '+err.message,'error');}
-  e.target.value='';
-}
-
-function clearProjectRefs(dept, key){
-  store[dept][key]={refs:[],refData:{}};
-  navState[dept].level='refs';
-  navState[dept].refId=null;
-  formState[dept].refSearch='';
-  renderRequestArea(dept);
-  toast('References cleared','info');
-}
-
-// ═══════════════ WIRE TABLE INTERACTION ══════════════════════
-function toggleRow(dept, idx){
-  const cb=document.querySelector(`#${dept}-wrow-${idx} .wire-cb`);
-  if(cb){cb.checked=!cb.checked;updateSelCount(dept);}
-}
-function updateSelCount(dept){
-  const cbs=document.querySelectorAll(`.${dept}-wcb`);
-  const n=Array.from(cbs).filter(c=>c.checked).length;
-  const el=document.getElementById(`${dept}-sel-count`);
-  if(el)el.textContent=`${n} selected`;
-  cbs.forEach(cb=>{
-    const row=document.getElementById(`${dept}-wrow-${cb.dataset.idx}`);
-    if(row)row.classList.toggle('selected-wire',cb.checked);
-  });
-  const allCb=document.getElementById(`${dept}-all-cb`);
-  if(allCb){allCb.checked=n===cbs.length&&n>0;allCb.indeterminate=n>0&&n<cbs.length;}
-}
-function toggleAll(dept,v){document.querySelectorAll(`.${dept}-wcb`).forEach(c=>{c.checked=v;});updateSelCount(dept);}
-function selectAll(dept){toggleAll(dept,true);}
-function deselectAll(dept){toggleAll(dept,false);}
-
-// ═══════════════ PREVIEW WIRE LIST MODAL ═════════════════════
-function viewWireList(dept, key, refId){
-  const wires=store[dept][key].refData[refId]||[];
-  if(!wires.length){toast('No wire data','error');return;}
-  document.getElementById('view-modal')?.remove();
-  const modal=document.createElement('div');
-  modal.className='modal-overlay';modal.id='view-modal';
-  modal.onclick=e=>{if(e.target===modal)modal.remove();};
-  const cols=wires[0]?._cols||[];
-  modal.innerHTML=`<div class="modal" style="max-width:820px">
-    <div class="modal-hd" style="background:linear-gradient(135deg,var(--navy),var(--navy-soft))">
-      <div><div class="modal-title">Wire List — ${refId}</div><div class="modal-sub">${projectLabel(key)} · ${wires.length} items</div></div>
-      <button class="modal-close" onclick="document.getElementById('view-modal').remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body" style="padding:0">
-      <div style="overflow-x:auto">
-        <table class="dt" style="min-width:400px">
-          <thead><tr><th>#</th>${cols.map(c=>`<th>${c}</th>`).join('')}<th>Detected Type</th></tr></thead>
-          <tbody>${wires.map((w,i)=>`<tr><td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-3)">${i+1}</td>${cols.map(c=>`<td class="wire-detail-col">${w._raw[c]!==undefined?w._raw[c]:''}</td>`).join('')}<td>${typeTag(w.wireType)}</td></tr>`).join('')}</tbody>
-        </table>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-outline" onclick="document.getElementById('view-modal').remove()" style="flex:0;padding:8px 18px">Close</button></div>
-  </div>`;
-  document.body.appendChild(modal);
-}
-
-// ═══════════════ SUBMIT REQUEST ══════════════════════════════
-function submitRequest(dept){
-  const ns=navState[dept];
-  const key=ns.projectKey;
-  const refId=ns.refId;
-  if(!key||!refId){toast('Please select a project and reference first','error');return;}
-  const wires=store[dept][key].refData[refId]||[];
-  if(!wires.length){toast('No wire data for this reference','error');return;}
-
-  const cbs=document.querySelectorAll(`.${dept}-wcb`);
-  const selected=Array.from(cbs).filter(c=>c.checked);
-  if(!selected.length){toast('Please select at least one wire','error');return;}
-
-  const urgency=document.getElementById(`${dept}-urgency`)?.value||'normal';
-  const projectLabel_=projectLabel(key);
-
-  const items=selected.map(cb=>{
-    const idx=parseInt(cb.dataset.idx);
-    const w=wires[idx];
-    const qty=parseInt(document.getElementById(`${dept}-qty-${idx}`)?.value)||w.quantity;
-    return{reference:refId,wireName:w.wireName,wireType:w.wireType,quantity:qty,tinning:w.tinning,layLength:w.layLength||null,pagodaStatus:null,_rawRow:w._raw};
-  });
-
-  const req={
-    id:`REQ-2026-${String(requests.length+1).padStart(3,'0')}`,
-    items,urgency,status:'pending',assignedTo:'pagoda',
-    project:projectLabel_,projectKey:key,
-    time:new Date().toISOString(),requestedBy:dept,
-    pagodaStatus:'pending',completedAt:null
-  };
-  requests.push(req);
-
-  toast(`Request ${req.id} submitted — ${items.length} wire${items.length>1?'s':''} from ${refId}`,'success');
-  navState[dept].level='refs';
-  navState[dept].refId=null;
-  renderRequestArea(dept);
-  renderReqList(dept);
-  updateBadges();
-  renderAnalytics();
-}
-
-// ═══════════════ REQUEST LIST RENDERER ═══════════════════════
-function timeAgo(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<1)return'just now';if(m<60)return`${m}m ago`;if(m<1440)return`${Math.floor(m/60)}h ago`;return`${Math.floor(m/1440)}d ago`;}
-function urgBadge(u){const m={normal:'badge-green',urgent:'badge-amber',critical:'badge-red'};return`<span class="badge ${m[u]||'badge-grey'}">${u.toUpperCase()}</span>`;}
-function emptyState(msg){return`<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h8M7 16h5"/></svg><p>${msg}</p></div>`;}
-
-function wireStatusBadge(it,reqSt,pagSt){
-  if(it.pagodaStatus==='in_stock')return'<span class="wst wst-in">In Stock</span>';
-  if(it.pagodaStatus==='out_of_stock')return'<span class="wst wst-oos">Out of Stock</span>';
-  if(it.deptStatus==='done')return'<span class="wst wst-in">Done</span>';
-  if(it.deptStatus==='in_progress')return'<span class="wst" style="background:rgba(30,86,200,.12);color:var(--blue)">In Progress</span>';
-  if(reqSt==='completed')return'<span class="wst wst-in">Completed</span>';
-  if(pagSt==='out_of_stock')return'<span class="wst wst-oos">Routed</span>';
-  if(reqSt==='in_progress')return'<span class="wst" style="background:rgba(30,86,200,.12);color:var(--blue)">In Progress</span>';
-  return'<span class="wst" style="background:var(--surface-2);color:var(--text-3)">Pending</span>';
-}
-
-function renderCard(r){
-  let stTxt='Pending at Pagoda',dotCls='sp-pending';
-  if(r.status==='completed'){stTxt='Completed';dotCls='sp-done';}
-  else if(r.status==='in_progress'){stTxt='In progress at '+r.assignedTo.toUpperCase();dotCls='sp-progress';}
-  else if(r.pagodaStatus==='out_of_stock'){stTxt='Routed to '+r.assignedTo.toUpperCase();dotCls='sp-progress';}
-  const itemsHtml=r.items.map(it=>`<div class="rc-item">
-    <div><div class="rc-item-name">${it.wireName}</div><div class="rc-item-det" style="margin-top:2px">×${it.quantity} · Ref: ${it.reference}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div></div>
-    <div>${wireStatusBadge(it,r.status,r.pagodaStatus)}</div>
-  </div>`).join('');
-  return`<div class="req-card rc-${r.urgency}">
-    <div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span></div></div>
-    <div class="rc-items">${itemsHtml}</div>
-    <div class="rc-foot"><div class="status-pill"><span class="sdot2 ${dotCls}"></span>${stTxt}</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
-  </div>`;
-}
-
-function renderReqList(dept){
-  const listId=dept==='assembly'?'asm-req-list':dept==='wpa'?'wpa-req-list':'twist-req-list';
-  const el=document.getElementById(listId);if(!el)return;
-  const reqs=requests.filter(r=>r.requestedBy===dept).sort((a,b)=>new Date(b.time)-new Date(a.time));
-  el.innerHTML=reqs.length?reqs.map(renderCard).join(''):emptyState('No requests yet. Select a project above to get started.');
-}
-
-// ═══════════════ PAGODA ══════════════════════════════════════
-function renderPagodaRequests(){
-  const reqs=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending');
-  const el=document.getElementById('pagoda-req-list');
-  document.getElementById('p-req-count').textContent=reqs.length;
-  if(!reqs.length){el.innerHTML=emptyState('No pending requests');return;}
-  el.innerHTML=reqs.map(r=>{
-    const multi=r.items.length>1;
-    const doneCount=r.items.filter(it=>it.pagodaStatus).length;
-    const itemsHtml=r.items.map(it=>{
-      let tag='';
-      if(it.pagodaStatus==='in_stock')tag='<span class="wst wst-in">In Stock</span>';
-      else if(it.pagodaStatus==='out_of_stock')tag='<span class="wst wst-oos">Out of Stock</span>';
-      return`<div class="rc-item" style="${it.pagodaStatus==='in_stock'?'border-color:var(--green)':it.pagodaStatus==='out_of_stock'?'border-color:var(--amber)':''}">
-        <span class="rc-item-name">${it.wireName}</span>
-        <div style="display:flex;align-items:center;gap:7px">${tag}<span class="rc-item-det">×${it.quantity} · ${it.reference} · ${typeTag(it.wireType)}</span></div>
-      </div>`;
-    }).join('');
-    const progressHtml=multi&&doneCount>0?`<div style="margin:8px 0 2px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-bottom:3px"><span>${doneCount}/${r.items.length} actioned</span><span>${Math.round(doneCount/r.items.length*100)}%</span></div><div style="height:4px;background:var(--surface-2);border-radius:3px;overflow:hidden"><div style="width:${Math.round(doneCount/r.items.length*100)}%;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:3px"></div></div></div>`:'';
-    return`<div class="req-card rc-${r.urgency}">
-      <div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span><span class="badge badge-blue">from ${r.requestedBy.toUpperCase()}</span></div></div>
-      <div class="rc-items">${itemsHtml}</div>
-      ${progressHtml}
-      <div class="rc-foot"><div class="status-pill"><span class="sdot2 sp-pending"></span>Awaiting action</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
-      <div class="btn-row">
-        ${multi?`<button class="btn btn-primary" onclick="openPagodaModal('${r.id}')">Review Items (${r.items.length})</button>`:`<button class="btn btn-success" onclick="markInStock('${r.id}')">In Stock</button><button class="btn btn-amber" onclick="markOOS('${r.id}')">Out of Stock</button>`}
-      </div>
-    </div>`;
-  }).join('');
-  loadHistory('pagoda-hist','pagoda','assignedTo');
-}
-
-function openPagodaModal(reqId){
-  const r=requests.find(x=>x.id===reqId);if(!r)return;
-  document.getElementById('pagoda-modal')?.remove();
-  const modal=document.createElement('div');modal.className='modal-overlay';modal.id='pagoda-modal';
-  modal.onclick=e=>{if(e.target===modal)closePM();};
-  const doneCount=()=>r.items.filter(it=>it.pagodaStatus).length;
-  function body(){
-    const done=doneCount();const pct=Math.round(done/r.items.length*100);
-    return`<div class="mbar"><span>${done} of ${r.items.length} actioned</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%"></div></div><span style="font-weight:700;color:var(--text-1)">${pct}%</span></div>
-    ${r.items.map((it,idx)=>{
-      const st=it.pagodaStatus;
-      const tag=st==='in_stock'?'<span class="wst wst-in">In Stock</span>':st==='out_of_stock'?'<span class="wst wst-oos">Out of Stock</span>':'';
-      const btns=!st?`<button class="wbtn wbtn-ok" onclick="setPagodaItem('${reqId}',${idx},'in_stock')">In Stock</button><button class="wbtn wbtn-oos" onclick="setPagodaItem('${reqId}',${idx},'out_of_stock')">OOS</button>`:`<button class="wbtn wbtn-undo" onclick="setPagodaItem('${reqId}',${idx},null)">Undo</button>`;
-      // Show all raw details
-      const rawDetails=it._rawRow?Object.entries(it._rawRow).map(([k,v])=>`${k}: ${v}`).join(' · '):'';
-      return`<div class="wire-action-row ${st==='in_stock'?'war-in':st==='out_of_stock'?'war-oos':''}">
-        <div class="war-info">
-          <div class="war-name">${it.wireName}</div>
-          <div class="war-det">×${it.quantity} · Ref: ${it.reference} · ${it.wireType.toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div>
-          ${rawDetails?`<div class="war-det" style="margin-top:3px;font-style:italic">${rawDetails}</div>`:''}
-        </div>
-        <div style="display:flex;align-items:center;gap:7px">${tag}<div class="war-btns">${btns}</div></div>
-      </div>`;
-    }).join('')}`;
-  }
-  function refresh(){
-    document.getElementById('pm-body').innerHTML=body();
-    const done=doneCount();const fb=document.getElementById('pm-finalize');
-    if(fb){fb.disabled=done<r.items.length;fb.style.opacity=done<r.items.length?'0.4':'1';fb.textContent=done<r.items.length?`Finalize (${done}/${r.items.length} done)`:'Finalize & Route';}
-    renderPagodaRequests();
-  }
-  modal.innerHTML=`<div class="modal" style="max-width:640px">
-    <div class="modal-hd" style="background:linear-gradient(135deg,var(--navy),var(--navy-soft))">
-      <div><div class="modal-title">${r.id} · Wire Review</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · from ${r.requestedBy.toUpperCase()}</div></div>
-      <button class="modal-close" onclick="closePM()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body" id="pm-body">${body()}</div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closePM()" style="flex:0;padding:8px 18px">Cancel</button>
-      <button class="btn btn-success" id="pm-finalize" onclick="finalizePagoda('${r.id}')" style="flex:1;opacity:0.4" disabled>Finalize</button>
-    </div>
-  </div>`;
-  modal._refresh=refresh;document.body.appendChild(modal);refresh();
-}
-function closePM(){const m=document.getElementById('pagoda-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>m.remove(),150);}}
-function setPagodaItem(rid,idx,st){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].pagodaStatus=st;const m=document.getElementById('pagoda-modal');if(m?._refresh)m._refresh();}
-function finalizePagoda(rid){
-  const r=requests.find(x=>x.id===rid);if(!r)return;
-  const inStock=r.items.filter(it=>it.pagodaStatus==='in_stock');
-  const oos=r.items.filter(it=>it.pagodaStatus==='out_of_stock');
-  if(oos.length===0){r.status='completed';r.pagodaStatus='in_stock';r.completedAt=new Date().toISOString();toast('All wires in stock — request completed','success');}
-  else if(inStock.length===0){r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';toast(`All OOS — routed to ${r.assignedTo.toUpperCase()}`,'info');}
-  else{
-    const groups={};
-    oos.forEach(it=>{const d=it.wireType==='simple'?'cutting':it.wireType==='twist'?'twist':'wpa';if(!groups[d])groups[d]=[];groups[d].push(it);});
-    Object.entries(groups).forEach(([d,items])=>{
-      requests.push({id:`${rid}-${d.toUpperCase()}`,items,urgency:r.urgency,status:'pending',assignedTo:d,project:r.project,time:new Date().toISOString(),requestedBy:r.requestedBy,pagodaStatus:'out_of_stock',completedAt:null});
-    });
-    r.status='completed';r.pagodaStatus='partial';r.completedAt=new Date().toISOString();
-    toast(`${inStock.length} in stock · ${oos.length} routed`,'success');
-  }
-  closePM();loadPage('pagoda');updateBadges();renderAnalytics();
-}
-function markInStock(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();}
-function markOOS(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');loadPage('pagoda');updateBadges();renderAnalytics();}
-function loadLowStock(){let h='',low=0;Object.values(wireStock).forEach(w=>{if(w.stock<w.min){low++;h+=`<div class="alert-item"><div><div class="alert-name">${w.name}</div><div style="font-size:11px;color:#b45309">${w.loc}</div></div><div class="alert-stock">${w.stock}/${w.min}</div></div>`;}});document.getElementById('low-stock-list').innerHTML=h||`<div class="alert-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="20 6 9 17 4 12"/></svg>All stock levels OK</div>`;document.getElementById('p-low').textContent=low;}
-function updatePagodaMetrics(){document.getElementById('p-pending').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;document.getElementById('p-stock').textContent=Object.values(wireStock).reduce((s,w)=>s+w.stock,0);const today=new Date().toDateString();document.getElementById('p-today').textContent=requests.filter(r=>new Date(r.time).toDateString()===today).length;const comp=requests.filter(r=>r.status==='completed').length;const rate=requests.length?Math.round(comp/requests.length*100):0;document.getElementById('p-rate').textContent=rate+'%';document.getElementById('p-rate-bar').style.width=rate+'%';}
-
-// ═══════════════ CUTTING ═════════════════════════════════════
-function renderCuttingRequests(){
-  const reqs=requests.filter(r=>r.assignedTo==='cutting'&&r.status!=='completed');
-  const el=document.getElementById('cutting-req-list');
-  el.innerHTML=reqs.length?reqs.map(r=>{
-    const ip=r.status==='in_progress';
-    return`<div class="req-card rc-${r.urgency}">
-      <div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span></div></div>
-      <div class="rc-items">${r.items.map(it=>`<div class="rc-item"><div class="rc-item-name">${it.wireName}</div><span class="rc-item-det">×${it.quantity} · ${it.reference}</span></div>`).join('')}</div>
-      <div class="rc-foot"><div class="status-pill"><span class="sdot2 ${ip?'sp-progress':'sp-pending'}"></span>${ip?'In Progress':'Pending'}</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
-      <div class="btn-row">${ip?`<button class="btn btn-disabled" disabled>In Progress…</button>`:`<button class="btn btn-primary" onclick="startReq('${r.id}')">Start Cutting</button>`}<button class="btn btn-success" onclick="completeReq('${r.id}')">Complete</button></div>
-    </div>`;
-  }).join(''):emptyState('No cutting requests');
-  loadHistory('cutting-hist','cutting','assignedTo');
-}
-function updateCuttingMetrics(){document.getElementById('c-pending').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='pending').length;document.getElementById('c-prog').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='in_progress').length;document.getElementById('c-done').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='completed').length;}
-
-// ═══════════════ WPA / TWIST TABS ════════════════════════════
-function switchTab(dept,tab){
-  const rp=document.getElementById(`${dept}-req-panel`);const fp=document.getElementById(`${dept}-fulfill-panel`);
-  const rb=document.getElementById(`${dept}-tab-req`);const fb=document.getElementById(`${dept}-tab-fulfill`);
-  const activeColor=dept==='wpa'?'var(--cyan)':'var(--purple)';
-  if(tab==='req'){
-    rp.style.display='block';fp.style.display='none';
-    rb.style.cssText=`background:${activeColor};color:#fff;border-color:${activeColor}`;
-    fb.style.cssText='';
-  } else {
-    rp.style.display='none';fp.style.display='block';
-    fb.style.cssText=`background:${activeColor};color:#fff;border-color:${activeColor}`;
-    rb.style.cssText='';
-    if(dept==='wpa')loadWPAFulfill();else loadTwistFulfill();
-  }
-}
-function loadWPAFulfill(){
-  const wpa=requests.filter(r=>r.assignedTo==='wpa'&&r.status!=='completed');
-  const xe=wpa.filter(r=>r.items[0]?.wireType==='xe');const sp=wpa.filter(r=>r.items[0]?.wireType==='sp');
-  const mkCard=r=>{const ip=r.status==='in_progress';return`<div class="req-card rc-${r.urgency}"><div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span></div></div><div class="rc-items">${r.items.map(it=>`<div class="rc-item"><div class="rc-item-name">${it.wireName}</div><span class="rc-item-det">×${it.quantity}</span></div>`).join('')}</div><div class="rc-foot"><div class="status-pill"><span class="sdot2 ${ip?'sp-progress':'sp-pending'}"></span>${ip?'In Progress':'Pending'}</div><span class="time-lbl">${timeAgo(r.time)}</span></div><div class="btn-row">${ip?`<button class="btn btn-disabled" disabled>In Progress…</button>`:`<button class="btn btn-primary" onclick="startReq('${r.id}')">Start Prep</button>`}<button class="btn btn-success" onclick="completeReq('${r.id}')">Complete</button></div></div>`;};
-  document.getElementById('wpa-xe-list').innerHTML=xe.length?xe.map(mkCard).join(''):emptyState('No XE requests');
-  document.getElementById('wpa-sp-list').innerHTML=sp.length?sp.map(mkCard).join(''):emptyState('No SP requests');
-  document.getElementById('wpa-xe-cnt').textContent=xe.length;document.getElementById('wpa-sp-cnt').textContent=sp.length;
-  document.getElementById('wpa-prog-cnt').textContent=requests.filter(r=>r.assignedTo==='wpa'&&r.status==='in_progress').length;
-}
-function loadTwistFulfill(){
-  const reqs=requests.filter(r=>r.assignedTo==='twist'&&r.status!=='completed');
-  const mkCard=r=>{const ip=r.status==='in_progress';return`<div class="req-card rc-${r.urgency}"><div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span></div></div><div class="rc-items">${r.items.map(it=>`<div class="rc-item"><div class="rc-item-name">${it.wireName}</div><span class="rc-item-det">×${it.quantity}${it.layLength?' · Lay: '+it.layLength:''}</span></div>`).join('')}</div><div class="rc-foot"><div class="status-pill"><span class="sdot2 ${ip?'sp-progress':'sp-pending'}"></span>${ip?'In Progress':'Pending'}</div><span class="time-lbl">${timeAgo(r.time)}</span></div><div class="btn-row">${ip?`<button class="btn btn-disabled" disabled>Twisting…</button>`:`<button class="btn btn-primary" onclick="startReq('${r.id}')">Start Twist</button>`}<button class="btn btn-success" onclick="completeReq('${r.id}')">Complete</button></div></div>`;};
-  document.getElementById('twist-req-fulfill-list').innerHTML=reqs.length?reqs.map(mkCard).join(''):emptyState('No twist requests');
-  document.getElementById('twist-pend-cnt').textContent=requests.filter(r=>r.assignedTo==='twist'&&r.status==='pending').length;
-  document.getElementById('twist-prog-cnt').textContent=requests.filter(r=>r.assignedTo==='twist'&&r.status==='in_progress').length;
-  document.getElementById('twist-pairs-cnt').textContent=requests.filter(r=>r.assignedTo==='twist').reduce((s,r)=>s+r.items.reduce((ss,i)=>ss+i.quantity,0),0);
-}
-
-// ═══════════════ GENERIC REQ ACTIONS ═════════════════════════
-function startReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='in_progress';toast(`Started ${id}`,'info');loadPage(currentPage);updateBadges();}
-function completeReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();toast(`${id} completed!`,'success');loadPage(currentPage);updateBadges();renderAnalytics();}
-
-// ═══════════════ HISTORY TABLE ════════════════════════════════
-function loadHistory(tbodyId,dept,field){
-  const tbody=document.getElementById(tbodyId);if(!tbody)return;
-  const comp=requests.filter(r=>r[field]===dept&&r.status==='completed').sort((a,b)=>new Date(b.completedAt||b.time)-new Date(a.completedAt||a.time));
-  if(!comp.length){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-3)">No completed orders yet</td></tr>`;return;}
-  tbody.innerHTML=comp.map(r=>{
-    const dt=new Date(r.completedAt||r.time);
-    return`<tr><td class="mono">${r.id}</td><td>${r.items.map(i=>`${i.quantity}× ${i.wireName}`).join(', ')}</td>${field==='requestedBy'?`<td><span class="badge badge-grey">${r.project}</span></td>`:''}<td>${dt.toLocaleDateString()} ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td><span class="badge badge-green">Completed</span></td></tr>`;
-  }).join('');
-}
-
-// ═══════════════ ANALYTICS ════════════════════════════════════
-function renderAnalytics(){
-  document.getElementById('a-total').textContent=requests.length;
-  document.getElementById('a-done').textContent=requests.filter(r=>r.status==='completed').length;
-  document.getElementById('a-pending').textContent=requests.filter(r=>r.status==='pending').length;
-  document.getElementById('a-prog').textContent=requests.filter(r=>r.status==='in_progress').length;
-  // Bar chart
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const counts={};const labels=[];
-  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toDateString();counts[k]=0;labels.push({l:days[d.getDay()],k});}
-  requests.forEach(r=>{const k=new Date(r.time).toDateString();if(counts[k]!==undefined)counts[k]++;});
-  const maxC=Math.max(...Object.values(counts),1);
-  document.getElementById('daily-chart').innerHTML=labels.map(({l,k})=>{const h=Math.round((counts[k]/maxC)*120);return`<div class="bar-col"><div class="bar-fill" style="height:${h}px"><span class="bar-val">${counts[k]}</span></div><div class="bar-lbl">${l}</div></div>`;}).join('');
-  // Donut
-  const depts=['pagoda','cutting','wpa','twist'];const deptColors=['#1e56c8','#16a06a','#0891b2','#7c3aed'];const deptNames=['Pagoda','Cutting','WPA','Twist'];
-  const dc=depts.map(d=>requests.filter(r=>r.assignedTo===d&&r.status!=='completed').length);
-  const tot=dc.reduce((a,b)=>a+b,0)||1;const C=2*Math.PI*38;let off=0;
-  const segs=depts.map((d,i)=>{const pct=dc[i]/tot;const dash=pct*C;const s=`<circle cx="50" cy="50" r="38" fill="none" stroke="${deptColors[i]}" stroke-width="13" stroke-dasharray="${dash} ${C-dash}" stroke-dashoffset="${-off}" transform="rotate(-90 50 50)" style="transition:all .5s"/>`;off+=dash;return s;}).join('');
-  document.getElementById('donut-svg').innerHTML=`<circle cx="50" cy="50" r="38" fill="none" stroke="#eef1f8" stroke-width="13"/>${segs}`;
-  document.getElementById('donut-legend').innerHTML=depts.map((d,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${deptColors[i]}"></div><span style="color:var(--text-2);flex:1">${deptNames[i]}</span><span style="font-weight:700">${dc[i]}</span></div>`).join('');
-  // Top wires
-  const wc={};requests.forEach(r=>r.items.forEach(it=>{wc[it.wireName]=(wc[it.wireName]||0)+it.quantity;}));
-  const tw=Object.entries(wc).sort((a,b)=>b[1]-a[1]).slice(0,5);const mw=Math.max(...tw.map(x=>x[1]),1);
-  document.getElementById('top-wires').innerHTML=tw.map(([n,c])=>`<div class="wbar-item"><span class="wbar-name">${n}</span><div class="wbar-track"><div class="wbar-fill" style="width:${(c/mw*100).toFixed(0)}%;background:var(--blue)"></div></div><span class="wbar-count">${c}</span></div>`).join('')||'<div class="empty-state"><p>No data yet</p></div>';
-  // Projects chart
-  const pc={};requests.forEach(r=>{pc[r.project]=(pc[r.project]||0)+1;});
-  const tp=Object.entries(pc).sort((a,b)=>b[1]-a[1]).slice(0,8);const mp=Math.max(...tp.map(x=>x[1]),1);
-  document.getElementById('proj-chart').innerHTML=tp.map(([n,c])=>`<div class="wbar-item"><span class="wbar-name">${n}</span><div class="wbar-track"><div class="wbar-fill" style="width:${(c/mp*100).toFixed(0)}%;background:var(--green)"></div></div><span class="wbar-count">${c}</span></div>`).join('')||'<div class="empty-state"><p>No data yet</p></div>';
-}
-
-// ═══════════════ CLOCK ════════════════════════════════════════
-function updateClock(){
-  const n=new Date();
-  document.getElementById('clk-time').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
-  document.getElementById('clk-date').textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
-  const h=n.getHours();document.getElementById('clk-shift').textContent=h>=6&&h<14?'Morning 06–14':h>=14&&h<22?'Afternoon 14–22':'Night 22–06';
-}
-
-// ═══════════════ SIDEBAR MOBILE ═══════════════════════════════
-function toggleSB(){const s=document.querySelector('.sidebar');const o=document.getElementById('sb-overlay');s.classList.contains('open')?closeSB():(s.classList.add('open'),o.classList.add('show'),document.body.style.overflow='hidden');}
-function closeSB(){document.querySelector('.sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('show');document.body.style.overflow='';}
-document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.nb').forEach(b=>{b.addEventListener('click',()=>{if(window.innerWidth<=900)closeSB();});});});
+// Remove error class on input
+document.addEventListener('input', e => {
+  if (e.target.classList.contains('fi')) e.target.classList.remove('error');
+});
 </script>
 </body>
 </html>
