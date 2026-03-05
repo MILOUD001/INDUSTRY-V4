@@ -5,450 +5,133 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MILOUD EZZAKY INDUSTRY V.6 — Secure Access Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<!-- ═══════════════════════════════════════════════════
-     SUPABASE — loaded ONCE here, used everywhere below
-     ════════════════════════════════════════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --navy:#07111f;
-  --navy-2:#0d1e35;
-  --navy-3:#152847;
-  --gold:#e8b84b;
-  --gold-lt:#f5d47a;
-  --gold-dk:#c49830;
-  --blue:#2563eb;
-  --blue-lt:#3b82f6;
-  --cyan:#06b6d4;
-  --green:#10b981;
-  --red:#ef4444;
-  --amber:#f59e0b;
-  --purple:#8b5cf6;
-  --white:#ffffff;
-  --glass:rgba(255,255,255,0.04);
-  --glass-border:rgba(255,255,255,0.09);
-  --text-primary:#f1f5f9;
-  --text-secondary:rgba(255,255,255,0.5);
-  --text-muted:rgba(255,255,255,0.25);
-  --input-bg:rgba(255,255,255,0.05);
-  --input-border:rgba(255,255,255,0.1);
-  --shadow-gold:0 0 60px rgba(232,184,75,0.12);
-  --shadow-card:0 32px 80px rgba(0,0,0,0.5);
+  --navy:#07111f;--gold:#e8b84b;--gold-lt:#f5d47a;--gold-dk:#c49830;
+  --blue:#2563eb;--blue-lt:#3b82f6;--cyan:#06b6d4;
+  --green:#10b981;--red:#ef4444;
+  --glass:rgba(255,255,255,0.04);--glass-b:rgba(255,255,255,0.09);
+  --t1:#f1f5f9;--t2:rgba(255,255,255,0.5);--t3:rgba(255,255,255,0.25);
+  --ib:rgba(255,255,255,0.05);--ibb:rgba(255,255,255,0.1);
 }
-
-html{min-height:100%;overflow-x:hidden;scroll-behavior:smooth;}
-body{
-  font-family:'Instrument Sans',sans-serif;
-  background:var(--navy);
-  color:var(--text-primary);
-  min-height:100vh;
-  overflow-x:hidden;
-  overflow-y:auto;
-  -webkit-font-smoothing:antialiased;
-  display:flex;
-  align-items:flex-start;
-  justify-content:center;
-  padding:32px 16px;
-}
-
-/* ── BACKGROUND ── */
-.bg-layer{position:fixed;inset:0;z-index:0;overflow:hidden}
-
-.bg-grid{
-  position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px);
-  background-size:60px 60px;
-  animation:gridPan 40s linear infinite;
-}
-@keyframes gridPan{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
-
-.bg-glow{
-  position:absolute;
-  border-radius:50%;
-  filter:blur(80px);
-  animation:glowPulse 6s ease-in-out infinite alternate;
-}
-.bg-glow-1{width:600px;height:600px;background:radial-gradient(circle,rgba(232,184,75,0.08),transparent 70%);top:-10%;left:-5%}
-.bg-glow-2{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,0.1),transparent 70%);bottom:-15%;right:0%;animation-delay:-3s}
-.bg-glow-3{width:300px;height:300px;background:radial-gradient(circle,rgba(6,182,212,0.06),transparent 70%);top:40%;right:20%;animation-delay:-1.5s}
-@keyframes glowPulse{0%{opacity:.6;transform:scale(1)}100%{opacity:1;transform:scale(1.1)}}
-
-/* Animated wire-like lines */
-.wire-line{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(232,184,75,0.3),transparent);animation:wireSweep 8s linear infinite;opacity:0}
-.wire-line:nth-child(1){width:40%;top:20%;animation-delay:0s}
-.wire-line:nth-child(2){width:60%;top:55%;animation-delay:-2.5s}
-.wire-line:nth-child(3){width:30%;top:80%;animation-delay:-5s}
-@keyframes wireSweep{0%{left:-40%;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:100%;opacity:0}}
-
-.noise{position:absolute;inset:0;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
-
-/* ── LAYOUT ── */
-.portal{
-  position:relative;z-index:1;
-  width:100%;max-width:480px;
-  padding:0;
-  display:flex;flex-direction:column;align-items:center;
-  gap:0;
-}
-
-/* ── BRAND HEADER ── */
-.brand{
-  display:flex;flex-direction:column;align-items:center;
-  margin-bottom:32px;
-  animation:fadeSlideDown 0.6s ease both;
-}
-@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
-
-.brand-mark{
-  width:68px;height:68px;
-  background:linear-gradient(135deg,var(--gold),var(--gold-dk));
-  border-radius:20px;
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:16px;
-  box-shadow:0 12px 40px rgba(232,184,75,0.3),0 0 0 1px rgba(232,184,75,0.2),inset 0 1px 0 rgba(255,255,255,0.3);
-  position:relative;overflow:hidden;
-}
-.brand-mark::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent);
-}
-.brand-mark svg{width:36px;height:36px;position:relative;z-index:1}
-
-.brand-name{
-  font-family:'Syne',sans-serif;
-  font-size:20px;font-weight:800;
-  color:var(--white);
-  letter-spacing:0.5px;
-  text-align:center;
-}
-.brand-tag{
-  font-size:10px;font-weight:500;
-  letter-spacing:3px;text-transform:uppercase;
-  color:var(--text-muted);
-  margin-top:5px;text-align:center;
-}
-.brand-divider{
-  width:40px;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  margin-top:12px;opacity:0.6;
-}
-
-/* ── CARD ── */
-.auth-card{
-  width:100%;
-  background:var(--glass);
-  border:1px solid var(--glass-border);
-  border-radius:24px;
-  backdrop-filter:blur(24px);
-  overflow:hidden;
-  box-shadow:var(--shadow-card),inset 0 1px 0 rgba(255,255,255,0.07);
-  animation:cardIn 0.7s cubic-bezier(0.16,1,0.3,1) both;
-  animation-delay:0.1s;
-}
-@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-
-/* Card top gradient bar */
-.card-stripe{height:3px;width:100%;background:linear-gradient(90deg,var(--gold-dk),var(--gold),var(--cyan),var(--blue));background-size:200% 100%;animation:stripeShift 4s linear infinite}
-@keyframes stripeShift{0%{background-position:0% 0}100%{background-position:200% 0}}
-
-/* ── TAB SWITCHER ── */
-.tab-nav{
-  display:flex;gap:0;
-  padding:16px 20px 0;
-  border-bottom:1px solid var(--glass-border);
-}
-.tab-btn{
-  flex:1;padding:10px 8px;
-  background:transparent;border:none;
-  font-family:'Syne',sans-serif;font-size:12px;font-weight:600;
-  letter-spacing:0.5px;text-transform:uppercase;
-  color:var(--text-muted);
-  cursor:pointer;
-  position:relative;
-  transition:color 0.2s;
-}
-.tab-btn::after{
-  content:'';
-  position:absolute;bottom:-1px;left:0;right:0;
-  height:2px;background:var(--gold);
-  transform:scaleX(0);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-}
-.tab-btn.active{color:var(--gold)}
-.tab-btn.active::after{transform:scaleX(1)}
-.tab-btn:hover:not(.active){color:var(--text-secondary)}
-
-/* ── PANELS ── */
-.panel{display:none;padding:24px 28px 28px;animation:panelIn 0.3s ease both}
-.panel.active{display:block}
-@keyframes panelIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
-
-.panel-title{
-  font-family:'Syne',sans-serif;font-size:17px;font-weight:700;
-  color:var(--white);margin-bottom:4px;
-}
-.panel-sub{font-size:12px;color:var(--text-secondary);margin-bottom:22px;line-height:1.5}
-
-/* ── FORM ELEMENTS ── */
-.field-group{display:flex;flex-direction:column;gap:13px;margin-bottom:20px}
-
-.field{position:relative}
-.field label{
-  display:block;
-  font-size:10px;font-weight:600;letter-spacing:1.2px;
-  text-transform:uppercase;color:var(--text-secondary);
-  margin-bottom:7px;
-}
-.field label .req{color:var(--gold);margin-left:2px}
-
-.fi{
-  width:100%;padding:12px 14px;
-  background:var(--input-bg);
-  border:1px solid var(--input-border);
-  border-radius:12px;
-  color:var(--white);
-  font-family:'Instrument Sans',sans-serif;
-  font-size:13px;
-  outline:none;
-  transition:all 0.2s;
-  -webkit-appearance:none;
-}
-.fi::placeholder{color:var(--text-muted);font-size:12px}
-.fi:focus{
-  border-color:rgba(232,184,75,0.5);
-  background:rgba(255,255,255,0.07);
-  box-shadow:0 0 0 3px rgba(232,184,75,0.08),0 4px 12px rgba(0,0,0,0.2);
-}
-.fi.error{border-color:rgba(239,68,68,0.5);box-shadow:0 0 0 3px rgba(239,68,68,0.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{min-height:100%;overflow-x:hidden}
+body{font-family:'Instrument Sans',sans-serif;background:var(--navy);color:var(--t1);min-height:100vh;overflow-y:auto;-webkit-font-smoothing:antialiased;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,0.05)1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.05)1px,transparent 1px);background-size:60px 60px;animation:gp 40s linear infinite}
+@keyframes gp{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
+.bg-g{position:absolute;border-radius:50%;filter:blur(80px);animation:gpls 6s ease-in-out infinite alternate}
+.bg-g1{width:600px;height:600px;background:radial-gradient(circle,rgba(232,184,75,0.08),transparent 70%);top:-10%;left:-5%}
+.bg-g2{width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,0.1),transparent 70%);bottom:-15%;right:0;animation-delay:-3s}
+@keyframes gpls{0%{opacity:.6;transform:scale(1)}100%{opacity:1;transform:scale(1.1)}}
+.wl{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(232,184,75,0.3),transparent);animation:ws 8s linear infinite;opacity:0}
+.wl:nth-child(3){width:40%;top:20%;animation-delay:0s}
+.wl:nth-child(4){width:60%;top:55%;animation-delay:-2.5s}
+.wl:nth-child(5){width:30%;top:80%;animation-delay:-5s}
+@keyframes ws{0%{left:-40%;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:100%;opacity:0}}
+.portal{position:relative;z-index:1;width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center}
+.brand{display:flex;flex-direction:column;align-items:center;margin-bottom:32px;animation:fd .6s ease both}
+@keyframes fd{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.bm{width:68px;height:68px;background:linear-gradient(135deg,var(--gold),var(--gold-dk));border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 12px 40px rgba(232,184,75,0.3),0 0 0 1px rgba(232,184,75,0.2);position:relative;overflow:hidden}
+.bm::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent)}
+.bm svg{width:36px;height:36px;position:relative;z-index:1}
+.bn{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;letter-spacing:.5px;text-align:center}
+.bt{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--t3);margin-top:5px;text-align:center}
+.bdiv{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-top:12px}
+.card{width:100%;background:var(--glass);border:1px solid var(--glass-b);border-radius:24px;backdrop-filter:blur(24px);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07);animation:ci .7s cubic-bezier(.16,1,.3,1) both;animation-delay:.1s}
+@keyframes ci{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.stripe{height:3px;background:linear-gradient(90deg,var(--gold-dk),var(--gold),var(--cyan),var(--blue));background-size:200% 100%;animation:ss 4s linear infinite}
+@keyframes ss{0%{background-position:0%}100%{background-position:200%}}
+.tabs{display:flex;padding:16px 20px 0;border-bottom:1px solid var(--glass-b)}
+.tb{flex:1;padding:10px 8px;background:transparent;border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--t3);cursor:pointer;position:relative;transition:color .2s}
+.tb::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.tb.on{color:var(--gold)}.tb.on::after{transform:scaleX(1)}
+.tb:hover:not(.on){color:var(--t2)}
+.panel{display:none;padding:24px 28px 28px;animation:pi .3s ease both}
+.panel.on{display:block}
+@keyframes pi{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+.pt{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:4px}
+.ps{font-size:12px;color:var(--t2);margin-bottom:22px;line-height:1.5}
+.fg{display:flex;flex-direction:column;gap:13px;margin-bottom:20px}
+.f{position:relative}
+.f label{display:block;font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--t2);margin-bottom:7px}
+.f label .r{color:var(--gold);margin-left:2px}
+.fi{width:100%;padding:12px 14px;background:var(--ib);border:1px solid var(--ibb);border-radius:12px;color:#fff;font-family:'Instrument Sans',sans-serif;font-size:13px;outline:none;transition:all .2s;-webkit-appearance:none}
+.fi::placeholder{color:var(--t3);font-size:12px}
+.fi:focus{border-color:rgba(232,184,75,.5);background:rgba(255,255,255,.07);box-shadow:0 0 0 3px rgba(232,184,75,.08)}
 .fi option{background:#0d1e35;color:#fff}
-
-/* Input with icon */
-.fi-wrap{position:relative}
-.fi-wrap .fi{padding-left:40px}
-.fi-icon{
-  position:absolute;left:13px;top:50%;transform:translateY(-50%);
-  color:var(--text-muted);pointer-events:none;
-  transition:color 0.2s;
-}
-.fi-wrap:focus-within .fi-icon{color:var(--gold)}
-.fi-icon svg{width:15px;height:15px}
-
-/* Password toggle */
-.pw-toggle{
-  position:absolute;right:12px;top:50%;transform:translateY(-50%);
-  background:none;border:none;cursor:pointer;
-  color:var(--text-muted);padding:4px;
-  transition:color 0.2s;
-}
-.pw-toggle:hover{color:var(--text-secondary)}
-.pw-toggle svg{width:14px;height:14px}
-
-/* Dept select grid */
-.dept-grid{
-  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;
-  margin-bottom:0;
-}
-.dept-option{
-  position:relative;
-}
-.dept-option input[type=radio]{position:absolute;opacity:0;width:0;height:0}
-.dept-label{
-  display:flex;flex-direction:column;align-items:flex-start;gap:4px;
-  padding:11px 13px;
-  background:var(--input-bg);
-  border:1px solid var(--input-border);
-  border-radius:11px;
-  cursor:pointer;
-  transition:all 0.2s;
-  position:relative;overflow:hidden;
-}
-.dept-label::before{
-  content:'';position:absolute;inset:0;
-  opacity:0;transition:opacity 0.2s;
-}
-.dept-label:hover{border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.07)}
-.dept-option input:checked + .dept-label{
-  border-color:var(--gold);
-  background:rgba(232,184,75,0.08);
-  box-shadow:0 0 0 1px rgba(232,184,75,0.2),inset 0 1px 0 rgba(232,184,75,0.1);
-}
-.dept-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.dept-row{display:flex;align-items:center;gap:7px}
-.dept-name{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--white)}
-.dept-role{font-size:10px;color:var(--text-muted);letter-spacing:0.3px}
-.dept-check{
-  position:absolute;top:9px;right:9px;
-  width:16px;height:16px;
-  background:var(--gold);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transition:opacity 0.2s;
-}
-.dept-option input:checked + .dept-label .dept-check{opacity:1}
-.dept-check svg{width:9px;height:9px;color:var(--navy)}
-
-/* ── SUBMIT BUTTON ── */
-.submit-btn{
-  width:100%;padding:14px;
-  border:none;border-radius:13px;
-  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
-  letter-spacing:1px;text-transform:uppercase;
-  cursor:pointer;
-  transition:all 0.25s;
-  position:relative;overflow:hidden;
-  color:var(--navy);
-}
-.submit-btn-signin{
-  background:linear-gradient(135deg,var(--gold),var(--gold-dk));
-  box-shadow:0 8px 24px rgba(232,184,75,0.25),inset 0 1px 0 rgba(255,255,255,0.25);
-}
-.submit-btn-signup{
-  background:linear-gradient(135deg,var(--blue-lt),var(--blue));
-  box-shadow:0 8px 24px rgba(37,99,235,0.25),inset 0 1px 0 rgba(255,255,255,0.1);
-  color:#fff;
-}
-.submit-btn-reset{
-  background:linear-gradient(135deg,var(--cyan),#0284c7);
-  box-shadow:0 8px 24px rgba(6,182,212,0.2),inset 0 1px 0 rgba(255,255,255,0.1);
-  color:#fff;
-}
-.submit-btn::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent);
-  opacity:0;transition:opacity 0.2s;
-}
-.submit-btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
-.submit-btn:hover::after{opacity:1}
-.submit-btn:active{transform:translateY(0)}
-.submit-btn.loading{pointer-events:none;opacity:0.7}
-
-/* ── SECONDARY LINKS ── */
-.alt-links{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-top:14px;
-}
-.alt-link{
-  font-size:12px;color:var(--text-secondary);
-  background:none;border:none;cursor:pointer;
-  text-decoration:none;transition:color 0.2s;
-  font-family:'Instrument Sans',sans-serif;
-}
-.alt-link:hover{color:var(--gold)}
-
-/* ── MESSAGES ── */
-.msg-bar{
-  display:flex;align-items:center;gap:9px;
-  padding:10px 14px;border-radius:10px;
-  font-size:12px;font-weight:500;
-  margin-bottom:16px;
-  animation:msgIn 0.3s ease;
-}
-@keyframes msgIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-.msg-error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#fca5a5}
-.msg-success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7}
-.msg-info{background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.25);color:#67e8f9}
-.msg-bar svg{width:14px;height:14px;flex-shrink:0}
-
-/* ── DIVIDER ── */
-.divider{
-  display:flex;align-items:center;gap:12px;
-  margin:16px 0;color:var(--text-muted);font-size:11px;
-}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--glass-border)}
-
-/* ── FORGOT PW section ── */
-.back-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  background:none;border:none;cursor:pointer;
-  color:var(--text-secondary);font-size:12px;
-  font-family:'Instrument Sans',sans-serif;
-  margin-bottom:16px;transition:color 0.2s;
-  padding:0;
-}
-.back-btn:hover{color:var(--gold)}
-.back-btn svg{width:13px;height:13px}
-
-/* ── STRENGTH METER ── */
-.strength-wrap{margin-top:7px}
-.strength-track{height:3px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
-.strength-fill{height:100%;border-radius:3px;transition:width 0.3s,background 0.3s;width:0%}
-.strength-label{font-size:10px;color:var(--text-muted);margin-top:4px;letter-spacing:0.3px}
-
-/* ── FOOTER ── */
-.portal-footer{
-  margin-top:18px;
-  font-size:10px;color:var(--text-muted);
-  letter-spacing:0.5px;text-align:center;
-  animation:fadeSlideDown 0.8s ease both;animation-delay:0.3s;
-}
-
-/* ── LOADING SPINNER ── */
-.spinner{
-  display:inline-block;width:14px;height:14px;
-  border:2px solid rgba(255,255,255,0.2);
-  border-top-color:currentColor;border-radius:50%;
-  animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── SUCCESS STATE ── */
-.success-state{
-  display:flex;flex-direction:column;align-items:center;
-  text-align:center;padding:16px 0 8px;
-  animation:panelIn 0.4s ease;
-}
-.success-ring{
-  width:72px;height:72px;
-  background:rgba(16,185,129,0.1);
-  border:2px solid rgba(16,185,129,0.3);
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:16px;
-  animation:successPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
-}
-@keyframes successPop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
-.success-ring svg{width:32px;height:32px;color:var(--green)}
-.success-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:6px}
-.success-text{font-size:12px;color:var(--text-secondary);line-height:1.6;max-width:280px}
-.success-dept{
-  display:inline-flex;align-items:center;gap:8px;
-  margin-top:14px;padding:8px 16px;
-  background:rgba(232,184,75,0.1);border:1px solid rgba(232,184,75,0.25);
-  border-radius:20px;font-size:12px;font-weight:600;color:var(--gold);
-}
-
-/* ── RESPONSIVE ── */
-@media(max-width:500px){
-  body{padding:16px 10px;}
-  .panel{padding:20px 20px 24px}
-  .dept-grid{grid-template-columns:1fr 1fr}
-  .brand-name{font-size:17px}
-}
-@media(max-height:700px){
-  .brand{margin-bottom:20px}
-  .brand-mark{width:52px;height:52px}
-}
+.fw{position:relative}.fw .fi{padding-left:40px}
+.fi-ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none;transition:color .2s}
+.fw:focus-within .fi-ic{color:var(--gold)}
+.fi-ic svg{width:15px;height:15px}
+.ptg{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--t3);padding:4px;transition:color .2s}
+.ptg:hover{color:var(--t2)}
+.ptg svg{width:14px;height:14px}
+.dg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.do{position:relative}
+.do input[type=radio]{position:absolute;opacity:0;width:0;height:0}
+.dl{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:11px 13px;background:var(--ib);border:1px solid var(--ibb);border-radius:11px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.dl:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.07)}
+.do input:checked + .dl{border-color:var(--gold);background:rgba(232,184,75,.08);box-shadow:0 0 0 1px rgba(232,184,75,.2)}
+.dd{width:8px;height:8px;border-radius:50%}
+.dr{display:flex;align-items:center;gap:7px}
+.dn{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#fff}
+.drl{font-size:10px;color:var(--t3)}
+.dc{position:absolute;top:9px;right:9px;width:16px;height:16px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.do input:checked + .dl .dc{opacity:1}
+.dc svg{width:9px;height:9px;color:var(--navy)}
+.sbtn{width:100%;padding:14px;border:none;border-radius:13px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .25s}
+.sbtn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}
+.sbtn:disabled{opacity:.6;cursor:not-allowed;transform:none !important}
+.sbtn-g{background:linear-gradient(135deg,var(--gold),var(--gold-dk));color:var(--navy);box-shadow:0 8px 24px rgba(232,184,75,.25)}
+.sbtn-b{background:linear-gradient(135deg,var(--blue-lt),var(--blue));color:#fff;box-shadow:0 8px 24px rgba(37,99,235,.25)}
+.sbtn-c{background:linear-gradient(135deg,var(--cyan),#0284c7);color:#fff;box-shadow:0 8px 24px rgba(6,182,212,.2)}
+.al{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.alink{font-size:12px;color:var(--t2);background:none;border:none;cursor:pointer;transition:color .2s;font-family:'Instrument Sans',sans-serif}
+.alink:hover{color:var(--gold)}
+.mb{display:flex;align-items:flex-start;gap:9px;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:500;margin-bottom:16px;animation:mi .3s ease;line-height:1.5}
+@keyframes mi{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.me{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#fca5a5}
+.ms{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:#6ee7b7}
+.mb svg{width:14px;height:14px;flex-shrink:0;margin-top:1px}
+.bb{display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:var(--t2);font-size:12px;font-family:'Instrument Sans',sans-serif;margin-bottom:16px;transition:color .2s}
+.bb:hover{color:var(--gold)}
+.bb svg{width:13px;height:13px}
+.sw{margin-top:7px}
+.st{height:3px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.sf{height:100%;border-radius:3px;transition:width .3s,background .3s;width:0%}
+.sl{font-size:10px;color:var(--t3);margin-top:4px}
+.foot{margin-top:18px;font-size:10px;color:var(--t3);letter-spacing:.5px;text-align:center}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);border-top-color:currentColor;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ss-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding:16px 0 8px}
+.ss-ring{width:72px;height:72px;background:rgba(16,185,129,.1);border:2px solid rgba(16,185,129,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:16px;animation:ssp .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes ssp{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.ss-ring svg{width:32px;height:32px;color:var(--green)}
+.ss-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:6px}
+.ss-text{font-size:12px;color:var(--t2);line-height:1.6;max-width:280px}
+.ss-dept{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 16px;background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.25);border-radius:20px;font-size:12px;font-weight:600;color:var(--gold)}
+@media(max-width:500px){body{padding:16px 10px}.panel{padding:20px 20px 24px}}
 </style>
 </head>
 <body>
 
-<div class="bg-layer">
+<div class="bg">
   <div class="bg-grid"></div>
-  <div class="bg-glow bg-glow-1"></div>
-  <div class="bg-glow bg-glow-2"></div>
-  <div class="bg-glow bg-glow-3"></div>
-  <div class="wire-line"></div>
-  <div class="wire-line"></div>
-  <div class="wire-line"></div>
-  <div class="noise"></div>
+  <div class="bg-g bg-g1"></div>
+  <div class="bg-g bg-g2"></div>
+  <div class="wl"></div>
+  <div class="wl"></div>
+  <div class="wl"></div>
 </div>
 
 <div class="portal">
 
   <!-- Brand -->
   <div class="brand">
-    <div class="brand-mark">
+    <div class="bm">
       <svg viewBox="0 0 36 36" fill="none">
         <rect x="5" y="16" width="26" height="4" rx="2" fill="#07111f"/>
         <circle cx="11" cy="18" r="5" fill="#07111f"/>
@@ -457,639 +140,487 @@ body{
         <path d="M7 25l11 4 11-4" stroke="#07111f" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
     </div>
-    <div class="brand-name">MILOUD EZZAKY</div>
-    <div class="brand-tag">Industry V.6 · Wire Harness Manufacturing</div>
-    <div class="brand-divider"></div>
+    <div class="bn">MILOUD EZZAKY</div>
+    <div class="bt">Industry V.6 · Wire Harness Manufacturing</div>
+    <div class="bdiv"></div>
   </div>
 
   <!-- Card -->
-  <div class="auth-card" id="main-card">
-    <div class="card-stripe"></div>
+  <div class="card">
+    <div class="stripe"></div>
 
     <!-- Tabs -->
-    <div class="tab-nav" id="tab-nav">
-      <button class="tab-btn active" onclick="switchTab('signin')">Sign In</button>
-      <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
+    <div class="tabs" id="tabs">
+      <button class="tb on" id="t-si" onclick="showTab('si')">Sign In</button>
+      <button class="tb"    id="t-up" onclick="showTab('up')">Create Account</button>
     </div>
 
-    <!-- ── SIGN IN PANEL ── -->
-    <div class="panel active" id="panel-signin">
-      <div id="signin-msg"></div>
-      <div class="panel-title">Welcome back</div>
-      <div class="panel-sub">Sign in with your employee credentials to access your department</div>
+    <!-- SIGN IN PANEL -->
+    <div class="panel on" id="p-si">
+      <div id="si-msg"></div>
+      <div class="pt">Welcome back</div>
+      <div class="ps">Sign in with your employee credentials</div>
 
-      <!-- Department Select -->
-      <div class="field" style="margin-bottom:16px">
-        <label>Department <span class="req">*</span></label>
-        <div class="dept-grid">
-          <div class="dept-option">
-            <input type="radio" name="signin-dept" id="sd-assembly" value="assembly" checked>
-            <label class="dept-label" for="sd-assembly">
-              <div class="dept-row"><div class="dept-dot" style="background:#16a06a"></div><div class="dept-name">Assembly</div></div>
-              <div class="dept-role">Request Only</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
-          <div class="dept-option">
-            <input type="radio" name="signin-dept" id="sd-pagoda" value="pagoda">
-            <label class="dept-label" for="sd-pagoda">
-              <div class="dept-row"><div class="dept-dot" style="background:#2563eb"></div><div class="dept-name">Pagoda Hub</div></div>
-              <div class="dept-role">Central Control</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
-          <div class="dept-option">
-            <input type="radio" name="signin-dept" id="sd-cutting" value="cutting">
-            <label class="dept-label" for="sd-cutting">
-              <div class="dept-row"><div class="dept-dot" style="background:#10b981"></div><div class="dept-name">Cutting</div></div>
-              <div class="dept-role">Processing</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
-          <div class="dept-option">
-            <input type="radio" name="signin-dept" id="sd-wpa" value="wpa">
-            <label class="dept-label" for="sd-wpa">
-              <div class="dept-row"><div class="dept-dot" style="background:#06b6d4"></div><div class="dept-name">Wire Prep</div></div>
-              <div class="dept-role">Request & Fulfill</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
-          <div class="dept-option">
-            <input type="radio" name="signin-dept" id="sd-twist" value="twist">
-            <label class="dept-label" for="sd-twist">
-              <div class="dept-row"><div class="dept-dot" style="background:#8b5cf6"></div><div class="dept-name">Twist Dept</div></div>
-              <div class="dept-role">Request & Fulfill</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
+      <div class="f" style="margin-bottom:16px">
+        <label>Department <span class="r">*</span></label>
+        <div class="dg">
+          <div class="do"><input type="radio" name="si-d" id="si-d-a" value="assembly" checked><label class="dl" for="si-d-a"><div class="dr"><div class="dd" style="background:#16a06a"></div><div class="dn">Assembly</div></div><div class="drl">Request Only</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
+          <div class="do"><input type="radio" name="si-d" id="si-d-p" value="pagoda"><label class="dl" for="si-d-p"><div class="dr"><div class="dd" style="background:#2563eb"></div><div class="dn">Pagoda Hub</div></div><div class="drl">Central Control</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
+          <div class="do"><input type="radio" name="si-d" id="si-d-c" value="cutting"><label class="dl" for="si-d-c"><div class="dr"><div class="dd" style="background:#10b981"></div><div class="dn">Cutting</div></div><div class="drl">Processing</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
+          <div class="do"><input type="radio" name="si-d" id="si-d-w" value="wpa"><label class="dl" for="si-d-w"><div class="dr"><div class="dd" style="background:#06b6d4"></div><div class="dn">Wire Prep</div></div><div class="drl">Request &amp; Fulfill</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
+          <div class="do"><input type="radio" name="si-d" id="si-d-t" value="twist"><label class="dl" for="si-d-t"><div class="dr"><div class="dd" style="background:#8b5cf6"></div><div class="dn">Twist Dept</div></div><div class="drl">Request &amp; Fulfill</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
         </div>
       </div>
 
-      <div class="field-group">
-        <div class="field">
-          <label>Employee ID <span class="req">*</span></label>
-          <div class="fi-wrap">
-            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg></span>
-            <input type="text" class="fi" id="signin-empid" placeholder="ME-001" autocomplete="username">
-          </div>
+      <div class="fg">
+        <div class="f">
+          <label>Employee ID <span class="r">*</span></label>
+          <div class="fw"><span class="fi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg></span><input type="text" class="fi" id="si-id" placeholder="ME-001" autocomplete="username"></div>
         </div>
-        <div class="field">
-          <label>Password <span class="req">*</span></label>
-          <div class="fi-wrap">
-            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-            <input type="password" class="fi" id="signin-pw" placeholder="••••••••" autocomplete="current-password">
-            <button class="pw-toggle" type="button" onclick="togglePw('signin-pw',this)" tabindex="-1">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
+        <div class="f">
+          <label>Password <span class="r">*</span></label>
+          <div class="fw"><span class="fi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input type="password" class="fi" id="si-pw" placeholder="••••••••" autocomplete="current-password"><button class="ptg" type="button" onclick="togPw('si-pw',this)" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
         </div>
       </div>
 
-      <button class="submit-btn submit-btn-signin" id="signin-btn" onclick="doSignIn()">Sign In to Dashboard</button>
-
-      <div class="alt-links">
-        <button class="alt-link" onclick="switchTab('signup')">Don't have an account?</button>
-        <button class="alt-link" onclick="showForgot()">Forgot password?</button>
+      <button class="sbtn sbtn-g" id="si-btn" onclick="doSignIn()">Sign In to Dashboard</button>
+      <div class="al">
+        <button class="alink" onclick="showTab('up')">Don't have an account?</button>
+        <button class="alink" onclick="showForgot(true)">Forgot password?</button>
       </div>
     </div>
 
-    <!-- ── SIGN UP PANEL ── -->
-    <div class="panel" id="panel-signup">
-      <div id="signup-msg"></div>
-      <div class="panel-title">Create Account</div>
-      <div class="panel-sub">Register with your department to access the wire management system</div>
+    <!-- SIGN UP PANEL -->
+    <div class="panel" id="p-up">
+      <div id="up-msg"></div>
+      <div class="pt">Create Account</div>
+      <div class="ps">Register to access the wire management system</div>
 
-      <div class="field" style="margin-bottom:16px">
-        <label>Department <span class="req">*</span></label>
-        <div class="dept-grid">
-          <div class="dept-option">
-            <input type="radio" name="signup-dept" id="up-assembly" value="assembly" checked>
-            <label class="dept-label" for="up-assembly">
-              <div class="dept-row"><div class="dept-dot" style="background:#16a06a"></div><div class="dept-name">Assembly</div></div>
-              <div class="dept-role">Request Only</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
-          <div class="dept-option">
-            <input type="radio" name="signup-dept" id="up-pagoda" value="pagoda">
-            <label class="dept-label" for="up-pagoda">
-              <div class="dept-row"><div class="dept-dot" style="background:#2563eb"></div><div class="dept-name">Pagoda Hub</div></div>
-              <div class="dept-role">Central Control</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
-          <div class="dept-option">
-            <input type="radio" name="signup-dept" id="up-cutting" value="cutting">
-            <label class="dept-label" for="up-cutting">
-              <div class="dept-row"><div class="dept-dot" style="background:#10b981"></div><div class="dept-name">Cutting</div></div>
-              <div class="dept-role">Processing</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
-          <div class="dept-option">
-            <input type="radio" name="signup-dept" id="up-wpa" value="wpa">
-            <label class="dept-label" for="up-wpa">
-              <div class="dept-row"><div class="dept-dot" style="background:#06b6d4"></div><div class="dept-name">Wire Prep</div></div>
-              <div class="dept-role">Request & Fulfill</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
-          <div class="dept-option">
-            <input type="radio" name="signup-dept" id="up-twist" value="twist">
-            <label class="dept-label" for="up-twist">
-              <div class="dept-row"><div class="dept-dot" style="background:#8b5cf6"></div><div class="dept-name">Twist Dept</div></div>
-              <div class="dept-role">Request & Fulfill</div>
-              <div class="dept-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-            </label>
-          </div>
+      <div class="f" style="margin-bottom:16px">
+        <label>Department <span class="r">*</span></label>
+        <div class="dg">
+          <div class="do"><input type="radio" name="up-d" id="up-d-a" value="assembly" checked><label class="dl" for="up-d-a"><div class="dr"><div class="dd" style="background:#16a06a"></div><div class="dn">Assembly</div></div><div class="drl">Request Only</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
+          <div class="do"><input type="radio" name="up-d" id="up-d-p" value="pagoda"><label class="dl" for="up-d-p"><div class="dr"><div class="dd" style="background:#2563eb"></div><div class="dn">Pagoda Hub</div></div><div class="drl">Central Control</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
+          <div class="do"><input type="radio" name="up-d" id="up-d-c" value="cutting"><label class="dl" for="up-d-c"><div class="dr"><div class="dd" style="background:#10b981"></div><div class="dn">Cutting</div></div><div class="drl">Processing</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
+          <div class="do"><input type="radio" name="up-d" id="up-d-w" value="wpa"><label class="dl" for="up-d-w"><div class="dr"><div class="dd" style="background:#06b6d4"></div><div class="dn">Wire Prep</div></div><div class="drl">Request &amp; Fulfill</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
+          <div class="do"><input type="radio" name="up-d" id="up-d-t" value="twist"><label class="dl" for="up-d-t"><div class="dr"><div class="dd" style="background:#8b5cf6"></div><div class="dn">Twist Dept</div></div><div class="drl">Request &amp; Fulfill</div><div class="dc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></label></div>
         </div>
       </div>
 
-      <div class="field-group">
-        <div class="field">
-          <label>Full Name <span class="req">*</span></label>
-          <div class="fi-wrap">
-            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-            <input type="text" class="fi" id="signup-name" placeholder="Miloud Ezzaky" autocomplete="name">
-          </div>
+      <div class="fg">
+        <div class="f">
+          <label>Full Name <span class="r">*</span></label>
+          <div class="fw"><span class="fi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><input type="text" class="fi" id="up-name" placeholder="Your Full Name" autocomplete="name"></div>
         </div>
-        <div class="field">
-          <label>Employee ID <span class="req">*</span></label>
-          <div class="fi-wrap">
-            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg></span>
-            <input type="text" class="fi" id="signup-empid" placeholder="ME-001" autocomplete="username">
-          </div>
+        <div class="f">
+          <label>Employee ID <span class="r">*</span></label>
+          <div class="fw"><span class="fi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg></span><input type="text" class="fi" id="up-id" placeholder="ME-001" autocomplete="username"></div>
         </div>
-        <div class="field">
-          <label>Work Email</label>
-          <div class="fi-wrap">
-            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-            <input type="email" class="fi" id="signup-email" placeholder="m.ezzaky@company.ma" autocomplete="email">
-          </div>
+        <div class="f">
+          <label>Password <span class="r">*</span></label>
+          <div class="fw"><span class="fi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input type="password" class="fi" id="up-pw" placeholder="Min. 8 characters" autocomplete="new-password" oninput="chkStr(this.value)"><button class="ptg" type="button" onclick="togPw('up-pw',this)" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+          <div class="sw"><div class="st"><div class="sf" id="sfill"></div></div><div class="sl" id="slbl">Enter a password</div></div>
         </div>
-        <div class="field">
-          <label>Password <span class="req">*</span></label>
-          <div class="fi-wrap">
-            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-            <input type="password" class="fi" id="signup-pw" placeholder="Min. 8 characters" autocomplete="new-password" oninput="checkStrength(this.value)">
-            <button class="pw-toggle" type="button" onclick="togglePw('signup-pw',this)" tabindex="-1">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-          <div class="strength-wrap">
-            <div class="strength-track"><div class="strength-fill" id="strength-bar"></div></div>
-            <div class="strength-label" id="strength-label">Enter a password</div>
-          </div>
-        </div>
-        <div class="field">
-          <label>Confirm Password <span class="req">*</span></label>
-          <div class="fi-wrap">
-            <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><polyline points="20 6 9 17 4 12" style="stroke:#10b981" stroke-width="2.5"/></svg></span>
-            <input type="password" class="fi" id="signup-pw2" placeholder="Repeat password" autocomplete="new-password">
-          </div>
+        <div class="f">
+          <label>Confirm Password <span class="r">*</span></label>
+          <div class="fw"><span class="fi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><input type="password" class="fi" id="up-pw2" placeholder="Repeat password" autocomplete="new-password"></div>
         </div>
       </div>
 
-      <button class="submit-btn submit-btn-signup" id="signup-btn" onclick="doSignUp()">Create Account</button>
-      <div class="alt-links">
-        <button class="alt-link" onclick="switchTab('signin')">← Back to Sign In</button>
-      </div>
+      <button class="sbtn sbtn-b" id="up-btn" onclick="doSignUp()">Create Account</button>
+      <div class="al"><button class="alink" onclick="showTab('si')">← Back to Sign In</button></div>
     </div>
 
-    <!-- ── FORGOT PASSWORD PANEL ── -->
-    <div class="panel" id="panel-forgot">
-      <button class="back-btn" onclick="showForgot(false)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back to Sign In
-      </button>
-      <div id="forgot-msg"></div>
-      <div class="panel-title">Reset Password</div>
-      <div class="panel-sub">Enter your Employee ID and registered email — we'll send you a secure reset link</div>
-
-      <div id="forgot-form">
-        <div class="field-group">
-          <div class="field">
-            <label>Employee ID <span class="req">*</span></label>
-            <div class="fi-wrap">
-              <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg></span>
-              <input type="text" class="fi" id="forgot-empid" placeholder="ME-001">
-            </div>
-          </div>
-          <div class="field">
-            <label>Work Email <span class="req">*</span></label>
-            <div class="fi-wrap">
-              <span class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-              <input type="email" class="fi" id="forgot-email" placeholder="m.ezzaky@company.ma">
-            </div>
+    <!-- FORGOT PASSWORD PANEL -->
+    <div class="panel" id="p-fg">
+      <button class="bb" onclick="showForgot(false)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>Back to Sign In</button>
+      <div id="fg-msg"></div>
+      <div class="pt">Reset Password</div>
+      <div class="ps">Enter your work email to receive a reset link</div>
+      <div id="fg-form">
+        <div class="fg">
+          <div class="f">
+            <label>Work Email <span class="r">*</span></label>
+            <div class="fw"><span class="fi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span><input type="email" class="fi" id="fg-email" placeholder="your@email.com"></div>
           </div>
         </div>
-        <button class="submit-btn submit-btn-reset" id="forgot-btn" onclick="doForgot()">Send Reset Link</button>
+        <button class="sbtn sbtn-c" id="fg-btn" onclick="doForgot()">Send Reset Link</button>
       </div>
-
-      <div id="forgot-success" style="display:none">
-        <div class="success-state">
-          <div class="success-ring">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </div>
-          <div class="success-title">Reset Email Sent!</div>
-          <div class="success-text">Check your work email inbox for the password reset link. It expires in 30 minutes.</div>
-          <button class="alt-link" onclick="showForgot(false)" style="margin-top:16px;color:var(--gold)">← Return to Sign In</button>
+      <div id="fg-ok" style="display:none">
+        <div class="ss-wrap">
+          <div class="ss-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <div class="ss-title">Reset Email Sent!</div>
+          <div class="ss-text">Check your inbox. Link expires in 30 minutes.</div>
+          <button class="alink" onclick="showForgot(false)" style="margin-top:16px;color:var(--gold)">← Return to Sign In</button>
         </div>
       </div>
     </div>
 
-    <!-- ── LOGIN SUCCESS PANEL ── -->
-    <div class="panel" id="panel-success">
-      <div class="success-state">
-        <div class="success-ring">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div class="success-title">Access Granted</div>
-        <div class="success-text">Identity verified. Redirecting you to your department dashboard…</div>
-        <div class="success-dept" id="success-dept-tag">
-          <div class="dept-dot" id="success-dot" style="background:#16a06a;flex-shrink:0"></div>
-          <span id="success-dept-name">Assembly</span>
-        </div>
-        <div style="margin-top:20px;display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:11px">
-          <span class="spinner" style="border-top-color:var(--gold)"></span>Loading dashboard…
-        </div>
+    <!-- SUCCESS PANEL -->
+    <div class="panel" id="p-ok">
+      <div class="ss-wrap">
+        <div class="ss-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="ss-title">Access Granted</div>
+        <div class="ss-text">Identity verified. Redirecting to your dashboard…</div>
+        <div class="ss-dept"><div class="dd" id="ok-dot" style="background:#16a06a"></div><span id="ok-dept">Assembly</span></div>
+        <div style="margin-top:20px;display:flex;align-items:center;gap:8px;color:var(--t3);font-size:11px"><span class="spin" style="border-top-color:var(--gold)"></span>Loading…</div>
       </div>
     </div>
 
-  </div><!-- /auth-card -->
+  </div><!-- /card -->
 
-  <div class="portal-footer">© 2026 MILOUD EZZAKY INDUSTRY V.6 — All access is monitored and logged</div>
+  <div class="foot">© 2026 MILOUD EZZAKY INDUSTRY V.6 — All access is monitored</div>
 
 </div><!-- /portal -->
 
 <script>
 'use strict';
 
-// ════════════════════════════════════════════════════════════════
-// SUPABASE — initialised ONCE here, used by every function below
-// ════════════════════════════════════════════════════════════════
-const SUPABASE_URL  = 'https://efwxxpglyhczwrlfaqoz.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmd3h4cGdseWhjendybGZhcW96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMDk5OTAsImV4cCI6MjA4Nzg4NTk5MH0.lWCW8oeIwOpLTDAGwh2ha6duG6LW9x-Ps7-NeAy2AtE';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-// ════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
+   SUPABASE INIT
+═══════════════════════════════════════════ */
+var SB_URL = 'https://efwxxpglyhczwrlfaqoz.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmd3h4cGdseWhjendybGZhcW96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMDk5OTAsImV4cCI6MjA4Nzg4NTk5MH0.lWCW8oeIwOpLTDAGwh2ha6duG6LW9x-Ps7-NeAy2AtE';
 
-// ── DEPARTMENT METADATA ────────────────────────────────────────
-const DEPT_META = {
-  assembly: { name:'Assembly',     color:'#16a06a', role:'Request Only'        },
-  pagoda:   { name:'Pagoda Hub',   color:'#2563eb', role:'Central Control'     },
-  cutting:  { name:'Cutting Area', color:'#10b981', role:'Processing'          },
-  wpa:      { name:'Wire Prep',    color:'#06b6d4', role:'Request & Fulfill'   },
-  twist:    { name:'Twist Dept',   color:'#8b5cf6', role:'Request & Fulfill'   },
+var sb;
+try {
+  sb = window.supabase.createClient(SB_URL, SB_KEY);
+} catch(initErr) {
+  document.body.innerHTML = '<div style="color:#fca5a5;padding:40px;font-size:14px;font-family:monospace">Supabase failed to load: ' + initErr.message + '<br>Make sure you are online.</div>';
+  throw initErr;
+}
+
+var DEPTS = {
+  assembly: { name:'Assembly',   color:'#16a06a' },
+  pagoda:   { name:'Pagoda Hub', color:'#2563eb' },
+  cutting:  { name:'Cutting',    color:'#10b981' },
+  wpa:      { name:'Wire Prep',  color:'#06b6d4' },
+  twist:    { name:'Twist Dept', color:'#8b5cf6' }
 };
 
-// Redirect map — change these paths to match your actual page filenames
-const DEPT_REDIRECTS = {
-  assembly: 'dashboard.html',   // or index.html?dept=assembly
-  pagoda:   'dashboard.html',
-  cutting:  'dashboard.html',
-  wpa:      'dashboard.html',
-  twist:    'dashboard.html',
-};
-
-// ── ON PAGE LOAD — if already logged in, redirect directly ─────
-(async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('department, full_name')
-      .eq('id', session.user.id)
-      .single();
-    if (profile) redirectToDashboard(profile.department, profile.full_name, false);
-  }
+/* ═══════════════════════════════════════════
+   AUTO-LOGIN IF SESSION EXISTS
+═══════════════════════════════════════════ */
+(async function checkSession() {
+  try {
+    var r = await sb.auth.getSession();
+    var session = r.data && r.data.session;
+    if (!session) return;
+    var pr = await sb.from('profiles').select('department,full_name').eq('id', session.user.id).maybeSingle();
+    if (pr.data && pr.data.department) {
+      goDash(pr.data.department, pr.data.full_name, false);
+    }
+  } catch(e) { /* stay on page */ }
 })();
 
-// ── TAB SWITCHING ──────────────────────────────────────────────
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
-  document.getElementById(`panel-${tab}`).classList.add('active');
-  clearMessages();
+/* ═══════════════════════════════════════════
+   TAB / PANEL NAVIGATION
+═══════════════════════════════════════════ */
+function showTab(which) {
+  // Hide all panels
+  ['si','up'].forEach(function(id) {
+    document.getElementById('p-' + id).classList.remove('on');
+    document.getElementById('t-' + id).classList.remove('on');
+  });
+  document.getElementById('p-fg').classList.remove('on');
+  document.getElementById('p-ok').classList.remove('on');
+  // Show chosen
+  document.getElementById('p-' + which).classList.add('on');
+  document.getElementById('t-' + which).classList.add('on');
+  document.getElementById('tabs').style.opacity = '1';
+  document.getElementById('tabs').style.display = '';
+  // Clear messages
+  ['si-msg','up-msg','fg-msg'].forEach(function(id){ clearMsg(id); });
 }
 
-function showForgot(show = true) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+function showForgot(show) {
   if (show) {
-    document.getElementById('panel-forgot').classList.add('active');
-    document.getElementById('forgot-form').style.display = '';
-    document.getElementById('forgot-success').style.display = 'none';
-    document.getElementById('tab-nav').style.opacity = '0.4';
+    ['si','up'].forEach(function(id){ document.getElementById('p-' + id).classList.remove('on'); });
+    document.getElementById('p-fg').classList.add('on');
+    document.getElementById('tabs').style.opacity = '0.35';
+    document.getElementById('fg-form').style.display = '';
+    document.getElementById('fg-ok').style.display = 'none';
+    clearMsg('fg-msg');
   } else {
-    document.getElementById('tab-nav').style.opacity = '1';
-    switchTab('signin');
+    document.getElementById('p-fg').classList.remove('on');
+    showTab('si');
   }
 }
 
-function clearMessages() {
-  ['signin-msg','signup-msg','forgot-msg'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = '';
-  });
+/* ═══════════════════════════════════════════
+   MESSAGE HELPERS
+═══════════════════════════════════════════ */
+function clearMsg(id) {
+  var el = document.getElementById(id);
+  if (el) el.innerHTML = '';
 }
 
-function showMsg(id, text, type = 'error') {
-  const icons = {
-    error:   '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
-    success: '<polyline points="20 6 9 17 4 12"/>',
-    info:    '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
-  };
-  document.getElementById(id).innerHTML = `
-    <div class="msg-bar msg-${type}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[type]}</svg>
-      ${text}
-    </div>`;
+function showMsg(id, html, type) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var t = type || 'error';
+  var icon = (t === 'success')
+    ? '<polyline points="20 6 9 17 4 12"/>'
+    : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>';
+  el.innerHTML = '<div class="mb m' + t[0] + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + icon + '</svg><span>' + html + '</span></div>';
 }
 
-function setLoading(btnId, loading, label) {
-  const btn = document.getElementById(btnId);
+function setBusy(id, busy, label) {
+  var btn = document.getElementById(id);
   if (!btn) return;
-  btn.innerHTML = loading ? `<span class="spinner"></span>${label}` : label;
-  btn.classList.toggle('loading', loading);
+  btn.disabled = busy;
+  btn.innerHTML = busy ? '<span class="spin"></span>' + label : label;
 }
 
-// ── PASSWORD TOGGLE ────────────────────────────────────────────
-function togglePw(inputId, btn) {
-  const input = document.getElementById(inputId);
-  const isHidden = input.type === 'password';
-  input.type = isHidden ? 'text' : 'password';
-  btn.innerHTML = isHidden
-    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+function togPw(inputId, btn) {
+  var inp = document.getElementById(inputId);
+  var nowText = inp.type === 'password';
+  inp.type = nowText ? 'text' : 'password';
+  btn.innerHTML = nowText
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 }
 
-// ── PASSWORD STRENGTH ──────────────────────────────────────────
-function checkStrength(pw) {
-  const bar = document.getElementById('strength-bar');
-  const lbl = document.getElementById('strength-label');
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw)) score++;
-  const levels = [
-    { w:'0%',   c:'transparent', t:'Enter a password' },
-    { w:'25%',  c:'#ef4444',     t:'Weak'             },
-    { w:'50%',  c:'#f59e0b',     t:'Fair'             },
-    { w:'75%',  c:'#06b6d4',     t:'Good'             },
-    { w:'100%', c:'#10b981',     t:'Strong ✓'         },
-  ];
-  const l = levels[score];
-  bar.style.width = l.w; bar.style.background = l.c;
-  lbl.textContent = l.t; lbl.style.color = l.c;
+function chkStr(pw) {
+  var bar = document.getElementById('sfill');
+  var lbl = document.getElementById('slbl');
+  if (!bar) return;
+  var s = 0;
+  if (pw.length >= 8) s++;
+  if (/[A-Z]/.test(pw)) s++;
+  if (/[0-9]/.test(pw)) s++;
+  if (/[^A-Za-z0-9]/.test(pw)) s++;
+  var lvl = [
+    {w:'0%',  c:'transparent', t:'Enter a password'},
+    {w:'25%', c:'#ef4444',     t:'Weak'},
+    {w:'50%', c:'#f59e0b',     t:'Fair'},
+    {w:'75%', c:'#06b6d4',     t:'Good'},
+    {w:'100%',c:'#10b981',     t:'Strong ✓'}
+  ][s];
+  bar.style.width = lvl.w;
+  bar.style.background = lvl.c;
+  lbl.textContent = lvl.t;
+  lbl.style.color = lvl.c;
 }
 
-// ════════════════════════════════════════════════════════════════
-// SIGN IN  ── real Supabase auth
-// ════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
+   SIGN IN
+═══════════════════════════════════════════ */
 async function doSignIn() {
-  const empId = document.getElementById('signin-empid').value.trim().toUpperCase();
-  const pw    = document.getElementById('signin-pw').value;
-  const dept  = document.querySelector('input[name="signin-dept"]:checked')?.value;
+  clearMsg('si-msg');
 
-  if (!empId || !pw) { showMsg('signin-msg', 'Please fill in all required fields.'); return; }
-  if (!dept)         { showMsg('signin-msg', 'Please select your department.');       return; }
+  var empId = (document.getElementById('si-id').value  || '').trim().toUpperCase();
+  var pw    =  document.getElementById('si-pw').value  || '';
+  var dEl   =  document.querySelector('input[name="si-d"]:checked');
+  var dept  =  dEl ? dEl.value : '';
 
-  setLoading('signin-btn', true, 'Verifying Identity…');
+  if (!empId) { showMsg('si-msg', 'Please enter your Employee ID.');  return; }
+  if (!pw)    { showMsg('si-msg', 'Please enter your password.');     return; }
+  if (!dept)  { showMsg('si-msg', 'Please select your department.'); return; }
 
-  // Supabase requires an email — we derive it from Employee ID
-  // Format: me-001@meiw.internal  (lowercase, internal domain)
-  const email = `${empId.toLowerCase()}@meiw.internal`;
+  setBusy('si-btn', true, 'Verifying…');
 
-  // 1. Sign in with Supabase Auth
-  const { data: authData, error: authError } =
-    await supabase.auth.signInWithPassword({ email, password: pw });
+  try {
+    /* 1 — auth */
+    var email = empId.toLowerCase() + '@meiw.internal';
+    var ar = await sb.auth.signInWithPassword({ email: email, password: pw });
 
-  if (authError) {
-    setLoading('signin-btn', false, 'Sign In to Dashboard');
-    // Map Supabase error messages to friendly text
-    const msg = authError.message.includes('Invalid login')
-      ? 'Invalid Employee ID or password. Please try again.'
-      : authError.message;
-    showMsg('signin-msg', msg);
-    document.getElementById('signin-empid').classList.add('error');
-    document.getElementById('signin-pw').classList.add('error');
-    return;
-  }
-
-  // 2. Fetch this user's profile (department lives here)
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('department, full_name, employee_id, is_active')
-    .eq('id', authData.user.id)
-    .single();
-
-  if (profileError || !profile) {
-    await supabase.auth.signOut();
-    setLoading('signin-btn', false, 'Sign In to Dashboard');
-    showMsg('signin-msg', 'Account profile not found. Contact your administrator.');
-    return;
-  }
-
-  // 3. Check account is active
-  if (!profile.is_active) {
-    await supabase.auth.signOut();
-    setLoading('signin-btn', false, 'Sign In to Dashboard');
-    showMsg('signin-msg', 'This account has been deactivated. Contact your supervisor.');
-    return;
-  }
-
-  // 4. Verify the user belongs to the selected department
-  if (profile.department !== dept) {
-    await supabase.auth.signOut();
-    setLoading('signin-btn', false, 'Sign In to Dashboard');
-    showMsg('signin-msg',
-      `Account <strong>${empId}</strong> is registered under
-       <strong>${DEPT_META[profile.department]?.name || profile.department}</strong>,
-       not ${DEPT_META[dept]?.name}.`
-    );
-    return;
-  }
-
-  // 5. Log the successful login event
-  await supabase.from('access_logs').insert({
-    user_id:    authData.user.id,
-    employee_id: empId,
-    department: dept,
-    action:     'login',
-    user_agent: navigator.userAgent,
-    metadata:   { timestamp: new Date().toISOString() }
-  });
-
-  // 6. Update last_login_at on profile
-  await supabase.from('profiles')
-    .update({ last_login_at: new Date().toISOString() })
-    .eq('id', authData.user.id);
-
-  // 7. Store minimal session info for the dashboard to read
-  sessionStorage.setItem('me_profile', JSON.stringify({
-    id:         authData.user.id,
-    empId:      profile.employee_id,
-    name:       profile.full_name,
-    dept:       profile.department,
-    email:      authData.user.email,
-    loginAt:    new Date().toISOString(),
-  }));
-
-  setLoading('signin-btn', false, 'Sign In to Dashboard');
-  redirectToDashboard(profile.department, profile.full_name, true);
-}
-
-// ════════════════════════════════════════════════════════════════
-// SIGN UP  ── real Supabase auth
-// ════════════════════════════════════════════════════════════════
-async function doSignUp() {
-  const name  = document.getElementById('signup-name').value.trim();
-  const empId = document.getElementById('signup-empid').value.trim().toUpperCase();
-  const email = document.getElementById('signup-email').value.trim();
-  const pw    = document.getElementById('signup-pw').value;
-  const pw2   = document.getElementById('signup-pw2').value;
-  const dept  = document.querySelector('input[name="signup-dept"]:checked')?.value;
-
-  // Validation
-  if (!name || !empId || !pw)  { showMsg('signup-msg', 'Please fill in Name, Employee ID and Password.'); return; }
-  if (pw !== pw2)               { showMsg('signup-msg', 'Passwords do not match.');                        return; }
-  if (pw.length < 8)            { showMsg('signup-msg', 'Password must be at least 8 characters.');        return; }
-  if (!dept)                    { showMsg('signup-msg', 'Please select your department.');                  return; }
-
-  setLoading('signup-btn', true, 'Creating Account…');
-
-  // Use provided email, or auto-generate an internal one from Employee ID
-  const emailToUse = email || `${empId.toLowerCase()}@meiw.internal`;
-
-  // 1. Create auth user — the SQL trigger handle_new_user auto-creates the profile row
-  const { data, error } = await supabase.auth.signUp({
-    email:    emailToUse,
-    password: pw,
-    options: {
-      data: {
-        full_name:   name,
-        employee_id: empId,
-        department:  dept,
+    if (ar.error) {
+      setBusy('si-btn', false, 'Sign In to Dashboard');
+      var em = ar.error.message;
+      if (em.toLowerCase().indexOf('invalid') >= 0 || em.toLowerCase().indexOf('credentials') >= 0) {
+        em = 'Wrong Employee ID or password. Did you create an account first?';
+      } else if (em.toLowerCase().indexOf('not confirmed') >= 0) {
+        em = 'Account not confirmed. In Supabase go to Authentication → Email → turn OFF "Confirm email".';
       }
+      showMsg('si-msg', em);
+      return;
     }
-  });
 
-  setLoading('signup-btn', false, 'Create Account');
+    var user = ar.data.user;
 
-  if (error) {
-    const msg = error.message.includes('already registered')
-      ? `Employee ID <strong>${empId}</strong> already has an account. Try signing in.`
-      : error.message;
-    showMsg('signup-msg', msg);
-    return;
-  }
+    /* 2 — profile */
+    var pr = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
+    var profile = pr.data;
 
-  // 2. If email confirmation is disabled in Supabase (Settings → Auth → Email),
-  //    the user is signed in immediately — log the event
-  if (data.session) {
-    await supabase.from('access_logs').insert({
-      user_id:    data.user.id,
-      employee_id: empId,
-      department: dept,
-      action:     'login',
-      user_agent: navigator.userAgent,
-    });
+    /* 3 — create profile if missing */
+    if (!profile) {
+      var ins = await sb.from('profiles').insert({
+        id: user.id, employee_id: empId, full_name: empId,
+        department: dept, email: email, is_active: true
+      });
+      profile = { full_name: empId, department: dept, employee_id: empId, is_active: true };
+    }
+
+    /* 4 — deactivated? */
+    if (profile.is_active === false) {
+      await sb.auth.signOut();
+      setBusy('si-btn', false, 'Sign In to Dashboard');
+      showMsg('si-msg', 'Account deactivated. Contact your supervisor.');
+      return;
+    }
+
+    /* 5 — dept mismatch */
+    if (profile.department && profile.department !== dept) {
+      await sb.auth.signOut();
+      setBusy('si-btn', false, 'Sign In to Dashboard');
+      var cn = (DEPTS[profile.department] || {}).name || profile.department;
+      showMsg('si-msg', 'Account <b>' + empId + '</b> belongs to <b>' + cn + '</b>, not ' + ((DEPTS[dept]||{}).name||dept) + '.');
+      return;
+    }
+
+    /* 6 — save & redirect */
     sessionStorage.setItem('me_profile', JSON.stringify({
-      id: data.user.id, empId, name, dept,
-      email: emailToUse, loginAt: new Date().toISOString(),
+      id: user.id, empId: empId, name: profile.full_name || empId,
+      dept: profile.department || dept, email: email,
+      loginAt: new Date().toISOString()
     }));
-    redirectToDashboard(dept, name, true);
-    return;
-  }
 
-  // 3. Email confirmation is ON — show success message
-  showMsg('signup-msg',
-    `✓ Account created for <strong>${name}</strong> in
-     <strong>${DEPT_META[dept]?.name}</strong>.
-     Check <strong>${emailToUse}</strong> to confirm your account before signing in.`,
-    'success'
-  );
+    sb.from('access_logs').insert({ user_id: user.id, employee_id: empId, department: dept, action: 'login', user_agent: navigator.userAgent }).catch(function(){});
+    sb.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', user.id).catch(function(){});
+
+    setBusy('si-btn', false, 'Sign In to Dashboard');
+    goDash(profile.department || dept, profile.full_name || empId, true);
+
+  } catch(e) {
+    setBusy('si-btn', false, 'Sign In to Dashboard');
+    showMsg('si-msg', 'Unexpected error: ' + e.message);
+  }
 }
 
-// ════════════════════════════════════════════════════════════════
-// FORGOT PASSWORD  ── real Supabase reset email
-// ════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════
+   SIGN UP
+═══════════════════════════════════════════ */
+async function doSignUp() {
+  clearMsg('up-msg');
+
+  var name  = (document.getElementById('up-name').value || '').trim();
+  var empId = (document.getElementById('up-id').value   || '').trim().toUpperCase();
+  var pw    =  document.getElementById('up-pw').value   || '';
+  var pw2   =  document.getElementById('up-pw2').value  || '';
+  var dEl   =  document.querySelector('input[name="up-d"]:checked');
+  var dept  =  dEl ? dEl.value : '';
+
+  if (!name)         { showMsg('up-msg', 'Please enter your full name.');             return; }
+  if (!empId)        { showMsg('up-msg', 'Please enter your Employee ID.');           return; }
+  if (!pw)           { showMsg('up-msg', 'Please enter a password.');                 return; }
+  if (pw.length < 8) { showMsg('up-msg', 'Password must be at least 8 characters.'); return; }
+  if (pw !== pw2)    { showMsg('up-msg', 'Passwords do not match.');                  return; }
+  if (!dept)         { showMsg('up-msg', 'Please select your department.');           return; }
+
+  setBusy('up-btn', true, 'Creating Account…');
+
+  try {
+    var email = empId.toLowerCase() + '@meiw.internal';
+
+    var sr = await sb.auth.signUp({
+      email: email,
+      password: pw,
+      options: { data: { full_name: name, employee_id: empId, department: dept } }
+    });
+
+    if (sr.error) {
+      setBusy('up-btn', false, 'Create Account');
+      var em = sr.error.message;
+      if (em.toLowerCase().indexOf('already') >= 0) {
+        em = 'An account for <b>' + empId + '</b> already exists. <button class="alink" onclick="showTab(\'si\')" style="color:var(--gold)">Sign in instead →</button>';
+      }
+      showMsg('up-msg', em);
+      return;
+    }
+
+    var user = sr.data.user;
+
+    /* create profile row (backup if trigger didn't run) */
+    if (user) {
+      try {
+        await sb.from('profiles').upsert({
+          id: user.id, employee_id: empId, full_name: name,
+          department: dept, email: email, is_active: true
+        }, { onConflict: 'id' });
+      } catch(pe) { /* ignore */ }
+    }
+
+    setBusy('up-btn', false, 'Create Account');
+
+    /* session = email confirm OFF = auto login */
+    if (sr.data.session) {
+      sessionStorage.setItem('me_profile', JSON.stringify({
+        id: user.id, empId: empId, name: name,
+        dept: dept, email: email, loginAt: new Date().toISOString()
+      }));
+      goDash(dept, name, true);
+      return;
+    }
+
+    /* email confirm ON */
+    showMsg('up-msg',
+      'Account created for <b>' + name + '</b>.<br>' +
+      'Check <b>' + email + '</b> to confirm, then sign in.<br>' +
+      '<small style="opacity:.7">Tip: In Supabase → Auth → Email → turn off "Confirm email" for instant access.</small>',
+      'success'
+    );
+
+  } catch(e) {
+    setBusy('up-btn', false, 'Create Account');
+    showMsg('up-msg', 'Error: ' + e.message);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   FORGOT PASSWORD
+═══════════════════════════════════════════ */
 async function doForgot() {
-  const empId = document.getElementById('forgot-empid').value.trim().toUpperCase();
-  const email = document.getElementById('forgot-email').value.trim();
+  clearMsg('fg-msg');
+  var email = (document.getElementById('fg-email').value || '').trim();
+  if (!email) { showMsg('fg-msg', 'Please enter your email address.'); return; }
 
-  if (!empId || !email) { showMsg('forgot-msg', 'Please enter your Employee ID and email.'); return; }
-  if (!/\S+@\S+\.\S+/.test(email)) { showMsg('forgot-msg', 'Please enter a valid email address.'); return; }
+  setBusy('fg-btn', true, 'Sending…');
 
-  setLoading('forgot-btn', true, 'Sending Reset Email…');
-
-  // Log the reset attempt
-  await supabase.from('access_logs').insert({
-    employee_id: empId,
-    action:      'password_reset',
-    user_agent:  navigator.userAgent,
-    metadata:    { email_provided: email }
-  });
-
-  // Send Supabase password reset email
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/reset-password.html'
-  });
-
-  setLoading('forgot-btn', false, 'Send Reset Link');
-
-  if (error) {
-    showMsg('forgot-msg', error.message);
-    return;
-  }
-
-  // Show success state
-  document.getElementById('forgot-form').style.display = 'none';
-  document.getElementById('forgot-success').style.display = 'block';
-}
-
-// ════════════════════════════════════════════════════════════════
-// REDIRECT TO DASHBOARD
-// ════════════════════════════════════════════════════════════════
-function redirectToDashboard(dept, name, animate = true) {
-  if (animate) {
-    // Show the animated success panel first, then redirect
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('tab-nav').style.display = 'none';
-    document.getElementById('panel-success').classList.add('active');
-
-    const meta = DEPT_META[dept] || { name: dept, color: '#1e56c8' };
-    document.getElementById('success-dept-name').textContent = meta.name;
-    document.getElementById('success-dot').style.background  = meta.color;
-    document.getElementById('success-dept-tag').style.borderColor = meta.color + '55';
-
-    setTimeout(() => {
-      const target = DEPT_REDIRECTS[dept] || 'dashboard.html';
-      // Pass department as a URL param so the dashboard knows which view to show
-      window.location.href = `${target}?dept=${dept}`;
-    }, 2200);
-  } else {
-    // Already logged in — redirect immediately without animation
-    const target = DEPT_REDIRECTS[dept] || 'dashboard.html';
-    window.location.href = `${target}?dept=${dept}`;
+  try {
+    var res = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: SB_URL + '/auth/v1/callback'
+    });
+    setBusy('fg-btn', false, 'Send Reset Link');
+    if (res.error) { showMsg('fg-msg', 'Error: ' + res.error.message); return; }
+    document.getElementById('fg-form').style.display = 'none';
+    document.getElementById('fg-ok').style.display = 'block';
+  } catch(e) {
+    setBusy('fg-btn', false, 'Send Reset Link');
+    showMsg('fg-msg', 'Error: ' + e.message);
   }
 }
 
-// ── KEYBOARD SUBMIT ────────────────────────────────────────────
-document.addEventListener('keydown', e => {
+/* ═══════════════════════════════════════════
+   REDIRECT TO DASHBOARD
+═══════════════════════════════════════════ */
+function goDash(dept, name, animate) {
+  var url = 'dashboard.html?dept=' + encodeURIComponent(dept || 'assembly');
+  if (!animate) { window.location.href = url; return; }
+
+  /* hide everything, show success panel */
+  ['si','up'].forEach(function(id){ document.getElementById('p-' + id).classList.remove('on'); });
+  document.getElementById('p-fg').classList.remove('on');
+  document.getElementById('tabs').style.display = 'none';
+  document.getElementById('p-ok').classList.add('on');
+
+  var meta = DEPTS[dept] || { name: dept || 'Dashboard', color: '#2563eb' };
+  document.getElementById('ok-dept').textContent       = meta.name;
+  document.getElementById('ok-dot').style.background   = meta.color;
+
+  setTimeout(function(){ window.location.href = url; }, 2200);
+}
+
+/* ═══════════════════════════════════════════
+   KEYBOARD + CLEANUP
+═══════════════════════════════════════════ */
+document.addEventListener('keydown', function(e) {
   if (e.key !== 'Enter') return;
-  const active = document.querySelector('.panel.active');
-  if (!active) return;
-  const id = active.id;
-  if (id === 'panel-signin')  doSignIn();
-  else if (id === 'panel-signup')  doSignUp();
-  else if (id === 'panel-forgot') doForgot();
-});
-
-// ── REMOVE ERROR STYLE ON INPUT ────────────────────────────────
-document.addEventListener('input', e => {
-  if (e.target.classList.contains('fi')) e.target.classList.remove('error');
+  var p = document.querySelector('.panel.on');
+  if (!p) return;
+  if      (p.id === 'p-si') doSignIn();
+  else if (p.id === 'p-up') doSignUp();
+  else if (p.id === 'p-fg') doForgot();
 });
 </script>
 </body>
