@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MILOUD EZZAKY INDUSTRY V.6 — Wire Request System</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -34,7 +33,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #login-screen{position:fixed;inset:0;z-index:999;background:var(--bg-base);display:flex;align-items:center;justify-content:center;overflow:auto;}
 #login-screen::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(232,168,58,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(232,168,58,.04) 1px,transparent 1px),linear-gradient(rgba(37,99,235,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.03) 1px,transparent 1px);background-size:60px 60px,60px 60px,12px 12px,12px 12px;animation:gridScroll 25s linear infinite;}
 @keyframes gridScroll{from{transform:translateY(0) translateX(0)}to{transform:translateY(60px) translateX(60px)}}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 #login-screen::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 55% at 50% 45%,rgba(232,168,58,.06) 0%,transparent 70%),radial-gradient(ellipse 30% 40% at 20% 80%,rgba(37,99,235,.06) 0%,transparent 60%);}
 .wire-particle{position:absolute;pointer-events:none;width:2px;border-radius:2px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);animation:wireFloat linear infinite;opacity:0;}
 @keyframes wireFloat{0%{transform:translateY(100vh) scaleY(0);opacity:0}10%{opacity:.6}90%{opacity:.4}100%{transform:translateY(-100px) scaleY(1);opacity:0}}
@@ -929,10 +927,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="clk-time" id="clk-time">--:--:--</div>
       <div class="clk-date" id="clk-date">…</div>
       <div class="shift-tag"><span class="sdot"></span><span id="clk-shift">—</span></div>
-      <div style="display:flex;align-items:center;gap:7px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd-1)">
-        <div id="db-status-dot" style="width:7px;height:7px;border-radius:50%;background:var(--tx-4);transition:background .4s;flex-shrink:0"></div>
-        <span style="font-size:10px;color:var(--tx-3);letter-spacing:.5px">DB: <span id="db-status-lbl">Offline</span></span>
-      </div>
     </div>
   </aside>
 
@@ -1117,241 +1111,6 @@ const PROJECTS=[
   {id:'DAF',name:'DAF',color:'#b45309'},
 ];
 
-// ═══════════════ SUPABASE CONFIG ═════════════════════════════
-// ┌─────────────────────────────────────────────────────────┐
-// │  REPLACE THE TWO VALUES BELOW WITH YOUR SUPABASE KEYS   │
-// │                                                         │
-// │  LINE A ↓  Your Project URL                             │
-const SUPABASE_URL = 'https://hxfzqrztpawziuxeqlwd.supabase.co';
-// │                                                         │
-// │  LINE B ↓  Your anon/public API key                     │
-const SUPABASE_KEY = 'sb_publishable_ghPZmD-gA4L6ZQZ1azBWeQ_4cTWqjFD';
-// └─────────────────────────────────────────────────────────┘
-
-let supabase = null;
-let realtimeChannel = null;
-
-function initSupabase(){
-  try {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('✅ Supabase connected');
-    return true;
-  } catch(e) {
-    console.warn('⚠️ Supabase init failed — running offline', e);
-    return false;
-  }
-}
-
-// ── Convert flat DB row + items array → app request object ──
-function dbToReq(row, items){
-  return {
-    id: row.id,
-    project: row.project,
-    projectKey: row.project_key,
-    urgency: row.urgency,
-    status: row.status,
-    assignedTo: row.assigned_to,
-    requestedBy: row.requested_by,
-    pagodaStatus: row.pagoda_status,
-    parentId: row.parent_id,
-    time: row.time,
-    completedAt: row.completed_at,
-    locked: row.locked ?? true,
-    items: (items||[]).map(it=>({
-      wireName: it.wire_name,
-      wireType: it.wire_type,
-      quantity: it.quantity,
-      reference: it.reference,
-      tinning: it.tinning,
-      layLength: it.lay_length,
-      pagodaStatus: it.pagoda_status,
-      deptStatus: it.dept_status,
-      _rawRow: it.raw_row,
-      _itemId: it.id,
-      _sortOrder: it.sort_order
-    }))
-  };
-}
-
-// ── Convert app request → DB row ────────────────────────────
-function reqToDb(req){
-  return {
-    id: req.id,
-    project: req.project,
-    project_key: req.projectKey,
-    urgency: req.urgency,
-    status: req.status,
-    assigned_to: req.assignedTo,
-    requested_by: req.requestedBy,
-    pagoda_status: req.pagodaStatus,
-    parent_id: req.parentId || null,
-    time: req.time,
-    completed_at: req.completedAt || null,
-    locked: req.locked ?? true
-  };
-}
-
-// ── Load ALL requests from Supabase ─────────────────────────
-async function loadRequestsFromDB(){
-  if(!supabase) return false;
-  try {
-    showDBLoader(true);
-    const { data: rows, error: rErr } = await supabase
-      .from('requests')
-      .select('*')
-      .order('time', { ascending: false });
-    if(rErr) throw rErr;
-
-    const { data: items, error: iErr } = await supabase
-      .from('request_items')
-      .select('*')
-      .order('sort_order', { ascending: true });
-    if(iErr) throw iErr;
-
-    // Group items by request_id
-    const itemMap = {};
-    (items||[]).forEach(it => {
-      if(!itemMap[it.request_id]) itemMap[it.request_id] = [];
-      itemMap[it.request_id].push(it);
-    });
-
-    requests = (rows||[]).map(row => dbToReq(row, itemMap[row.id]||[]));
-    showDBLoader(false);
-    return true;
-  } catch(e) {
-    console.error('DB load error:', e);
-    showDBLoader(false);
-    toast('⚠️ Could not load from database — working offline', 'error');
-    return false;
-  }
-}
-
-// ── Save a new request to Supabase ──────────────────────────
-async function saveRequestToDB(req){
-  if(!supabase) return false;
-  try {
-    const { error: rErr } = await supabase
-      .from('requests')
-      .insert(reqToDb(req));
-    if(rErr) throw rErr;
-
-    const itemRows = req.items.map((it, i) => ({
-      request_id: req.id,
-      wire_name: it.wireName,
-      wire_type: it.wireType,
-      quantity: it.quantity,
-      reference: it.reference,
-      tinning: it.tinning || false,
-      lay_length: it.layLength || null,
-      pagoda_status: it.pagodaStatus || null,
-      dept_status: it.deptStatus || null,
-      raw_row: it._rawRow || null,
-      sort_order: i
-    }));
-
-    const { error: iErr } = await supabase
-      .from('request_items')
-      .insert(itemRows);
-    if(iErr) throw iErr;
-    return true;
-  } catch(e) {
-    console.error('DB save error:', e);
-    toast('⚠️ Saved locally only — DB write failed', 'error');
-    return false;
-  }
-}
-
-// ── Update a request row in Supabase ────────────────────────
-async function updateRequestInDB(req){
-  if(!supabase) return false;
-  try {
-    const { error } = await supabase
-      .from('requests')
-      .update(reqToDb(req))
-      .eq('id', req.id);
-    if(error) throw error;
-    return true;
-  } catch(e) {
-    console.error('DB update error:', e);
-    return false;
-  }
-}
-
-// ── Update a single item's status in Supabase ───────────────
-async function updateItemInDB(reqId, itemIdx, fields){
-  if(!supabase) return false;
-  try {
-    const req = requests.find(r=>r.id===reqId);
-    if(!req) return false;
-    const item = req.items[itemIdx];
-    if(!item?._itemId) return false;
-
-    const dbFields = {};
-    if('pagodaStatus' in fields) dbFields.pagoda_status = fields.pagodaStatus;
-    if('deptStatus'   in fields) dbFields.dept_status   = fields.deptStatus;
-
-    const { error } = await supabase
-      .from('request_items')
-      .update(dbFields)
-      .eq('id', item._itemId);
-    if(error) throw error;
-    return true;
-  } catch(e) {
-    console.error('DB item update error:', e);
-    return false;
-  }
-}
-
-// ── Subscribe to realtime changes ───────────────────────────
-function subscribeRealtime(){
-  if(!supabase) return;
-  realtimeChannel = supabase
-    .channel('wire-system')
-    .on('postgres_changes',
-      { event: '*', schema: 'public', table: 'requests' },
-      async () => {
-        await loadRequestsFromDB();
-        refreshAll();
-        updateBadges();
-      }
-    )
-    .on('postgres_changes',
-      { event: '*', schema: 'public', table: 'request_items' },
-      async () => {
-        await loadRequestsFromDB();
-        refreshAll();
-        updateBadges();
-      }
-    )
-    .subscribe(status => {
-      const dot = document.getElementById('db-status-dot');
-      const lbl = document.getElementById('db-status-lbl');
-      if(status === 'SUBSCRIBED'){
-        if(dot) dot.style.background='var(--green)';
-        if(lbl) lbl.textContent='Live';
-      } else {
-        if(dot) dot.style.background='var(--amber)';
-        if(lbl) lbl.textContent='Connecting…';
-      }
-    });
-}
-
-// ── DB loading overlay ───────────────────────────────────────
-function showDBLoader(show){
-  let el = document.getElementById('db-loader');
-  if(show){
-    if(!el){
-      el = document.createElement('div');
-      el.id = 'db-loader';
-      el.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg-03);border:1px solid var(--bd-gold);color:var(--gold);font-size:11px;font-weight:600;padding:8px 16px;border-radius:20px;z-index:9999;display:flex;align-items:center;gap:8px;letter-spacing:.5px;box-shadow:var(--sh-md)';
-      el.innerHTML='<div style="width:10px;height:10px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite"></div>Syncing with database…';
-      document.body.appendChild(el);
-    }
-  } else {
-    el?.remove();
-  }
-}
-
 // ═══════════════ STATE ═══════════════════════════════════════
 const store={assembly:{},wpa:{},twist:{}};
 const navState={
@@ -1376,7 +1135,7 @@ function toast(msg,type='info'){
 }
 
 // ═══════════════ LOGIN ════════════════════════════════════════
-async function doLogin(){
+function doLogin(){
   const dept=document.getElementById('dept-select').value;
   const uid=document.getElementById('login-uid').value;
   currentUser={username:uid,department:dept,name:uid==='ME-001'?'Miloud Ezzaky':'Operator'};
@@ -1399,16 +1158,8 @@ async function doLogin(){
   setInterval(refreshAll,12000);
   const defaultBtn=document.querySelector(`.nb[onclick*="'${dept}'"]`);
   if(defaultBtn){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
-
-  // ── Supabase init ──
-  const dbOk = initSupabase();
-  if(dbOk){
-    await loadRequestsFromDB();
-    subscribeRealtime();
-  }
-
   loadPage(dept);updateBadges();
-  toast(`Welcome, ${currentUser.name}! ${dbOk?'Connected to database.':'Working offline.'}`,dbOk?'success':'info');
+  toast(`Welcome, ${currentUser.name}! Select a project to get started.`,'success');
 }
 
 // ═══════════════ NAVIGATION ══════════════════════════════════
@@ -1863,7 +1614,7 @@ function viewWireList(dept,key,refId){
 }
 
 // ═══════════════ SUBMIT REQUEST ══════════════════════════════
-async function submitRequest(dept){
+function submitRequest(dept){
   const ns=navState[dept];const key=ns.projectKey;const refId=ns.refId;
   if(!key||!refId){toast('Please select a project and reference first','error');return;}
   const wires=store[dept][key].refData[refId]||[];
@@ -1880,10 +1631,6 @@ async function submitRequest(dept){
   });
   const req={id:`REQ-2026-${String(requests.length+1).padStart(3,'0')}`,items,urgency,status:'pending',assignedTo:'pagoda',project:pl,projectKey:key,time:new Date().toISOString(),requestedBy:dept,pagodaStatus:'pending',completedAt:null,locked:true};
   requests.push(req);
-
-  // ── Save to Supabase ──
-  await saveRequestToDB(req);
-
   toast(`Request ${req.id} submitted — ${items.length} wire${items.length>1?'s':''} from ${refId}`,'success');
   navState[dept].level='refs';navState[dept].refId=null;
   renderRequestArea(dept);renderReqList(dept);updateBadges();renderAnalytics();
@@ -2035,48 +1782,21 @@ function openPagodaModal(reqId){
   modal._refresh=refresh;document.body.appendChild(modal);refresh();
 }
 function closePM(){const m=document.getElementById('pagoda-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>m.remove(),150);}}
-async function setPagodaItem(rid,idx,st){
-  const r=requests.find(x=>x.id===rid);if(!r)return;
-  r.items[idx].pagodaStatus=st;
-  await updateItemInDB(rid,idx,{pagodaStatus:st});
-  const m=document.getElementById('pagoda-modal');if(m?._refresh)m._refresh();
-}
-async function finalizePagoda(rid){
+function setPagodaItem(rid,idx,st){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].pagodaStatus=st;const m=document.getElementById('pagoda-modal');if(m?._refresh)m._refresh();}
+function finalizePagoda(rid){
   const r=requests.find(x=>x.id===rid);if(!r)return;
   const inStock=r.items.filter(it=>it.pagodaStatus==='in_stock');const oos=r.items.filter(it=>it.pagodaStatus==='out_of_stock');
-  if(oos.length===0){
-    r.status='completed';r.pagodaStatus='in_stock';r.completedAt=new Date().toISOString();
-    await updateRequestInDB(r);
-    toast('All wires in stock — request completed','success');
-  } else if(inStock.length===0){
-    r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';
-    await updateRequestInDB(r);
-    toast(`All OOS — routed to ${r.assignedTo.toUpperCase()}`,'info');
-  } else {
+  if(oos.length===0){r.status='completed';r.pagodaStatus='in_stock';r.completedAt=new Date().toISOString();toast('All wires in stock — request completed','success');}
+  else if(inStock.length===0){r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';toast(`All OOS — routed to ${r.assignedTo.toUpperCase()}`,'info');}
+  else{
     const groups={};oos.forEach(it=>{const d=it.wireType==='simple'?'cutting':it.wireType==='twist'?'twist':'wpa';if(!groups[d])groups[d]=[];groups[d].push(it);});
-    for(const [d,items] of Object.entries(groups)){
-      const sub={id:`${rid}-${d.toUpperCase()}`,items,urgency:r.urgency,status:'pending',assignedTo:d,project:r.project,projectKey:r.projectKey,time:new Date().toISOString(),requestedBy:r.requestedBy,pagodaStatus:'out_of_stock',completedAt:null,parentId:rid,locked:true};
-      requests.push(sub);
-      await saveRequestToDB(sub);
-    }
-    r.status='completed';r.pagodaStatus='partial';r.completedAt=new Date().toISOString();
-    await updateRequestInDB(r);
-    toast(`${inStock.length} in stock · ${oos.length} routed`,'success');
+    Object.entries(groups).forEach(([d,items])=>{requests.push({id:`${rid}-${d.toUpperCase()}`,items,urgency:r.urgency,status:'pending',assignedTo:d,project:r.project,time:new Date().toISOString(),requestedBy:r.requestedBy,pagodaStatus:'out_of_stock',completedAt:null,parentId:rid});});
+    r.status='completed';r.pagodaStatus='partial';r.completedAt=new Date().toISOString();toast(`${inStock.length} in stock · ${oos.length} routed`,'success');
   }
   closePM();loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
 }
-async function markInStock(id){
-  const r=requests.find(x=>x.id===id);if(!r)return;
-  r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();
-  await updateRequestInDB(r);
-  toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
-}
-async function markOOS(id){
-  const r=requests.find(x=>x.id===id);if(!r)return;
-  r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';
-  await updateRequestInDB(r);
-  toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
-}
+function markInStock(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
+function markOOS(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
 function loadLowStock(){let h='',low=0;Object.values(wireStock).forEach(w=>{if(w.stock<w.min){low++;h+=`<div class="alert-item"><div><div class="alert-name">${w.name}</div><div style="font-size:11px;color:#f59e0b;margin-top:2px">${w.loc}</div></div><div class="alert-stock">${w.stock}/${w.min}</div></div>`;}});document.getElementById('low-stock-list').innerHTML=h||`<div class="alert-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="20 6 9 17 4 12"/></svg>All stock levels OK</div>`;document.getElementById('p-low').textContent=low;}
 function updatePagodaMetrics(){document.getElementById('p-pending').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;document.getElementById('p-stock').textContent=Object.values(wireStock).reduce((s,w)=>s+w.stock,0);const today=new Date().toDateString();document.getElementById('p-today').textContent=requests.filter(r=>new Date(r.time).toDateString()===today).length;const comp=requests.filter(r=>r.status==='completed').length;const rate=requests.length?Math.round(comp/requests.length*100):0;document.getElementById('p-rate').textContent=rate+'%';document.getElementById('p-rate-bar').style.width=rate+'%';}
 
@@ -2157,22 +1877,8 @@ function openDeptModal(reqId,dept){
   modal._refresh=refresh;document.body.appendChild(modal);
 }
 function closeDeptModal(){const m=document.getElementById('dept-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>m.remove(),150);}}
-async function setDeptItem(rid,idx,st,dept){
-  const r=requests.find(x=>x.id===rid);if(!r)return;
-  r.items[idx].deptStatus=st;
-  await updateItemInDB(rid,idx,{deptStatus:st});
-  const m=document.getElementById('dept-modal');if(m?._refresh)m._refresh();
-  renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
-}
-async function finalizeDeptModal(rid,dept){
-  const r=requests.find(x=>x.id===rid);if(!r)return;
-  r.status='completed';r.completedAt=new Date().toISOString();
-  await updateRequestInDB(r);
-  toast(`${rid} — all items processed & completed!`,'success');
-  closeDeptModal();loadPage(currentPage);updateBadges();renderAnalytics();
-  renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
-  if(currentPage==='history')renderHistoryPage();
-}
+function setDeptItem(rid,idx,st,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].deptStatus=st;const m=document.getElementById('dept-modal');if(m?._refresh)m._refresh();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
+function finalizeDeptModal(rid,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();toast(`${rid} — all items processed & completed!`,'success');closeDeptModal();loadPage(currentPage);updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');if(currentPage==='history')renderHistoryPage();}
 
 // ═══════════════ WPA / TWIST TABS ════════════════════════════
 function switchTab(dept,tab){
@@ -2198,8 +1904,8 @@ function loadTwistFulfill(){
   document.getElementById('twist-pairs-cnt').textContent=requests.filter(r=>r.assignedTo==='twist').reduce((s,r)=>s+r.items.reduce((ss,i)=>ss+i.quantity,0),0);
 }
 
-async function startReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='in_progress';await updateRequestInDB(r);toast(`Started ${id}`,'info');loadPage(currentPage);updateBadges();}
-async function completeReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();await updateRequestInDB(r);toast(`${id} completed!`,'success');loadPage(currentPage);updateBadges();renderAnalytics();if(currentPage==='history')renderHistoryPage();}
+function startReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='in_progress';toast(`Started ${id}`,'info');loadPage(currentPage);updateBadges();}
+function completeReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();toast(`${id} completed!`,'success');loadPage(currentPage);updateBadges();renderAnalytics();if(currentPage==='history')renderHistoryPage();}
 
 function fmtDateTime(iso){
   if(!iso)return'—';
