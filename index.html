@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07090f">
+<meta name="description" content="Industrial Wire Management System with Department Notifications">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
 <title>MILOUD EZZAKY INDUSTRY V.6 — Wire Request System</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -74,10 +79,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .sb-icon svg{width:20px;height:20px}
 .sb-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx-1);line-height:1.2;}
 .sb-ver{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--tx-3);margin-top:2px}
-.sb-user{padding:14px 20px;display:flex;align-items:center;gap:11px;background:rgba(232,168,58,.03);border-bottom:1px solid var(--bd-1);}
-.sb-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--blue-lt));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 2px 8px rgba(37,99,235,.3);}
-.sb-uname{font-size:13px;font-weight:600;color:var(--tx-1)}
-.sb-udept{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--tx-3);margin-top:2px}
 .sb-nav{flex:1;padding:16px 10px;overflow-y:auto}
 .nav-section{margin-bottom:20px}
 .nav-lbl{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--tx-4);padding:0 10px 8px;display:block;}
@@ -110,6 +111,76 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .tb-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;letter-spacing:.3px;cursor:pointer;border:1px solid var(--bd-1);background:var(--bg-03);color:var(--tx-2);font-family:'Space Grotesk',sans-serif;transition:all .2s;}
 .tb-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-subtle)}
 .tb-btn svg{width:13px;height:13px}
+
+/* ═══ NOTIFICATIONS ═══════════════════════════════════════════ */
+.notification-bell{position:relative;margin-left:auto;margin-right:16px;}
+.bell-btn{width:40px;height:40px;border-radius:50%;background:var(--bg-03);border:1px solid var(--bd-1);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx-2);transition:all .2s;position:relative;}
+.bell-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-subtle)}
+.bell-btn svg{width:18px;height:18px}
+.bell-badge{position:absolute;top:-4px;right:-4px;width:20px;height:20px;background:var(--red);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;animation:bellPulse 2s infinite;}
+@keyframes bellPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.bell-dropdown{position:absolute;top:50px;right:0;width:350px;background:var(--bg-card);border:1px solid var(--bd-1);border-radius:var(--r-lg);box-shadow:var(--sh-xl);z-index:100;max-height:400px;overflow:hidden;display:none;}
+.bell-dropdown.show{display:block}
+.bell-header{padding:16px 20px;border-bottom:1px solid var(--bd-1);display:flex;align-items:center;justify-content:space-between;}
+.bell-title{font-size:14px;font-weight:600;color:var(--tx-1);}
+.bell-mark-all{font-size:12px;color:var(--gold);cursor:pointer;font-weight:500;}
+.bell-list{max-height:300px;overflow-y:auto;}
+.bell-item{padding:14px 20px;border-bottom:1px solid var(--bd-1);cursor:pointer;transition:all .2s;display:flex;gap:12px;}
+.bell-item:hover{background:var(--bg-02)}
+.bell-item.unread{background:var(--gold-subtle);border-left:3px solid var(--gold);}
+.bell-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.bell-icon.assembly{background:rgba(232,168,58,.15);color:var(--gold);}
+.bell-icon.pagoda{background:rgba(37,99,235,.15);color:var(--blue);}
+.bell-icon.cutting{background:rgba(16,185,129,.15);color:var(--green);}
+.bell-icon.wpa{background:rgba(6,182,212,.15);color:var(--cyan);}
+.bell-icon.twist{background:rgba(139,92,246,.15);color:var(--purple);}
+.bell-content{flex:1;}
+.bell-msg{font-size:13px;color:var(--tx-1);line-height:1.4;margin-bottom:4px;}
+.bell-time{font-size:11px;color:var(--tx-3);}
+.bell-priority{position:absolute;top:8px;right:8px;padding:2px 8px;border-radius:12px;font-size:9px;font-weight:700;text-transform:uppercase;}
+.bell-priority.critical{background:rgba(239,68,68,.15);color:var(--red);}
+.bell-priority.urgent{background:rgba(245,158,11,.15);color:var(--amber);}
+.bell-priority.important{background:rgba(37,99,235,.15);color:var(--blue);}
+.bell-priority.info{background:rgba(107,114,128,.15);color:grey;}
+
+.notification-center{display:none;position:fixed;inset:0;z-index:200;background:var(--bg-base);padding:20px;}
+.nc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.nc-title{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--tx-1);}
+.nc-close{width:40px;height:40px;border-radius:50%;background:var(--bg-03);border:1px solid var(--bd-1);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx-2);}
+.nc-filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.nc-filter{padding:8px 16px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bd-1);background:var(--bg-03);color:var(--tx-2);transition:all .2s;}
+.nc-filter.active{background:var(--gold);color:var(--bg-base);border-color:var(--gold);}
+.nc-list{max-height:calc(100vh - 200px);overflow-y:auto;}
+.nc-item{background:var(--bg-card);border:1px solid var(--bd-1);border-radius:var(--r-lg);padding:20px;margin-bottom:16px;}
+.nc-item.unread{border-left:4px solid var(--gold);}
+.nc-item-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.nc-item-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.nc-item-title{font-size:16px;font-weight:600;color:var(--tx-1);}
+.nc-item-time{font-size:12px;color:var(--tx-3);}
+.nc-item-msg{font-size:14px;color:var(--tx-2);line-height:1.5;margin-bottom:16px;}
+.nc-item-actions{display:flex;gap:8px;}
+.nc-btn{padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bd-1);background:var(--bg-03);color:var(--tx-2);transition:all .2s;}
+.nc-btn:hover{background:var(--bg-04);border-color:var(--bd-2);}
+.nc-btn.primary{background:var(--gold);color:var(--bg-base);border-color:var(--gold);}
+
+.toast-container{position:fixed;top:20px;right:20px;z-index:300;pointer-events:none;}
+.toast{position:relative;margin-bottom:12px;padding:16px 20px;background:var(--bg-card);border:1px solid var(--bd-1);border-radius:var(--r-lg);box-shadow:var(--sh-lg);pointer-events:auto;animation:toastIn .3s cubic-bezier(.16,1,.3,1) both;}
+@keyframes toastIn{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+.toast.critical{background:var(--red);color:white;border-color:var(--red);}
+.toast.urgent{background:var(--amber);color:var(--bg-base);border-color:var(--amber);}
+.toast.important{background:var(--blue);color:white;border-color:var(--blue);}
+.toast.info{background:var(--bg-card);color:var(--tx-1);}
+
+.modal-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--bg-card);border:1px solid var(--bd-1);border-radius:var(--r-xl);box-shadow:var(--sh-xl);max-width:500px;width:100%;max-height:90vh;overflow-y:auto;}
+.modal-header{padding:24px 28px;border-bottom:1px solid var(--bd-1);}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--tx-1);}
+.modal-body{padding:24px 28px;}
+.modal-footer{padding:20px 28px;border-top:1px solid var(--bd-1);display:flex;gap:12px;justify-content:flex-end;}
+.modal-btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--bd-1);background:var(--bg-03);color:var(--tx-2);transition:all .2s;}
+.modal-btn.primary{background:var(--gold);color:var(--bg-base);border-color:var(--gold);}
+.modal-btn:hover{background:var(--bg-04);border-color:var(--bd-2);}
+.modal-btn.primary:hover{background:var(--gold-dk);}
 
 /* ═══ PAGES ═══════════════════════════════════════════════════ */
 .page{display:none;padding:28px;animation:pageIn .3s cubic-bezier(.16,1,.3,1) both}
@@ -250,130 +321,35 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .dz-hint{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:11px;font-weight:600;color:var(--blue-lt);background:rgba(37,99,235,.08);padding:6px 14px;border-radius:20px;border:1px solid rgba(37,99,235,.15);}
 
 /* ═══ EXCEL TABLE — Exact display ════════════════════════════ */
-.excel-table-container{
-  background:var(--bg-card);
-  border:1px solid var(--bd-1);
-  border-radius:var(--r-lg);
-  overflow:hidden;
-  margin-bottom:18px;
-}
-.excel-table-toolbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 16px;
-  background:var(--bg-02);
-  border-bottom:1px solid var(--bd-1);
-  flex-wrap:wrap;gap:8px;
-}
+.excel-table-container{background:var(--bg-card);border:1px solid var(--bd-1);border-radius:var(--r-lg);overflow:hidden;margin-bottom:18px;}
+.excel-table-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--bg-02);border-bottom:1px solid var(--bd-1);flex-wrap:wrap;gap:8px;}
 .excel-toolbar-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .excel-title{font-size:12px;font-weight:600;color:var(--tx-2);display:flex;align-items:center;gap:7px;}
 .excel-filename{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);background:rgba(232,168,58,.08);padding:2px 8px;border-radius:4px;border:1px solid rgba(232,168,58,.15);}
 .excel-row-count{font-size:11px;color:var(--tx-3);font-family:'JetBrains Mono',monospace;}
-
-/* The scroll wrapper — horizontal scroll on mobile */
-.excel-scroll{
-  overflow-x:auto;
-  overflow-y:auto;
-  max-height:420px;
-  -webkit-overflow-scrolling:touch;
-}
-/* Make scrollbar visible on mobile too */
+.excel-scroll{overflow-x:auto;overflow-y:auto;max-height:420px;-webkit-overflow-scrolling:touch;}
 .excel-scroll::-webkit-scrollbar{width:6px;height:6px;}
 .excel-scroll::-webkit-scrollbar-track{background:var(--bg-02);}
 .excel-scroll::-webkit-scrollbar-thumb{background:var(--bg-04);border-radius:4px;}
 .excel-scroll::-webkit-scrollbar-thumb:hover{background:var(--bd-2);}
 .excel-scroll::-webkit-scrollbar-corner{background:var(--bg-02);}
-
-/* The actual excel-like table */
-.excel-tbl{
-  border-collapse:collapse;
-  width:max-content; /* allows table to be wider than container — enables horizontal scroll */
-  min-width:100%;
-  font-family:'JetBrains Mono',monospace;
-  font-size:12px;
-}
-
-/* Row number column */
-.excel-row-num{
-  position:sticky;left:0;z-index:3;
-  background:var(--bg-02);
-  border-right:2px solid var(--bd-2);
-  color:var(--tx-4);
-  font-size:10px;
-  font-weight:600;
-  text-align:center;
-  padding:6px 8px;
-  min-width:36px;
-  white-space:nowrap;
-  user-select:none;
-}
-.excel-tbl thead .excel-row-num{
-  background:var(--bg-01);
-  color:var(--tx-3);
-  font-size:10px;
-  z-index:5;
-  top:0;
-}
-
-/* Header row */
-.excel-tbl thead tr th{
-  position:sticky;top:0;z-index:4;
-  background:var(--bg-01);
-  color:var(--tx-1);
-  font-weight:700;
-  font-size:11px;
-  letter-spacing:.5px;
-  text-transform:uppercase;
-  padding:9px 12px;
-  white-space:nowrap;
-  border-bottom:2px solid var(--bd-gold);
-  border-right:1px solid var(--bd-1);
-  text-align:left;
-  min-width:100px;
-  user-select:none;
-}
+.excel-tbl{border-collapse:collapse;width:max-content;min-width:100%;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.excel-row-num{position:sticky;left:0;z-index:3;background:var(--bg-02);border-right:2px solid var(--bd-2);color:var(--tx-4);font-size:10px;font-weight:600;text-align:center;padding:6px 8px;min-width:36px;white-space:nowrap;user-select:none;}
+.excel-tbl thead .excel-row-num{background:var(--bg-01);color:var(--tx-3);font-size:10px;z-index:5;top:0;}
+.excel-tbl thead tr th{position:sticky;top:0;z-index:4;background:var(--bg-01);color:var(--tx-1);font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;padding:9px 12px;white-space:nowrap;border-bottom:2px solid var(--bd-gold);border-right:1px solid var(--bd-1);text-align:left;min-width:100px;user-select:none;}
 .excel-tbl thead tr th:hover{background:var(--bg-03);cursor:default;}
-
-/* Data rows */
-.excel-tbl tbody tr{
-  transition:background .1s;
-}
+.excel-tbl tbody tr{transition:background .1s;}
 .excel-tbl tbody tr:nth-child(even){background:rgba(255,255,255,.018);}
 .excel-tbl tbody tr:hover{background:rgba(37,99,235,.07);}
 .excel-tbl tbody tr.excel-selected td,.excel-tbl tbody tr.excel-selected .excel-row-num{background:rgba(37,99,235,.12);}
-
-.excel-tbl tbody td{
-  padding:7px 12px;
-  border-bottom:1px solid rgba(255,255,255,.03);
-  border-right:1px solid rgba(255,255,255,.03);
-  color:var(--tx-2);
-  white-space:nowrap;
-  max-width:220px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  vertical-align:middle;
-  cursor:default;
-}
+.excel-tbl tbody td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.03);border-right:1px solid rgba(255,255,255,.03);color:var(--tx-2);white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;cursor:default;}
 .excel-tbl tbody td:last-child,.excel-tbl thead th:last-child{border-right:none;}
 .excel-tbl tbody tr:last-child td{border-bottom:none;}
-
-/* Cell content types */
 .cell-num{color:var(--blue-lt);font-weight:500;text-align:right;}
 .cell-empty{color:var(--tx-4);font-style:italic;font-size:10px;}
-
-/* Pinned col highlight line */
-.excel-col-select{
-  background:rgba(232,168,58,.06) !important;
-}
-
-/* Excel-style col checkbox */
-.excel-checkbox-col{
-  width:32px;min-width:32px;
-  text-align:center;
-  padding:6px 4px;
-}
+.excel-col-select{background:rgba(232,168,58,.06) !important;}
+.excel-checkbox-col{width:32px;min-width:32px;text-align:center;padding:6px 4px;}
 .excel-cb{width:14px;height:14px;accent-color:var(--blue-lt);cursor:pointer;}
-
-/* Wire type tags */
 .wt-type{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
 .wt-simple{background:rgba(16,185,129,.1);color:var(--green-lt);border:1px solid rgba(16,185,129,.2)}
 .wt-xe{background:rgba(37,99,235,.1);color:var(--blue-lt);border:1px solid rgba(37,99,235,.2)}
@@ -419,12 +395,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .srb-clear svg{width:11px;height:11px}
 
 /* Wire table toolbar */
-.wit-wrap-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;
-  background:var(--bg-02);
-  border-bottom:1px solid var(--bd-1);flex-wrap:wrap;gap:7px;
-}
+.wit-wrap-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg-02);border-bottom:1px solid var(--bd-1);flex-wrap:wrap;gap:7px;}
 .wit-title{font-size:12px;font-weight:600;color:var(--tx-2);letter-spacing:.3px}
 .sel-count{font-size:12px;font-weight:700;color:var(--blue-lt);font-family:'JetBrains Mono',monospace;}
 .wit-actions{display:flex;gap:6px}
@@ -607,8 +578,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .hist-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .hist-details{border-top:1px solid var(--bd-1);background:var(--bg-01);padding:18px 20px;display:none}
 .hist-entry.expanded .hist-details{display:block}
-
-/* Timeline inside history detail */
 .hist-timeline{display:flex;flex-direction:column;gap:0;margin-bottom:18px}
 .ht-step{display:flex;gap:14px;position:relative}
 .ht-step:not(:last-child)::after{content:'';position:absolute;left:11px;top:28px;bottom:0;width:2px;background:var(--bd-1)}
@@ -623,213 +592,22 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .ht-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx-3)}
 .ht-duration{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:rgba(232,168,58,.08);color:var(--gold);border:1px solid rgba(232,168,58,.15);margin-top:3px}
 .ht-sub{font-size:11px;color:var(--tx-3);margin-top:4px}
-
-/* Wire detail table inside history */
 .hist-wire-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:10px}
 .hist-wire-table th{text-align:left;padding:6px 10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx-3);border-bottom:1px solid var(--bd-1)}
 .hist-wire-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--tx-2)}
 .hist-wire-table tr:last-child td{border-bottom:none}
 .hist-wire-table tr:hover td{background:rgba(255,255,255,.02)}
-
-/* Locked order banner */
 .locked-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);border-radius:var(--r-md);margin-bottom:14px;font-size:12px;color:#fca5a5}
 .locked-banner svg{flex-shrink:0;width:15px;height:15px;color:#f87171}
 
 /* ═══ RESPONSIVE ═════════════════════════════════════════════ */
-
-/* ── Large desktop (1280px+): full two-col layouts ─────────── */
-@media(min-width:1281px){
-  .two-col{grid-template-columns:1fr 360px}
-}
-
-/* ── Desktop / small laptop (1024–1280px) ──────────────────── */
-@media(max-width:1280px){
-  .two-col{grid-template-columns:1fr}
-  .stats-row{grid-template-columns:repeat(2,1fr)}
-}
-
-/* ── iPad landscape / small desktop (900–1024px) ───────────── */
-@media(max-width:1024px){
-  :root{--sb-w:220px}
-  .projects-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
-  .sc-val{font-size:26px}
-}
-
-/* ── iPad portrait / tablet (768–900px) ────────────────────── */
-@media(max-width:900px){
-  :root{--sb-w:280px}
-  /* Sidebar slides off canvas, toggled via menu button */
-  .sidebar{transform:translateX(-100%);z-index:200;width:var(--sb-w)}
-  .sidebar.open{transform:translateX(0);box-shadow:var(--sh-xl)}
-  .main{margin-left:0}
-  .menu-toggle{display:flex}
-  .topbar{padding:0 16px;height:56px}
-  .topbar-title{font-size:15px}
-  .page{padding:16px}
-  .stats-row{grid-template-columns:repeat(2,1fr);gap:12px}
-  .three-col{grid-template-columns:repeat(2,1fr)}
-  .req-form-row{grid-template-columns:1fr}
-  .two-col{grid-template-columns:1fr}
-  .projects-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
-  .volvo-subs{grid-template-columns:repeat(3,1fr)}
-  /* Table: allow horizontal scroll */
-  .dt-scroll{max-height:280px}
-  .excel-scroll{max-height:360px}
-  /* Card layout */
-  .card-hd{padding:12px 16px}
-  .card-body{padding:14px 16px}
-  .dept-banner{padding:16px 20px}
-  .db-title{font-size:20px}
-}
-
-/* ── Mobile landscape / large phone (640–768px) ─────────────── */
-@media(max-width:768px){
-  .stats-row{grid-template-columns:repeat(2,1fr);gap:10px}
-  .sc-val{font-size:24px}
-  .sc-lbl{font-size:9px}
-  .sc-icon{width:32px;height:32px;margin-bottom:10px}
-  .three-col{grid-template-columns:repeat(2,1fr);gap:10px}
-  /* Pagoda + other two-col areas stack */
-  .two-col{grid-template-columns:1fr}
-  /* Breadcrumb smaller */
-  .bc-item{font-size:11px;padding:3px 8px}
-  /* Back button compact */
-  .back-btn{font-size:12px;padding:7px 13px}
-  /* Req cards */
-  .req-list{max-height:480px}
-  /* Table toolbar wraps nicely */
-  .excel-table-toolbar{flex-direction:column;align-items:flex-start;gap:10px}
-  .excel-table-toolbar > div:last-child{width:100%;flex-wrap:wrap}
-  .excel-scroll{max-height:300px}
-  /* Level header */
-  .level-header{flex-direction:column;align-items:flex-start}
-  .level-actions{width:100%;flex-wrap:wrap}
-  .ref-search-input{width:100%;flex:1}
-  /* Wire selection form */
-  .ws-header{flex-direction:column;gap:8px}
-  .ws-body{padding:14px 16px}
-  .sel-ref-banner{flex-direction:column;align-items:flex-start;gap:10px}
-}
-
-/* ── Mobile portrait (up to 640px) ─────────────────────────── */
-@media(max-width:640px){
-  :root{--sb-w:88vw}
-  .page{padding:10px}
-  .topbar{height:52px}
-  .topbar-title{font-size:14px;letter-spacing:.5px}
-
-  /* Stats: 2 columns on mobile */
-  .stats-row{grid-template-columns:1fr 1fr;gap:8px}
-  .stat-card{padding:14px}
-  .sc-val{font-size:22px;letter-spacing:-0.5px}
-  .sc-lbl{font-size:9px;letter-spacing:1px}
-  .sc-icon{width:30px;height:30px;border-radius:8px;margin-bottom:8px}
-  .sc-icon svg{width:14px;height:14px}
-
-  /* Three-col → 2 on mobile */
-  .three-col{grid-template-columns:1fr 1fr;gap:8px}
-
-  /* Projects grid: 2 columns */
-  .projects-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .pc-body{padding:12px}
-  .pc-logo{width:34px;height:34px;border-radius:9px;margin-bottom:10px;font-size:11px}
-  .pc-name{font-size:13px}
-  .pc-sub{font-size:10px}
-
-  /* Volvo subs: 2 columns */
-  .volvo-subs{grid-template-columns:repeat(2,1fr);gap:8px}
-  .vsub-card{padding:11px}
-  .vsub-name{font-size:12px}
-
-  /* Modal: bottom sheet */
-  .modal{max-width:100vw;max-height:92vh;border-radius:20px 20px 0 0;align-self:flex-end}
-  .modal-overlay{align-items:flex-end;padding:0}
-  .modal-hd{padding:16px 18px}
-  .modal-body{padding:14px 16px}
-  .modal-footer{padding:12px 16px}
-
-  /* Toast: full width */
-  #toast{bottom:10px;right:10px;left:10px}
-  .toast-item{min-width:0;font-size:12px}
-
-  /* Form */
-  .req-form-row{grid-template-columns:1fr}
-  .field label{font-size:9px}
-
-  /* Excel table toolbar: stack */
-  .excel-table-toolbar{flex-direction:column;align-items:flex-start;gap:8px}
-  .excel-table-toolbar > div{width:100%}
-  .excel-table-toolbar > div:last-child{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-  #\${dept}-wire-search,input[id$="-wire-search"]{width:100%!important;min-width:0}
-  .excel-scroll{max-height:260px}
-  .excel-tbl th,.excel-tbl td{padding:6px 9px;font-size:11px}
-  .excel-row-num{min-width:28px;padding:5px 6px;font-size:9px}
-
-  /* Breadcrumb */
-  .breadcrumb{gap:4px;margin-bottom:14px}
-  .bc-item{font-size:10px;padding:3px 7px}
-
-  /* Back button */
-  .back-btn{font-size:11px;padding:7px 12px;margin-bottom:12px}
-  .back-btn svg{width:12px;height:12px}
-
-  /* Wire selection */
-  .ws-header{padding:14px 16px}
-  .ws-title{font-size:14px}
-  .ws-body{padding:12px 14px}
-  .sel-ref-banner{flex-direction:column;align-items:flex-start;gap:8px;padding:10px 12px}
-  .srb-id{font-size:12px}
-
-  /* Dept banner */
-  .dept-banner{padding:14px 16px;margin-bottom:14px}
-  .db-title{font-size:18px;letter-spacing:1px}
-  .db-sub{font-size:11px}
-
-  /* Tab row */
-  .tab-row{gap:6px}
-  .tab-row .tb-btn{font-size:11px;padding:7px 11px}
-
-  /* Req cards */
-  .req-card{padding:12px 14px}
-  .rc-id{font-size:12px}
-  .rc-item{padding:6px 10px}
-  .rc-item-name{font-size:11px}
-  .rc-item-det{font-size:10px}
-  .btn-row{gap:6px}
-  .btn{padding:8px 10px;font-size:11px}
-
-  /* Level header */
-  .level-header{flex-direction:column;align-items:flex-start;gap:8px}
-  .level-actions{width:100%;flex-wrap:wrap}
-  .ref-search-input{width:100%}
-  .level-title{font-size:14px}
-
-  /* Analytics charts */
-  .donut-wrap{flex-direction:column;align-items:flex-start;padding:14px 16px;gap:14px}
-  .donut-wrap svg{width:90px;height:90px}
-
-  /* Wire action rows in modals */
-  .wire-action-row{flex-direction:column;align-items:flex-start;gap:10px}
-  .war-btns{flex-wrap:wrap}
-  .wbtn{font-size:10px;padding:5px 10px}
-
-  /* History table: horizontal scroll */
-  .hist-table{min-width:480px}
-}
-
-/* ── Very small phones (up to 390px) ───────────────────────── */
-@media(max-width:390px){
-  .stats-row{grid-template-columns:1fr 1fr;gap:6px}
-  .sc-val{font-size:20px}
-  .projects-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .three-col{grid-template-columns:1fr 1fr;gap:6px}
-  .page{padding:8px}
-  .topbar{height:50px}
-  .excel-scroll{max-height:220px}
-  .excel-tbl th,.excel-tbl td{font-size:10px;padding:5px 7px}
-}
-
-/* ── Ensure tables always scroll horizontally ───────────────── */
+@media(min-width:1281px){.two-col{grid-template-columns:1fr 360px}}
+@media(max-width:1280px){.two-col{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1024px){:root{--sb-w:220px}.projects-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}.sc-val{font-size:26px}}
+@media(max-width:900px){:root{--sb-w:280px}.sidebar{transform:translateX(-100%);z-index:200;width:var(--sb-w)}.sidebar.open{transform:translateX(0);box-shadow:var(--sh-xl)}.main{margin-left:0}.menu-toggle{display:flex}.topbar{padding:0 16px;height:56px}.topbar-title{font-size:15px}.page{padding:16px}.stats-row{grid-template-columns:repeat(2,1fr);gap:12px}.three-col{grid-template-columns:repeat(2,1fr)}.req-form-row{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.projects-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}.volvo-subs{grid-template-columns:repeat(3,1fr)}.dt-scroll{max-height:280px}.excel-scroll{max-height:360px}.card-hd{padding:12px 16px}.card-body{padding:14px 16px}.dept-banner{padding:16px 20px}.db-title{font-size:20px}}
+@media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr);gap:10px}.sc-val{font-size:24px}.sc-lbl{font-size:9px}.sc-icon{width:32px;height:32px;margin-bottom:10px}.three-col{grid-template-columns:repeat(2,1fr);gap:10px}.two-col{grid-template-columns:1fr}.bc-item{font-size:11px;padding:3px 8px}.back-btn{font-size:12px;padding:7px 13px}.req-list{max-height:480px}.excel-table-toolbar{flex-direction:column;align-items:flex-start;gap:10px}.excel-table-toolbar > div:last-child{width:100%;flex-wrap:wrap}.excel-scroll{max-height:300px}.level-header{flex-direction:column;align-items:flex-start}.level-actions{width:100%;flex-wrap:wrap}.ref-search-input{width:100%;flex:1}.ws-header{flex-direction:column;gap:8px}.ws-body{padding:14px 16px}.sel-ref-banner{flex-direction:column;align-items:flex-start;gap:10px}}
+@media(max-width:640px){:root{--sb-w:88vw}.page{padding:10px}.topbar{height:52px}.topbar-title{font-size:14px;letter-spacing:.5px}.stats-row{grid-template-columns:1fr 1fr;gap:8px}.stat-card{padding:14px}.sc-val{font-size:22px;letter-spacing:-0.5px}.sc-lbl{font-size:9px;letter-spacing:1px}.sc-icon{width:30px;height:30px;border-radius:8px;margin-bottom:8px}.sc-icon svg{width:14px;height:14px}.three-col{grid-template-columns:1fr 1fr;gap:8px}.projects-grid{grid-template-columns:repeat(2,1fr);gap:10px}.pc-body{padding:12px}.pc-logo{width:34px;height:34px;border-radius:9px;margin-bottom:10px;font-size:11px}.pc-name{font-size:13px}.pc-sub{font-size:10px}.volvo-subs{grid-template-columns:repeat(2,1fr);gap:8px}.vsub-card{padding:11px}.vsub-name{font-size:12px}.modal{max-width:100vw;max-height:92vh;border-radius:20px 20px 0 0;align-self:flex-end}.modal-overlay{align-items:flex-end;padding:0}.modal-hd{padding:16px 18px}.modal-body{padding:14px 16px}.modal-footer{padding:12px 16px}#toast{bottom:10px;right:10px;left:10px}.toast-item{min-width:0;font-size:12px}.req-form-row{grid-template-columns:1fr}.field label{font-size:9px}.excel-table-toolbar{flex-direction:column;align-items:flex-start;gap:8px}.excel-table-toolbar > div{width:100%}.excel-scroll{max-height:260px}.excel-tbl th,.excel-tbl td{padding:6px 9px;font-size:11px}.excel-row-num{min-width:28px;padding:5px 6px;font-size:9px}.breadcrumb{gap:4px;margin-bottom:14px}.bc-item{font-size:10px;padding:3px 7px}.back-btn{font-size:11px;padding:7px 12px;margin-bottom:12px}.back-btn svg{width:12px;height:12px}.ws-header{padding:14px 16px}.ws-title{font-size:14px}.ws-body{padding:12px 14px}.sel-ref-banner{flex-direction:column;align-items:flex-start;gap:8px;padding:10px 12px}.srb-id{font-size:12px}.dept-banner{padding:14px 16px;margin-bottom:14px}.db-title{font-size:18px;letter-spacing:1px}.db-sub{font-size:11px}.tab-row{gap:6px}.tab-row .tb-btn{font-size:11px;padding:7px 11px}.req-card{padding:12px 14px}.rc-id{font-size:12px}.rc-item{padding:6px 10px}.rc-item-name{font-size:11px}.rc-item-det{font-size:10px}.btn-row{gap:6px}.btn{padding:8px 10px;font-size:11px}.level-header{flex-direction:column;align-items:flex-start;gap:8px}.level-actions{width:100%;flex-wrap:wrap}.ref-search-input{width:100%}.level-title{font-size:14px}.donut-wrap{flex-direction:column;align-items:flex-start;padding:14px 16px;gap:14px}.donut-wrap svg{width:90px;height:90px}.wire-action-row{flex-direction:column;align-items:flex-start;gap:10px}.war-btns{flex-wrap:wrap}.wbtn{font-size:10px;padding:5px 10px}.hist-table{min-width:480px}}
+@media(max-width:390px){.stats-row{grid-template-columns:1fr 1fr;gap:6px}.sc-val{font-size:20px}.projects-grid{grid-template-columns:1fr 1fr;gap:8px}.three-col{grid-template-columns:1fr 1fr;gap:6px}.page{padding:8px}.topbar{height:50px}.excel-scroll{max-height:220px}.excel-tbl th,.excel-tbl td{font-size:10px;padding:5px 7px}}
 .dt-scroll,.excel-scroll{-webkit-overflow-scrolling:touch;overflow-x:auto}
 [style*="overflow-x:auto"]{-webkit-overflow-scrolling:touch}
 </style>
@@ -883,10 +661,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div><div class="sb-name">Miloud Ezzaky</div><div class="sb-ver">Industry V.6</div></div>
     </div>
-    <div class="sb-user">
-      <div class="sb-avatar" id="sb-avatar">M</div>
-      <div><div class="sb-uname" id="sb-uname">Operator</div><div class="sb-udept" id="sb-udept">Assembly</div></div>
-    </div>
     <nav class="sb-nav">
       <div class="nav-section">
         <span class="nav-lbl">Overview</span>
@@ -936,6 +710,26 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="topbar-title" id="topbar-title">Analytics Dashboard</div>
+      <div class="notification-bell">
+        <button class="bell-btn" onclick="toggleNotificationDropdown()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="bell-badge" id="bell-badge" style="display:none">0</span>
+        </button>
+        <div class="bell-dropdown" id="bell-dropdown">
+          <div class="bell-header">
+            <div class="bell-title">Notifications</div>
+            <button class="bell-mark-all" onclick="markAllNotificationsRead()">Mark all read</button>
+          </div>
+          <div class="bell-list" id="bell-list">
+            <div class="empty-state" style="padding:40px;text-align:center;color:var(--tx-3);">
+              <p>No notifications yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
       <button class="tb-btn" onclick="refreshAll()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg>
         Refresh
@@ -972,8 +766,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         </div>
         <span class="badge badge-gold" id="hist-total-badge">0 orders</span>
       </div>
-
-      <!-- Filter bar -->
       <div class="card" style="margin-bottom:16px">
         <div style="padding:14px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:12px">
           <input id="hist-search" type="text" class="fi" placeholder="Search order ID, wire name, project…" style="flex:1;min-width:160px;max-width:340px;padding:9px 13px;font-size:12px" oninput="renderHistoryPage()">
@@ -992,8 +784,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
           <div style="font-size:11px;color:var(--tx-3);margin-left:auto;font-family:'JetBrains Mono',monospace" id="hist-count-label">— orders</div>
         </div>
       </div>
-
-      <!-- History list -->
       <div id="hist-list"></div>
     </div>
 
@@ -1090,12 +880,262 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+<!-- Notification Center -->
+<div class="notification-center" id="notification-center">
+  <div class="nc-header">
+    <div class="nc-title">Notification Center</div>
+    <button class="nc-close" onclick="closeNotificationCenter()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="nc-filters">
+    <button class="nc-filter active" onclick="filterNotifications('all')">All</button>
+    <button class="nc-filter" onclick="filterNotifications('unread')">Unread</button>
+    <button class="nc-filter" onclick="filterNotifications('critical')">Critical</button>
+    <button class="nc-filter" onclick="filterNotifications('urgent')">Urgent</button>
+    <button class="nc-filter" onclick="filterNotifications('important')">Important</button>
+  </div>
+  <div class="nc-list" id="nc-list">
+    <div class="empty-state" style="padding:60px;text-align:center;color:var(--tx-3);">
+      <p>No notifications found</p>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modal-overlay" style="display:none;">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Notification</div>
+    </div>
+    <div class="modal-body">
+      <div id="modal-content">Content</div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn" onclick="closeModal()">Close</button>
+      <button class="modal-btn primary" onclick="acknowledgeNotification()">Acknowledge</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
 'use strict';
 
-// ═══════════════ PROJECTS ════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// SUPABASE CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://eeeagndfxrywpnrwoajc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlZWFnbmRmeHJ5d3BucndvYWpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NDc4NzksImV4cCI6MjA4ODUyMzg3OX0.nbuqHi991y6wAH7B6OGVMChPsw2OEVF32CIWiDhhKXs';
+
+let supabase = null;
+let currentUser = null;
+
+// Initialize Supabase (non-blocking)
+function initSupabase() {
+  try {
+    if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('Supabase initialized');
+    } else {
+      console.warn('Supabase library or credentials missing');
+    }
+  } catch (error) {
+    console.error('Supabase init error:', error);
+  }
+}
+
+// Call on page load (from DOMContentLoaded)
+
+
+// ═══════════════════════════════════════════════════════════════════
+// SUPABASE DATA OPERATIONS
+// ═══════════════════════════════════════════════════════════════════
+
+// Load all data from Supabase
+async function loadAllData() {
+  try {
+    console.log('Loading data...');
+    
+    // If Supabase isn't available, skip database loading
+    if (!supabase) {
+      console.log('Supabase not available - using demo data');
+      return;
+    }
+    
+    // Load requests
+    const { data: requestsData, error: requestsError } = await supabase
+      .from('wire_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (requestsError) {
+      console.warn('Could not load requests:', requestsError);
+    } else {
+      requests = requestsData || [];
+      console.log('Loaded', requests.length, 'requests');
+    }
+    
+    // Load wire stock
+    const { data: stockData, error: stockError } = await supabase
+      .from('wire_stock')
+      .select('*');
+    
+    if (stockError) {
+      console.warn('Could not load stock:', stockError);
+    } else {
+      stockData?.forEach(item => {
+        wireStock[item.wire_name] = {
+          name: item.wire_name,
+          stock: item.stock_quantity,
+          min: item.min_quantity,
+          loc: item.location
+        };
+      });
+      console.log('Loaded', Object.keys(wireStock).length, 'wire items');
+    }
+    
+    console.log('Data loading complete');
+  } catch (error) {
+    console.error('Error loading data from Supabase:', error);
+    // Don't break the app if data loading fails
+  }
+}
+
+// Save request to Supabase
+async function saveRequest(req) {
+  try {
+    if (!supabase) return; // Offline mode
+    
+    const { error } = await supabase
+      .from('wire_requests')
+      .upsert({
+        id: req.id,
+        items: req.items,
+        urgency: req.urgency,
+        status: req.status,
+        assigned_to: req.assignedTo,
+        project: req.project,
+        project_key: req.projectKey,
+        time: req.time,
+        requested_by: req.requestedBy,
+        pagoda_status: req.pagodaStatus,
+        completed_at: req.completedAt,
+        locked: req.locked,
+        user_id: currentUser?.id,
+        created_at: new Date().toISOString()
+      });
+    
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error saving request:', error);
+  }
+}
+
+// Upload file to Supabase Storage
+async function uploadExcelFile(file, path) {
+  try {
+    if (!supabase) return null;
+    
+    const { data, error } = await supabase.storage
+      .from('excel-files')
+      .upload(path, file);
+    
+    if (error) throw error;
+    
+    const { data: publicUrl } = supabase.storage
+      .from('excel-files')
+      .getPublicUrl(path);
+    
+    return publicUrl.publicUrl;
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    throw error;
+  }
+}
+
+// Save reference list to Supabase
+async function saveReferences(dept, projectKey, refs) {
+  try {
+    if (!supabase) return;
+    
+    for (const ref of refs) {
+      await supabase
+        .from('reference_lists')
+        .upsert({
+          id: `${dept}-${projectKey}-${ref.id}`,
+          reference_id: ref.id,
+          description: ref.desc,
+          department: dept,
+          project_key: projectKey,
+          created_by: currentUser?.id
+        });
+    }
+  } catch (error) {
+    console.error('Error saving references:', error);
+  }
+}
+
+// Setup real-time subscriptions
+function setupRealtimeSubscriptions() {
+  if (!supabase) return;
+  
+  // Subscribe to wire requests changes
+  const requestsSubscription = supabase
+    .channel('wire_requests')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'wire_requests' },
+      (payload) => {
+        console.log('Request update:', payload);
+        loadAllData().then(() => {
+          refreshAll();
+        });
+      }
+    )
+    .subscribe();
+  
+  // Subscribe to wire stock changes
+  const stockSubscription = supabase
+    .channel('wire_stock')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'wire_stock' },
+      (payload) => {
+        console.log('Stock update:', payload);
+        loadAllData().then(() => {
+          updatePagodaMetrics();
+        });
+      }
+    )
+    .subscribe();
+  
+  // Store subscriptions for cleanup
+  window.supabaseSubscriptions = [requestsSubscription, stockSubscription];
+}
+
+// Logout function
+async function doLogout() {
+  try {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    currentUser = null;
+    requests = [];
+    window.location.reload();
+  } catch (error) {
+    console.error('Logout error:', error);
+    window.location.reload();
+  }
+}
+
 const PROJECTS=[
   {id:'VOLVO',name:'VOLVO',color:'#c49a2a',isMain:true,subs:['SMALL','MDEP','AFTER MARKET','STEP E','C1','C2','C3','DAL','VCE']},
   {id:'CLAAS',name:'CLAAS',color:'#16a06a'},
@@ -1111,7 +1151,6 @@ const PROJECTS=[
   {id:'DAF',name:'DAF',color:'#b45309'},
 ];
 
-// ═══════════════ STATE ═══════════════════════════════════════
 const store={assembly:{},wpa:{},twist:{}};
 const navState={
   assembly:{level:'projects',projectKey:null,refId:null},
@@ -1124,45 +1163,180 @@ let currentUser={username:'ME-001',department:'assembly',name:'Miloud Ezzaky'};
 let currentPage='analytics';
 const wireStock={'WIRE-18-RED':{name:'WIRE-18-RED',stock:5,min:5,loc:'A1-3'},'WIRE-18-BLK':{name:'WIRE-18-BLK',stock:8,min:5,loc:'A1-4'},'WIRE-20-BLU':{name:'WIRE-20-BLU',stock:2,min:4,loc:'A2-1'},'XE1-20-RED':{name:'XE1-20-RED',stock:3,min:3,loc:'B1-1'},'SP23-18-RED':{name:'SP23-18-RED',stock:3,min:3,loc:'C1-1'},'TW45-24-RB':{name:'TW45-24-RB',stock:4,min:4,loc:'D1-1'}};
 
-// ═══════════════ TOAST ═══════════════════════════════════════
 function toast(msg,type='info'){
-  const c=document.getElementById('toast');
-  const el=document.createElement('div');
-  el.className=`toast-item ${type}`;
-  el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0">${type==='success'?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg>${msg}`;
-  c.appendChild(el);
-  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(20px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},3500);
+  // Use browser alert if toast element doesn't exist
+  const toastEl = document.getElementById('toast') || document.getElementById('toast-container');
+  
+  if (!toastEl) {
+    console.log('Toast:', msg);
+    return;
+  }
+  
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.style.cssText = `
+    margin-bottom: 12px;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--bd-1);
+    border-radius: var(--r-lg);
+    box-shadow: var(--sh-lg);
+    pointer-events: auto;
+    animation: toastIn .3s cubic-bezier(.16,1,.3,1) both;
+    color: var(--tx-1);
+  `;
+  
+  if (type === 'success') {
+    el.style.background = 'var(--green)';
+    el.style.color = '#fff';
+    el.style.borderColor = 'var(--green)';
+  } else if (type === 'error') {
+    el.style.background = 'var(--red)';
+    el.style.color = '#fff';
+    el.style.borderColor = 'var(--red)';
+  }
+  
+  el.innerHTML = `<div style="display:flex;align-items:center;gap:10px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0">
+      ${type==='success'?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+    </svg>
+    <span>${msg}</span>
+  </div>`;
+  
+  toastEl.appendChild(el);
+  
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(20px)';
+    el.style.transition = 'all .3s';
+    setTimeout(() => {
+      if (el.parentElement) el.remove();
+    }, 300);
+  }, 3500);
 }
 
-// ═══════════════ LOGIN ════════════════════════════════════════
 function doLogin(){
-  const dept=document.getElementById('dept-select').value;
-  const uid=document.getElementById('login-uid').value;
-  currentUser={username:uid,department:dept,name:uid==='ME-001'?'Miloud Ezzaky':'Operator'};
-  document.getElementById('login-screen').style.opacity='0';
-  document.getElementById('login-screen').style.transition='opacity .4s';
-  setTimeout(()=>{
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='flex';
-  },400);
-  document.getElementById('sb-uname').textContent=currentUser.name;
-  document.getElementById('sb-avatar').textContent=currentUser.name[0].toUpperCase();
-  document.getElementById('sb-udept').textContent=dept.toUpperCase();
-  ['assembly','wpa','twist'].forEach(d=>{
-    PROJECTS.forEach(p=>{
-      if(p.isMain){p.subs.forEach(s=>{store[d][p.id+'__'+s.replace(/ /g,'_')]={refs:[],refData:{}};});store[d][p.id]={refs:[],refData:{}};}
-      else{store[d][p.id]={refs:[],refData:{}};}
-    });
-  });
-  updateClock();setInterval(updateClock,1000);
-  setInterval(refreshAll,12000);
-  const defaultBtn=document.querySelector(`.nb[onclick*="'${dept}'"]`);
-  if(defaultBtn){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
-  loadPage(dept);updateBadges();
-  toast(`Welcome, ${currentUser.name}! Select a project to get started.`,'success');
+  console.log('=== LOGIN ATTEMPT ===');
+  
+  try {
+    const emailInput = document.getElementById('login-uid');
+    const deptSelect = document.getElementById('dept-select');
+    
+    if (!emailInput) {
+      alert('Error: User ID field not found');
+      console.error('login-uid element not found');
+      return;
+    }
+    
+    if (!deptSelect) {
+      alert('Error: Department field not found');
+      console.error('dept-select element not found');
+      return;
+    }
+    
+    const email = emailInput.value?.trim();
+    const dept = deptSelect.value?.trim();
+    
+    console.log('Email:', email, 'Dept:', dept);
+    
+    // Validate inputs
+    if (!email || email.length === 0) {
+      alert('Please enter a User ID');
+      toast('Please enter a User ID', 'error');
+      return;
+    }
+    
+    if (!dept || dept.length === 0) {
+      alert('Please select a Department');
+      toast('Please select a Department', 'error');
+      return;
+    }
+    
+    // Set user
+    currentUser = { 
+      id: email,
+      email: email + '@local.demo',
+      username: email,
+      department: dept
+    };
+    
+    console.log('Current user set:', currentUser);
+    console.log('Starting app...');
+    
+    // Start app immediately
+    startAppSimple(dept);
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('Error: ' + error.message);
+  }
 }
 
-// ═══════════════ NAVIGATION ══════════════════════════════════
+function startAppSimple(dept) {
+  console.log('Starting app for department:', dept);
+  
+  try {
+    // Hide login screen
+    const loginScreen = document.getElementById('login-screen');
+    const appContainer = document.getElementById('app');
+    
+    if (!loginScreen) {
+      console.error('login-screen not found');
+      return;
+    }
+    
+    if (!appContainer) {
+      console.error('app container not found');
+      return;
+    }
+    
+    // Fade out login
+    loginScreen.style.opacity = '0';
+    loginScreen.style.transition = 'opacity 0.4s';
+    
+    // After fade, hide and show app
+    setTimeout(() => {
+      loginScreen.style.display = 'none';
+      appContainer.style.display = 'flex';
+      console.log('App displayed');
+    }, 400);
+    
+    // Initialize app features
+    console.log('Initializing clock...');
+    updateClock();
+    setInterval(updateClock, 1000);
+    
+    // Set active nav button
+    console.log('Setting nav for:', dept);
+    const deptBtn = document.querySelector(`.nb[onclick*="'${dept}'"]`);
+    if (deptBtn) {
+      document.querySelectorAll('.nb').forEach(b => b.classList.remove('active'));
+      deptBtn.classList.add('active');
+      console.log('Nav button activated');
+    } else {
+      console.warn('Department nav button not found for:', dept);
+    }
+    
+    // Load the department page
+    console.log('Loading page:', dept);
+    loadPage(dept);
+    updateBadges();
+    
+    toast('Welcome! Select a project to get started.', 'success');
+    console.log('=== LOGIN COMPLETE ===');
+    
+  } catch (error) {
+    console.error('Start app error:', error);
+    alert('Error starting app: ' + error.message);
+  }
+}
+
+async function startApp(user) {
+  // This is called by Supabase login - for now just use startAppSimple
+  const dept = document.getElementById('dept-select')?.value || 'assembly';
+  startAppSimple(dept);
+}
+
 const PAGE_TITLES={analytics:'Analytics Dashboard',history:'Order History',assembly:'Assembly Department',pagoda:'Pagoda · Central Hub',cutting:'Cutting Area',wpa:'Wire Prep Area',twist:'Twist Department'};
 function switchPage(page,btn){
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
@@ -1196,7 +1370,6 @@ function updateBadges(){
   const hb=document.getElementById('b-history');if(hb)hb.textContent=requests.length;
 }
 
-// ═══════════════ EXCEL PARSER ════════════════════════════════
 function parseExcel(file){
   return new Promise((res,rej)=>{
     const r=new FileReader();
@@ -1204,7 +1377,6 @@ function parseExcel(file){
       try{
         const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
         const ws=wb.Sheets[wb.SheetNames[0]];
-        // Use raw rows to preserve exact data
         const raw=XLSX.utils.sheet_to_json(ws,{defval:'',raw:false});
         const headers=XLSX.utils.sheet_to_json(ws,{header:1,defval:''})[0]||[];
         res({rows:raw,headers});
@@ -1236,19 +1408,10 @@ function normalizeWire(row,headers){
 }
 function detectType(s){s=s.toLowerCase();if(s.includes('twist')||s.includes('torsad')||s.includes('paire'))return'twist';if(s.includes('xe')||s.includes('shield')||s.includes('ecran'))return'xe';if(s.includes('sp')&&!s.includes('spec')||s.includes(' sp '))return'sp';if(s.includes('sp'))return'sp';return'simple';}
 function typeTag(t){const map={simple:'wt-simple',xe:'wt-xe',sp:'wt-sp',twist:'wt-twist'};return`<span class="wt-type ${map[t]||'wt-simple'}">${t.toUpperCase()}</span>`;}
-
 function projectLabel(key){if(key.includes('__')){const[pid,sid]=key.split('__');const p=PROJECTS.find(x=>x.id===pid);return`${p?p.name:'VOLVO'} · ${sid.replace(/_/g,' ')}`;}const p=PROJECTS.find(x=>x.id===key);return p?p.name:key;}
 function projectColor(key){const pid=key.split('__')[0];const p=PROJECTS.find(x=>x.id===pid);return p?p.color:'#2563eb';}
+function backBtn(dept,targetLevel,label){return`<button class="back-btn" onclick="navTo('${dept}','${targetLevel}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>${label}</button>`;}
 
-// ═══════════════ BACK BUTTON HTML ════════════════════════════
-function backBtn(dept, targetLevel, label){
-  return`<button class="back-btn" onclick="navTo('${dept}','${targetLevel}')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    ${label}
-  </button>`;
-}
-
-// ═══════════════ RENDER REQUEST AREA ═════════════════════════
 function renderRequestArea(dept){
   const areaId=dept==='assembly'?'asm-request-area':dept==='wpa'?'wpa-request-area':'twist-request-area';
   const el=document.getElementById(areaId);if(!el)return;
@@ -1259,15 +1422,10 @@ function renderRequestArea(dept){
   else if(ns.level==='wires')el.innerHTML=renderWiresLevel(dept);
 }
 
-// ─── LEVEL 1: Projects ───────────────────────────────────────
 function renderProjectsLevel(dept){
   const deptStore=store[dept];
   const getCount=(key)=>(deptStore[key]||{refs:[]}).refs.length;
-  let html=`<div class="section-intro">
-    <div class="section-heading">Select a Project</div>
-    <div class="section-subtext">Choose a project to upload its reference list and create wire requests</div>
-  </div>
-  <div class="projects-grid">`;
+  let html=`<div class="section-intro"><div class="section-heading">Select a Project</div><div class="section-subtext">Choose a project to upload its reference list and create wire requests</div></div><div class="projects-grid">`;
   PROJECTS.forEach(p=>{
     const isVolvo=p.isMain;
     const count=isVolvo?p.subs.reduce((s,sub)=>s+(deptStore[p.id+'__'+sub.replace(/ /g,'_')]||{refs:[]}).refs.length,0)+getCount(p.id):getCount(p.id);
@@ -1286,203 +1444,73 @@ function renderProjectsLevel(dept){
       </div>
     </div>`;
   });
-  html+=`</div>`;
-  return html;
+  html+=`</div>`;return html;
 }
 
-// ─── LEVEL 1b: VOLVO Subs ────────────────────────────────────
 function renderVolvoSubsLevel(dept){
   const deptStore=store[dept];
   const volvo=PROJECTS.find(p=>p.isMain);
-  let html=`${backBtn(dept,'projects','← Back to Projects')}
-  ${renderBreadcrumb(dept)}
-  <div class="volvo-header">
-    <div class="volvo-logo">V</div>
-    <div><div class="volvo-title">VOLVO Projects</div><div class="volvo-sub">Select a sub-project to manage its references and wire lists</div></div>
-  </div>
-  <div class="volvo-subs">`;
+  let html=`${backBtn(dept,'projects','← Back to Projects')}${renderBreadcrumb(dept)}<div class="volvo-header"><div class="volvo-logo">V</div><div><div class="volvo-title">VOLVO Projects</div><div class="volvo-sub">Select a sub-project to manage its references and wire lists</div></div></div><div class="volvo-subs">`;
   volvo.subs.forEach(sub=>{
     const key='VOLVO__'+sub.replace(/ /g,'_');
     const count=(deptStore[key]||{refs:[]}).refs.length;
     const hasData=count>0;
-    html+=`<div class="vsub-card ${hasData?'has-data':''}" onclick="selectProject('${dept}','${key}')">
-      <div class="vsub-name">${sub}</div>
-      <div class="vsub-meta">${hasData?count+' reference'+(count>1?'s':''):'No references yet'}</div>
-    </div>`;
+    html+=`<div class="vsub-card ${hasData?'has-data':''}" onclick="selectProject('${dept}','${key}')"><div class="vsub-name">${sub}</div><div class="vsub-meta">${hasData?count+' reference'+(count>1?'s':''):'No references yet'}</div></div>`;
   });
-  html+=`</div>`;
-  return html;
+  html+=`</div>`;return html;
 }
 
-// ─── LEVEL 2: References ─────────────────────────────────────
 function renderRefsLevel(dept){
-  const ns=navState[dept];
-  const key=ns.projectKey;
+  const ns=navState[dept];const key=ns.projectKey;
   const pStore=store[dept][key]||{refs:[],refData:{}};
-  const color=projectColor(key);
-  const label=projectLabel(key);
+  const color=projectColor(key);const label=projectLabel(key);
   const searchTerm=formState[dept].refSearch||'';
   const filteredRefs=pStore.refs.filter(r=>!searchTerm||r.id.toLowerCase().includes(searchTerm.toLowerCase())||r.desc.toLowerCase().includes(searchTerm.toLowerCase()));
   const isVolvoSub=key&&key.startsWith('VOLVO__');
-
-  let html=`${backBtn(dept, isVolvoSub?'volvo_subs':'projects', isVolvoSub?'← Back to VOLVO Projects':'← Back to Projects')}
-  ${renderBreadcrumb(dept)}
-  <div class="ref-section">
-    <div class="level-header">
-      <div class="level-title">
-        <div style="width:30px;height:30px;background:${color};border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;box-shadow:0 2px 10px ${color}44">${label.split(' ')[0].slice(0,2).toUpperCase()}</div>
-        <span>${label}</span>
-        ${pStore.refs.length>0?`<span class="badge badge-green">${pStore.refs.length} loaded</span>`:''}
-      </div>
-      <div class="level-actions">`;
-  if(pStore.refs.length>0){
-    html+=`<input type="text" class="ref-search-input" placeholder="Search references…" value="${searchTerm}" oninput="searchRefs(event,'${dept}')">
-    <label class="upload-btn upload-btn-outline"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Replace</label>
-    <button onclick="clearProjectRefs('${dept}','${key}')" class="upload-btn upload-btn-outline" style="border-color:rgba(239,68,68,.3);color:var(--red)">Clear</button>`;
-  }
+  let html=`${backBtn(dept,isVolvoSub?'volvo_subs':'projects',isVolvoSub?'← Back to VOLVO Projects':'← Back to Projects')}${renderBreadcrumb(dept)}<div class="ref-section"><div class="level-header"><div class="level-title"><div style="width:30px;height:30px;background:${color};border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;box-shadow:0 2px 10px ${color}44">${label.split(' ')[0].slice(0,2).toUpperCase()}</div><span>${label}</span>${pStore.refs.length>0?`<span class="badge badge-green">${pStore.refs.length} loaded</span>`:''}</div><div class="level-actions">`;
+  if(pStore.refs.length>0){html+=`<input type="text" class="ref-search-input" placeholder="Search references…" value="${searchTerm}" oninput="searchRefs(event,'${dept}')"><label class="upload-btn upload-btn-outline"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Replace</label><button onclick="clearProjectRefs('${dept}','${key}')" class="upload-btn upload-btn-outline" style="border-color:rgba(239,68,68,.3);color:var(--red)">Clear</button>`;}
   html+=`</div></div>`;
-
   if(pStore.refs.length===0){
-    html+=`<div class="drop-zone" id="${dept}-${key}-dropzone">
-      <input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')">
-      <div class="dz-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-      <div class="dz-title">Upload Reference List for ${label}</div>
-      <div class="dz-sub">Drop an Excel file (.xlsx / .xls / .csv) with your reference list<br>Columns: Reference ID, Description (optional)</div>
-      <div class="dz-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Columns named "Reference", "Ref", "ID", or "Code" are auto-detected</div>
-    </div>`;
+    html+=`<div class="drop-zone" id="${dept}-${key}-dropzone"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')"><div class="dz-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div class="dz-title">Upload Reference List for ${label}</div><div class="dz-sub">Drop an Excel file (.xlsx / .xls / .csv) with your reference list<br>Columns: Reference ID, Description (optional)</div><div class="dz-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Columns named "Reference", "Ref", "ID", or "Code" are auto-detected</div></div>`;
   } else {
-    html+=`<div class="data-table-wrap">
-      <div class="dt-header">
-        <div class="dt-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          ${filteredRefs.length} of ${pStore.refs.length} references
-        </div>
-      </div>
-      <div class="dt-scroll">
-        <table class="dt"><thead><tr><th>Reference ID</th><th>Description</th><th>Wire List</th><th>Action</th></tr></thead><tbody>`;
+    html+=`<div class="data-table-wrap"><div class="dt-header"><div class="dt-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${filteredRefs.length} of ${pStore.refs.length} references</div></div><div class="dt-scroll"><table class="dt"><thead><tr><th>Reference ID</th><th>Description</th><th>Wire List</th><th>Action</th></tr></thead><tbody>`;
     filteredRefs.forEach(ref=>{
-      const wires=pStore.refData[ref.id]||[];
-      const hasWires=wires.length>0;
-      html+=`<tr>
-        <td class="mono">${ref.id}</td>
-        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;color:var(--tx-2)">${ref.desc||'—'}</td>
-        <td><div class="action-cell">
-          <span class="row-pill ${hasWires?'has':''}">${hasWires?wires.length+' wires':'No data'}</span>
-          ${hasWires?`<button class="icon-btn" onclick="viewWireList('${dept}','${key}','${ref.id}')" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`:''}
-          <label class="icon-btn ${hasWires?'has-data':''}" title="Upload wire Excel for ${ref.id}">
-            <input type="file" accept=".xlsx,.xls,.csv" onchange="handleWireUpload(event,'${dept}','${key}','${ref.id}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          </label>
-        </div></td>
-        <td><button class="select-arrow-btn" style="background:${color};color:#fff;box-shadow:0 2px 10px ${color}44" onclick="selectRef('${dept}','${ref.id}')">Select →</button></td>
-      </tr>`;
+      const wires=pStore.refData[ref.id]||[];const hasWires=wires.length>0;
+      html+=`<tr><td class="mono">${ref.id}</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;color:var(--tx-2)">${ref.desc||'—'}</td><td><div class="action-cell"><span class="row-pill ${hasWires?'has':''}">${hasWires?wires.length+' wires':'No data'}</span>${hasWires?`<button class="icon-btn" onclick="viewWireList('${dept}','${key}','${ref.id}')" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`:''}<label class="icon-btn ${hasWires?'has-data':''}" title="Upload wire Excel for ${ref.id}"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleWireUpload(event,'${dept}','${key}','${ref.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></label></div></td><td><button class="select-arrow-btn" style="background:${color};color:#fff;box-shadow:0 2px 10px ${color}44" onclick="selectRef('${dept}','${ref.id}')">Select →</button></td></tr>`;
     });
     if(filteredRefs.length===0){html+=`<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--tx-4)">No references match your search</td></tr>`;}
     html+=`</tbody></table></div></div>`;
   }
-  html+=`</div>`;
-  return html;
+  html+=`</div>`;return html;
 }
 
-// ─── LEVEL 3: Wires (Excel exact display) ────────────────────
 function renderWiresLevel(dept){
-  const ns=navState[dept];
-  const key=ns.projectKey;const refId=ns.refId;
-  const pStore=store[dept][key]||{refs:[],refData:{}};
-  const wires=pStore.refData[refId]||[];
-  const ref=pStore.refs.find(r=>r.id===refId);
-  const color=projectColor(key);const label=projectLabel(key);
+  const ns=navState[dept];const key=ns.projectKey;const refId=ns.refId;
+  const pStore=store[dept][key]||{refs:[],refData:{}};const wires=pStore.refData[refId]||[];
+  const ref=pStore.refs.find(r=>r.id===refId);const color=projectColor(key);const label=projectLabel(key);
   const hdrBg=dept==='wpa'?'linear-gradient(135deg,#071d35,#0c4a6e)':dept==='twist'?'linear-gradient(135deg,#1e0935,#4c1d95)':'linear-gradient(135deg,#0e1830,#1a2d5a)';
   const submitClass=dept==='wpa'?'sb-wpa':dept==='twist'?'sb-twist':'sb-asm';
   const cols=wires.length>0?wires[0]._cols:[];
-
-  let html=`${backBtn(dept,'refs','← Back to References')}
-  ${renderBreadcrumb(dept)}
-  <div class="wire-select-section">
-    <div class="ws-header" style="background:${hdrBg}">
-      <div><div class="ws-title">Step 3 — Select Wires & Submit</div><div class="ws-sub">Project: ${label} · Reference: ${refId}${ref?.desc?' · '+ref.desc:''}</div></div>
-    </div>
-    <div class="ws-body">
-      <div class="sel-ref-banner">
-        <div class="srb-info">
-          <div class="srb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-          <div><div class="srb-id">${refId}</div><div class="srb-meta">${label} · ${wires.length>0?wires.length+' wires available':'No wire data'}</div></div>
-        </div>
-        <button class="srb-clear" onclick="navTo('${dept}','refs')" title="Change reference"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-      </div>`;
-
+  let html=`${backBtn(dept,'refs','← Back to References')}${renderBreadcrumb(dept)}<div class="wire-select-section"><div class="ws-header" style="background:${hdrBg}"><div><div class="ws-title">Step 3 — Select Wires & Submit</div><div class="ws-sub">Project: ${label} · Reference: ${refId}${ref?.desc?' · '+ref.desc:''}</div></div></div><div class="ws-body"><div class="sel-ref-banner"><div class="srb-info"><div class="srb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="srb-id">${refId}</div><div class="srb-meta">${label} · ${wires.length>0?wires.length+' wires available':'No wire data'}</div></div></div><button class="srb-clear" onclick="navTo('${dept}','refs')" title="Change reference"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`;
   if(wires.length===0){
-    html+=`<div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:var(--r-md);padding:16px;display:flex;align-items:flex-start;gap:11px;margin-bottom:18px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      <div><div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:4px">No wire data for ${refId}</div><div style="font-size:12px;color:var(--tx-2)">Go back and upload an Excel file for this reference first.</div></div>
-    </div>
-    <button onclick="navTo('${dept}','refs')" class="btn btn-primary" style="flex:unset;padding:10px 22px">← Back to References</button>`;
+    html+=`<div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:var(--r-md);padding:16px;display:flex;align-items:flex-start;gap:11px;margin-bottom:18px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div><div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:4px">No wire data for ${refId}</div><div style="font-size:12px;color:var(--tx-2)">Go back and upload an Excel file for this reference first.</div></div></div><button onclick="navTo('${dept}','refs')" class="btn btn-primary" style="flex:unset;padding:10px 22px">← Back to References</button>`;
   } else {
-    // ── Excel-exact table display ──────────────────────────
-    html+=`<div class="excel-table-container">
-      <div class="excel-table-toolbar">
-        <div class="excel-toolbar-left">
-          <div class="excel-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:var(--green-lt)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Wire List — ${refId}
-          </div>
-          <span class="excel-row-count">${wires.length} rows × ${cols.length} cols</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <div style="position:relative">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--tx-3);pointer-events:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="${dept}-wire-search" placeholder="Filter rows…" value="${formState[dept].wireSearch||''}" oninput="searchWires(event,'${dept}')"
-              style="width:180px;padding:5px 9px 5px 28px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:6px;font-size:11px;font-family:'Space Grotesk',sans-serif;color:var(--tx-1);outline:none;transition:border-color .15s"
-              onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--bd-1)'">
-          </div>
-          <span class="sel-count" id="${dept}-sel-count">0 selected</span>
-          <button class="small-btn" onclick="selectAll('${dept}')">All</button>
-          <button class="small-btn" onclick="deselectAll('${dept}')">None</button>
-        </div>
-      </div>
-      <div class="excel-scroll">
-        <table class="excel-tbl" id="${dept}-wit">
-          <thead>
-            <tr>
-              <th class="excel-row-num">#</th>
-              <th class="excel-checkbox-col"><input type="checkbox" class="excel-cb wire-all-cb" id="${dept}-all-cb" onchange="toggleAll('${dept}',this.checked)" title="Select all"></th>`;
-
+    html+=`<div class="excel-table-container"><div class="excel-table-toolbar"><div class="excel-toolbar-left"><div class="excel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:var(--green-lt)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Wire List — ${refId}</div><span class="excel-row-count">${wires.length} rows × ${cols.length} cols</span></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--tx-3);pointer-events:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="${dept}-wire-search" placeholder="Filter rows…" value="${formState[dept].wireSearch||''}" oninput="searchWires(event,'${dept}')" style="width:180px;padding:5px 9px 5px 28px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:6px;font-size:11px;font-family:'Space Grotesk',sans-serif;color:var(--tx-1);outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--bd-1)'"></div><span class="sel-count" id="${dept}-sel-count">0 selected</span><button class="small-btn" onclick="selectAll('${dept}')">All</button><button class="small-btn" onclick="deselectAll('${dept}')">None</button></div></div><div class="excel-scroll"><table class="excel-tbl" id="${dept}-wit"><thead><tr><th class="excel-row-num">#</th><th class="excel-checkbox-col"><input type="checkbox" class="excel-cb wire-all-cb" id="${dept}-all-cb" onchange="toggleAll('${dept}',this.checked)" title="Select all"></th>`;
     cols.forEach(col=>{html+=`<th>${col}</th>`;});
     html+=`<th>Qty Override</th></tr></thead><tbody id="${dept}-wit-body">`;
-
     wires.forEach((w,i)=>{
-      html+=`<tr id="${dept}-wrow-${i}" onclick="toggleRow('${dept}',${i})" style="cursor:pointer">
-        <td class="excel-row-num">${i+1}</td>
-        <td class="excel-checkbox-col" onclick="event.stopPropagation()"><input type="checkbox" class="excel-cb wire-cb ${dept}-wcb" data-idx="${i}" onchange="updateSelCount('${dept}')"></td>`;
-      cols.forEach(col=>{
-        const val=w._raw[col]!==undefined?String(w._raw[col]):'';
-        const isEmpty=val===''||val===null||val===undefined;
-        const isNum=!isEmpty&&!isNaN(Number(val))&&val.trim()!=='';
-        html+=`<td class="${isEmpty?'cell-empty':isNum?'cell-num':''}" title="${val.replace(/"/g,'&quot;')}">${isEmpty?'—':val}</td>`;
-      });
-      html+=`<td onclick="event.stopPropagation()"><input type="number" class="qty-override" id="${dept}-qty-${i}" value="${w.quantity}" min="1"></td>
-      </tr>`;
+      html+=`<tr id="${dept}-wrow-${i}" onclick="toggleRow('${dept}',${i})" style="cursor:pointer"><td class="excel-row-num">${i+1}</td><td class="excel-checkbox-col" onclick="event.stopPropagation()"><input type="checkbox" class="excel-cb wire-cb ${dept}-wcb" data-idx="${i}" onchange="updateSelCount('${dept}')"></td>`;
+      cols.forEach(col=>{const val=w._raw[col]!==undefined?String(w._raw[col]):'';const isEmpty=val===''||val===null||val===undefined;const isNum=!isEmpty&&!isNaN(Number(val))&&val.trim()!=='';html+=`<td class="${isEmpty?'cell-empty':isNum?'cell-num':''}" title="${val.replace(/"/g,'&quot;')}">${isEmpty?'—':val}</td>`;});
+      html+=`<td onclick="event.stopPropagation()"><input type="number" class="qty-override" id="${dept}-qty-${i}" value="${w.quantity}" min="1"></td></tr>`;
     });
     html+=`</tbody></table></div></div>`;
-
-    html+=`<div class="req-form-row" style="margin-top:16px">
-      <div class="field"><label>Urgency <span style="color:var(--red)">*</span></label>
-        <select id="${dept}-urgency"><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="critical">Critical</option></select>
-      </div>
-      <div class="field"><label>Confirm Project</label>
-        <input type="text" id="${dept}-proj-display" value="${label}" readonly style="color:var(--tx-3);cursor:default">
-      </div>
-    </div>
-    <button class="submit-btn ${submitClass}" onclick="submitRequest('${dept}')">Submit Request to Pagoda →</button>`;
+    html+=`<div class="req-form-row" style="margin-top:16px"><div class="field"><label>Urgency <span style="color:var(--red)">*</span></label><select id="${dept}-urgency"><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="critical">Critical</option></select></div><div class="field"><label>Confirm Project</label><input type="text" id="${dept}-proj-display" value="${label}" readonly style="color:var(--tx-3);cursor:default"></div></div><button class="submit-btn ${submitClass}" onclick="submitRequest('${dept}')">Submit Request to Pagoda →</button>`;
   }
-  html+=`</div></div>`;
-  return html;
+  html+=`</div></div>`;return html;
 }
 
-// ─── BREADCRUMB ──────────────────────────────────────────────
 function renderBreadcrumb(dept){
-  const ns=navState[dept];
-  let items=[];
+  const ns=navState[dept];let items=[];
   items.push({label:'Projects',level:'projects'});
   if(ns.level==='volvo_subs'){items.push({label:'VOLVO',level:'volvo_subs',active:true});}
   else if(ns.level==='refs'||ns.level==='wires'){
@@ -1494,7 +1522,6 @@ function renderBreadcrumb(dept){
   return`<div class="breadcrumb">${items.map((it,i)=>`${i>0?'<span class="bc-sep">›</span>':''}<span class="bc-item ${it.active?'active':''}" onclick="navTo('${dept}','${it.level}')">${it.label}</span>`).join('')}</div>`;
 }
 
-// ═══════════════ NAV ACTIONS ══════════════════════════════════
 function selectProject(dept,projectId){
   const p=PROJECTS.find(x=>x.id===projectId);
   if(p&&p.isMain&&!projectId.includes('__')){navState[dept].level='volvo_subs';navState[dept].projectKey='VOLVO';}
@@ -1513,39 +1540,60 @@ function searchWires(e,dept){formState[dept].wireSearch=e.target.value;filterWir
 function filterWireTable(dept){
   const term=(formState[dept].wireSearch||'').toLowerCase();
   const ns=navState[dept];const key=ns.projectKey;const refId=ns.refId;
-  const pStore=store[dept][key]||{refs:[],refData:{}};
-  const wires=pStore.refData[refId]||[];
-  const cols=wires.length>0?wires[0]._cols:[];
+  const pStore=store[dept][key]||{refs:[],refData:{}};const wires=pStore.refData[refId]||[];const cols=wires.length>0?wires[0]._cols:[];
   let visible=0;
   wires.forEach((w,i)=>{
     const row=document.getElementById(`${dept}-wrow-${i}`);if(!row)return;
     const match=!term||cols.some(c=>String(w._raw[c]||'').toLowerCase().includes(term))||w.wireType.toLowerCase().includes(term);
     row.style.display=match?'':'none';if(match)visible++;
   });
-  const countEl=document.getElementById(`${dept}-wire-filter-count`);
-  if(countEl)countEl.textContent=term?`${visible} of ${wires.length} wires`:`${wires.length} wires`;
 }
 
-// ═══════════════ EXCEL UPLOAD ═════════════════════════════════
 async function handleRefsUpload(e,dept,key){
   const file=e.target.files[0];if(!file)return;
   try{
+    // Upload file to Supabase Storage
+    const filePath = `references/${dept}/${key}/${file.name}`;
+    if (supabase) {
+      try {
+        await uploadExcelFile(file, filePath);
+      } catch (uploadError) {
+        console.warn('Could not upload to storage:', uploadError);
+      }
+    }
+    
     const{rows}=await parseExcel(file);
     if(!rows.length){toast('File appears empty','error');return;}
     const refs=rows.map(normalizeRef).filter(r=>r.id&&r.id!=='undefined');
     if(!refs.length){toast('Could not detect a reference column. Add a column named "Reference" or "ID".','error');return;}
     store[dept][key].refs=refs;formState[dept].refSearch='';
+    
+    // Save references to Supabase
+    if (supabase) {
+      saveReferences(dept, key, refs).catch(err => console.warn('Could not save refs to DB:', err));
+    }
+    
     toast(`${refs.length} references loaded for ${projectLabel(key)}`,'success');
     renderRequestArea(dept);
   }catch(err){toast('Error reading file: '+err.message,'error');}
   e.target.value='';
 }
+
 async function handleWireUpload(e,dept,key,refId){
   const file=e.target.files[0];if(!file)return;
   try{
+    // Upload file to Supabase Storage
+    const filePath = `wires/${dept}/${key}/${refId}/${file.name}`;
+    if (supabase) {
+      try {
+        await uploadExcelFile(file, filePath);
+      } catch (uploadError) {
+        console.warn('Could not upload to storage:', uploadError);
+      }
+    }
+    
     const{rows,headers}=await parseExcel(file);
     if(!rows.length){toast('File appears empty','error');return;}
-    // Use actual column headers from the file
     const wires=rows.map(row=>normalizeWire(row,headers)).filter(w=>w.wireName&&w.wireName!=='undefined');
     if(!wires.length){toast('Could not detect wire data.','error');return;}
     store[dept][key].refData[refId]=wires;
@@ -1554,19 +1602,11 @@ async function handleWireUpload(e,dept,key,refId){
   }catch(err){toast('Error reading file: '+err.message,'error');}
   e.target.value='';
 }
-function clearProjectRefs(dept,key){
-  store[dept][key]={refs:[],refData:{}};navState[dept].level='refs';navState[dept].refId=null;formState[dept].refSearch='';
-  renderRequestArea(dept);toast('References cleared','info');
-}
+function clearProjectRefs(dept,key){store[dept][key]={refs:[],refData:{}};navState[dept].level='refs';navState[dept].refId=null;formState[dept].refSearch='';renderRequestArea(dept);toast('References cleared','info');}
 
-// ═══════════════ WIRE TABLE INTERACTION ═══════════════════════
-function toggleRow(dept,idx){
-  const cb=document.querySelector(`#${dept}-wrow-${idx} .wire-cb`);
-  if(cb){cb.checked=!cb.checked;updateSelCount(dept);}
-}
+function toggleRow(dept,idx){const cb=document.querySelector(`#${dept}-wrow-${idx} .wire-cb`);if(cb){cb.checked=!cb.checked;updateSelCount(dept);}}
 function updateSelCount(dept){
-  const cbs=document.querySelectorAll(`.${dept}-wcb`);
-  const n=Array.from(cbs).filter(c=>c.checked).length;
+  const cbs=document.querySelectorAll(`.${dept}-wcb`);const n=Array.from(cbs).filter(c=>c.checked).length;
   const el=document.getElementById(`${dept}-sel-count`);if(el)el.textContent=`${n} selected`;
   cbs.forEach(cb=>{const row=document.getElementById(`${dept}-wrow-${cb.dataset.idx}`);if(row)row.classList.toggle('excel-selected',cb.checked);});
   const allCb=document.getElementById(`${dept}-all-cb`);
@@ -1576,68 +1616,40 @@ function toggleAll(dept,v){document.querySelectorAll(`.${dept}-wcb`).forEach(c=>
 function selectAll(dept){toggleAll(dept,true);}
 function deselectAll(dept){toggleAll(dept,false);}
 
-// ═══════════════ VIEW WIRE LIST MODAL ════════════════════════
 function viewWireList(dept,key,refId){
-  const wires=store[dept][key].refData[refId]||[];
-  if(!wires.length){toast('No wire data','error');return;}
+  const wires=store[dept][key].refData[refId]||[];if(!wires.length){toast('No wire data','error');return;}
   document.getElementById('view-modal')?.remove();
-  const modal=document.createElement('div');
-  modal.className='modal-overlay';modal.id='view-modal';
+  const modal=document.createElement('div');modal.className='modal-overlay';modal.id='view-modal';
   modal.onclick=e=>{if(e.target===modal)modal.remove();};
   const cols=wires[0]?._cols||[];
-  modal.innerHTML=`<div class="modal" style="max-width:90vw;width:900px">
-    <div class="modal-hd" style="background:linear-gradient(135deg,#0e1830,#1a2d5a)">
-      <div><div class="modal-title">Wire List — ${refId}</div><div class="modal-sub">${projectLabel(key)} · ${wires.length} rows · ${cols.length} columns</div></div>
-      <button class="modal-close" onclick="document.getElementById('view-modal').remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body" style="padding:0">
-      <div class="excel-scroll" style="max-height:60vh">
-        <table class="excel-tbl">
-          <thead><tr>
-            <th class="excel-row-num">#</th>
-            ${cols.map(c=>`<th>${c}</th>`).join('')}
-          </tr></thead>
-          <tbody>
-            ${wires.map((w,i)=>{
-              return`<tr>
-                <td class="excel-row-num">${i+1}</td>
-                ${cols.map(c=>{const val=w._raw[c]!==undefined?String(w._raw[c]):'';const isEmpty=val==='';const isNum=!isEmpty&&!isNaN(Number(val))&&val.trim()!=='';return`<td class="${isEmpty?'cell-empty':isNum?'cell-num':''}" title="${val.replace(/"/g,'&quot;')}">${isEmpty?'—':val}</td>`;}).join('')}
-              </tr>`;
-            }).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-outline" onclick="document.getElementById('view-modal').remove()" style="flex:0;padding:9px 20px">Close</button></div>
-  </div>`;
+  modal.innerHTML=`<div class="modal" style="max-width:90vw;width:900px"><div class="modal-hd" style="background:linear-gradient(135deg,#0e1830,#1a2d5a)"><div><div class="modal-title">Wire List — ${refId}</div><div class="modal-sub">${projectLabel(key)} · ${wires.length} rows · ${cols.length} columns</div></div><button class="modal-close" onclick="document.getElementById('view-modal').remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" style="padding:0"><div class="excel-scroll" style="max-height:60vh"><table class="excel-tbl"><thead><tr><th class="excel-row-num">#</th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${wires.map((w,i)=>`<tr><td class="excel-row-num">${i+1}</td>${cols.map(c=>{const val=w._raw[c]!==undefined?String(w._raw[c]):'';const isEmpty=val==='';const isNum=!isEmpty&&!isNaN(Number(val))&&val.trim()!=='';return`<td class="${isEmpty?'cell-empty':isNum?'cell-num':''}">${isEmpty?'—':val}</td>`;}).join('')}</tr>`).join('')}</tbody></table></div></div><div class="modal-footer"><button class="btn btn-outline" onclick="document.getElementById('view-modal').remove()" style="flex:0;padding:9px 20px">Close</button></div></div>`;
   document.body.appendChild(modal);
 }
 
-// ═══════════════ SUBMIT REQUEST ══════════════════════════════
 function submitRequest(dept){
   const ns=navState[dept];const key=ns.projectKey;const refId=ns.refId;
   if(!key||!refId){toast('Please select a project and reference first','error');return;}
   const wires=store[dept][key].refData[refId]||[];
   if(!wires.length){toast('No wire data for this reference','error');return;}
-  const cbs=document.querySelectorAll(`.${dept}-wcb`);
-  const selected=Array.from(cbs).filter(c=>c.checked);
+  const cbs=document.querySelectorAll(`.${dept}-wcb`);const selected=Array.from(cbs).filter(c=>c.checked);
   if(!selected.length){toast('Please select at least one wire','error');return;}
-  const urgency=document.getElementById(`${dept}-urgency`)?.value||'normal';
-  const pl=projectLabel(key);
-  const items=selected.map(cb=>{
-    const idx=parseInt(cb.dataset.idx);const w=wires[idx];
-    const qty=parseInt(document.getElementById(`${dept}-qty-${idx}`)?.value)||w.quantity;
-    return{reference:refId,wireName:w.wireName,wireType:w.wireType,quantity:qty,tinning:w.tinning,layLength:w.layLength||null,pagodaStatus:null,_rawRow:w._raw};
-  });
+  const urgency=document.getElementById(`${dept}-urgency`)?.value||'normal';const pl=projectLabel(key);
+  const items=selected.map(cb=>{const idx=parseInt(cb.dataset.idx);const w=wires[idx];const qty=parseInt(document.getElementById(`${dept}-qty-${idx}`)?.value)||w.quantity;return{reference:refId,wireName:w.wireName,wireType:w.wireType,quantity:qty,tinning:w.tinning,layLength:w.layLength||null,pagodaStatus:null,_rawRow:w._raw};});
   const req={id:`REQ-2026-${String(requests.length+1).padStart(3,'0')}`,items,urgency,status:'pending',assignedTo:'pagoda',project:pl,projectKey:key,time:new Date().toISOString(),requestedBy:dept,pagodaStatus:'pending',completedAt:null,locked:true};
   requests.push(req);
-  toast(`Request ${req.id} submitted — ${items.length} wire${items.length>1?'s':''} from ${refId}`,'success');
+  
+  // Save to Supabase
+  saveRequest(req).then(() => {
+    toast(`Request ${req.id} submitted — ${items.length} wire${items.length>1?'s':''} from ${refId}`,'success');
+  }).catch(error => {
+    toast(`Request created locally. Database sync failed: ${error.message}`, 'info');
+  });
+  
   navState[dept].level='refs';navState[dept].refId=null;
   renderRequestArea(dept);renderReqList(dept);updateBadges();renderAnalytics();
   if(currentPage==='history')renderHistoryPage();
 }
 
-// ═══════════════ REQUEST LIST ═════════════════════════════════
 function timeAgo(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<1)return'just now';if(m<60)return`${m}m ago`;if(m<1440)return`${Math.floor(m/60)}h ago`;return`${Math.floor(m/1440)}d ago`;}
 function urgBadge(u){const m={normal:'badge-green',urgent:'badge-amber',critical:'badge-red'};return`<span class="badge ${m[u]||'badge-grey'}">${u.toUpperCase()}</span>`;}
 function emptyState(msg){return`<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h8M7 16h5"/></svg><p>${msg}</p></div>`;}
@@ -1695,18 +1707,9 @@ function renderCard(r){
   else if(r.status==='in_progress'){stTxt='In progress at '+r.assignedTo.toUpperCase();dotCls='sp-progress';}
   else if(r.pagodaStatus==='out_of_stock'){stTxt='Routed to '+r.assignedTo.toUpperCase();dotCls='sp-progress';}
   else if(r.pagodaStatus==='partial'){stTxt='Partial — routed to dept';dotCls='sp-progress';}
-  const itemsHtml=r.items.map(it=>`<div class="rc-item">
-    <div><div class="rc-item-name">${it.wireName}</div><div class="rc-item-det">×${it.quantity} · Ref: ${it.reference}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div></div>
-    <div>${wireStatusBadge(it,r.status,r.pagodaStatus)}</div>
-  </div>`).join('');
+  const itemsHtml=r.items.map(it=>`<div class="rc-item"><div><div class="rc-item-name">${it.wireName}</div><div class="rc-item-det">×${it.quantity} · Ref: ${it.reference}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div></div><div>${wireStatusBadge(it,r.status,r.pagodaStatus)}</div></div>`).join('');
   const lockedBanner=r.locked?`<div class="locked-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>This order is <strong>locked</strong> — submitted orders cannot be modified or deleted</span></div>`:'';
-  return`<div class="req-card rc-${r.urgency}">
-    ${lockedBanner}
-    <div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span></div></div>
-    <div class="rc-items">${itemsHtml}</div>
-    ${renderStatusTracker(r)}
-    <div class="rc-foot"><div class="status-pill"><span class="sdot2 ${dotCls}"></span>${stTxt}</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
-  </div>`;
+  return`<div class="req-card rc-${r.urgency}">${lockedBanner}<div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span></div></div><div class="rc-items">${itemsHtml}</div>${renderStatusTracker(r)}<div class="rc-foot"><div class="status-pill"><span class="sdot2 ${dotCls}"></span>${stTxt}</div><span class="time-lbl">${timeAgo(r.time)}</span></div></div>`;
 }
 
 function renderReqList(dept){
@@ -1717,7 +1720,6 @@ function renderReqList(dept){
 }
 setInterval(()=>{if(currentPage==='assembly')renderReqList('assembly');else if(currentPage==='wpa')renderReqList('wpa');else if(currentPage==='twist')renderReqList('twist');},4000);
 
-// ═══════════════ PAGODA ══════════════════════════════════════
 function renderPagodaRequests(){
   const reqs=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending');
   const el=document.getElementById('pagoda-req-list');
@@ -1729,18 +1731,10 @@ function renderPagodaRequests(){
       let tag='';
       if(it.pagodaStatus==='in_stock')tag='<span class="wst wst-in">In Stock</span>';
       else if(it.pagodaStatus==='out_of_stock')tag='<span class="wst wst-oos">OOS</span>';
-      return`<div class="rc-item" style="${it.pagodaStatus==='in_stock'?'border-color:rgba(16,185,129,.25)':it.pagodaStatus==='out_of_stock'?'border-color:rgba(245,158,11,.25)':''}">
-        <span class="rc-item-name">${it.wireName}</span>
-        <div style="display:flex;align-items:center;gap:7px">${tag}<span class="rc-item-det">×${it.quantity} · ${it.reference} · ${typeTag(it.wireType)}</span></div>
-      </div>`;
+      return`<div class="rc-item" style="${it.pagodaStatus==='in_stock'?'border-color:rgba(16,185,129,.25)':it.pagodaStatus==='out_of_stock'?'border-color:rgba(245,158,11,.25)':''}"><span class="rc-item-name">${it.wireName}</span><div style="display:flex;align-items:center;gap:7px">${tag}<span class="rc-item-det">×${it.quantity} · ${it.reference} · ${typeTag(it.wireType)}</span></div></div>`;
     }).join('');
     const progressHtml=multi&&doneCount>0?`<div style="margin:9px 0 3px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx-3);margin-bottom:4px"><span>${doneCount}/${r.items.length} actioned</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${Math.round(doneCount/r.items.length*100)}%</span></div><div style="height:4px;background:var(--bg-04);border-radius:3px;overflow:hidden"><div style="width:${Math.round(doneCount/r.items.length*100)}%;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:3px;transition:width .4s"></div></div></div>`:'';
-    return`<div class="req-card rc-${r.urgency}">
-      <div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span><span class="badge badge-blue">from ${r.requestedBy.toUpperCase()}</span></div></div>
-      <div class="rc-items">${itemsHtml}</div>${progressHtml}
-      <div class="rc-foot"><div class="status-pill"><span class="sdot2 sp-pending"></span>Awaiting action</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
-      <div class="btn-row">${multi?`<button class="btn btn-primary" onclick="openPagodaModal('${r.id}')">Review Items (${r.items.length})</button>`:`<button class="btn btn-success" onclick="markInStock('${r.id}')">In Stock</button><button class="btn btn-amber" onclick="markOOS('${r.id}')">Out of Stock</button>`}</div>
-    </div>`;
+    return`<div class="req-card rc-${r.urgency}"><div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span><span class="badge badge-blue">from ${r.requestedBy.toUpperCase()}</span></div></div><div class="rc-items">${itemsHtml}</div>${progressHtml}<div class="rc-foot"><div class="status-pill"><span class="sdot2 sp-pending"></span>Awaiting action</div><span class="time-lbl">${timeAgo(r.time)}</span></div><div class="btn-row">${multi?`<button class="btn btn-primary" onclick="openPagodaModal('${r.id}')">Review Items (${r.items.length})</button>`:`<button class="btn btn-success" onclick="markInStock('${r.id}')">In Stock</button><button class="btn btn-amber" onclick="markOOS('${r.id}')">Out of Stock</button>`}</div></div>`;
   }).join('');
   loadHistory('pagoda-hist','pagoda','assignedTo');
 }
@@ -1753,32 +1747,10 @@ function openPagodaModal(reqId){
   const doneCount=()=>r.items.filter(it=>it.pagodaStatus).length;
   function body(){
     const done=doneCount();const pct=Math.round(done/r.items.length*100);
-    return`<div class="mbar"><span>${done} of ${r.items.length} actioned</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%"></div></div><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div>
-    ${r.items.map((it,idx)=>{
-      const st=it.pagodaStatus;
-      const tag=st==='in_stock'?'<span class="wst wst-in">In Stock</span>':st==='out_of_stock'?'<span class="wst wst-oos">Out of Stock</span>':'';
-      const btns=!st?`<button class="wbtn wbtn-ok" onclick="setPagodaItem('${reqId}',${idx},'in_stock')">In Stock</button><button class="wbtn wbtn-oos" onclick="setPagodaItem('${reqId}',${idx},'out_of_stock')">OOS</button>`:`<button class="wbtn wbtn-undo" onclick="setPagodaItem('${reqId}',${idx},null)">Undo</button>`;
-      const rawDetails=it._rawRow?Object.entries(it._rawRow).map(([k,v])=>`${k}: ${v}`).join(' · '):'';
-      return`<div class="wire-action-row ${st==='in_stock'?'war-in':st==='out_of_stock'?'war-oos':''}">
-        <div class="war-info"><div class="war-name">${it.wireName}</div><div class="war-det">×${it.quantity} · Ref: ${it.reference} · ${it.wireType.toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div>${rawDetails?`<div class="war-det" style="margin-top:3px;opacity:.7">${rawDetails}</div>`:''}</div>
-        <div style="display:flex;align-items:center;gap:8px">${tag}<div class="war-btns">${btns}</div></div>
-      </div>`;
-    }).join('')}`;
+    return`<div class="mbar"><span>${done} of ${r.items.length} actioned</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%"></div></div><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div>${r.items.map((it,idx)=>{const st=it.pagodaStatus;const tag=st==='in_stock'?'<span class="wst wst-in">In Stock</span>':st==='out_of_stock'?'<span class="wst wst-oos">Out of Stock</span>':'';const btns=!st?`<button class="wbtn wbtn-ok" onclick="setPagodaItem('${reqId}',${idx},'in_stock')">In Stock</button><button class="wbtn wbtn-oos" onclick="setPagodaItem('${reqId}',${idx},'out_of_stock')">OOS</button>`:`<button class="wbtn wbtn-undo" onclick="setPagodaItem('${reqId}',${idx},null)">Undo</button>`;const rawDetails=it._rawRow?Object.entries(it._rawRow).map(([k,v])=>`${k}: ${v}`).join(' · '):'';return`<div class="wire-action-row ${st==='in_stock'?'war-in':st==='out_of_stock'?'war-oos':''}"><div class="war-info"><div class="war-name">${it.wireName}</div><div class="war-det">×${it.quantity} · Ref: ${it.reference} · ${it.wireType.toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div>${rawDetails?`<div class="war-det" style="margin-top:3px;opacity:.7">${rawDetails}</div>`:''}</div><div style="display:flex;align-items:center;gap:8px">${tag}<div class="war-btns">${btns}</div></div></div>`;}).join('')}`;
   }
-  function refresh(){
-    document.getElementById('pm-body').innerHTML=body();
-    const done=doneCount();const fb=document.getElementById('pm-finalize');
-    if(fb){fb.disabled=done<r.items.length;fb.style.opacity=done<r.items.length?'0.4':'1';fb.textContent=done<r.items.length?`Finalize (${done}/${r.items.length})`:'Finalize & Route';}
-    renderPagodaRequests();
-  }
-  modal.innerHTML=`<div class="modal" style="max-width:640px">
-    <div class="modal-hd" style="background:linear-gradient(135deg,#071230,#0f2a6e)">
-      <div><div class="modal-title">${r.id} · Wire Review</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · from ${r.requestedBy.toUpperCase()}</div></div>
-      <button class="modal-close" onclick="closePM()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body" id="pm-body">${body()}</div>
-    <div class="modal-footer"><button class="btn btn-outline" onclick="closePM()" style="flex:0;padding:9px 20px">Cancel</button><button class="btn btn-success" id="pm-finalize" onclick="finalizePagoda('${r.id}')" style="flex:1;opacity:0.4" disabled>Finalize</button></div>
-  </div>`;
+  function refresh(){document.getElementById('pm-body').innerHTML=body();const done=doneCount();const fb=document.getElementById('pm-finalize');if(fb){fb.disabled=done<r.items.length;fb.style.opacity=done<r.items.length?'0.4':'1';fb.textContent=done<r.items.length?`Finalize (${done}/${r.items.length})`:'Finalize & Route';}renderPagodaRequests();}
+  modal.innerHTML=`<div class="modal" style="max-width:640px"><div class="modal-hd" style="background:linear-gradient(135deg,#071230,#0f2a6e)"><div><div class="modal-title">${r.id} · Wire Review</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · from ${r.requestedBy.toUpperCase()}</div></div><button class="modal-close" onclick="closePM()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="pm-body">${body()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closePM()" style="flex:0;padding:9px 20px">Cancel</button><button class="btn btn-success" id="pm-finalize" onclick="finalizePagoda('${r.id}')" style="flex:1;opacity:0.4" disabled>Finalize</button></div></div>`;
   modal._refresh=refresh;document.body.appendChild(modal);refresh();
 }
 function closePM(){const m=document.getElementById('pagoda-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>m.remove(),150);}}
@@ -1793,14 +1765,29 @@ function finalizePagoda(rid){
     Object.entries(groups).forEach(([d,items])=>{requests.push({id:`${rid}-${d.toUpperCase()}`,items,urgency:r.urgency,status:'pending',assignedTo:d,project:r.project,time:new Date().toISOString(),requestedBy:r.requestedBy,pagodaStatus:'out_of_stock',completedAt:null,parentId:rid});});
     r.status='completed';r.pagodaStatus='partial';r.completedAt=new Date().toISOString();toast(`${inStock.length} in stock · ${oos.length} routed`,'success');
   }
+  
+  // Save updates to Supabase
+  saveRequest(r).catch(err => console.warn('Could not sync request:', err));
+  
   closePM();loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
 }
-function markInStock(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
-function markOOS(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
+
+function markInStock(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;
+  r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();
+  saveRequest(r).catch(err => console.warn('Could not sync request:', err));
+  toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
+}
+
+function markOOS(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;
+  r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';
+  saveRequest(r).catch(err => console.warn('Could not sync request:', err));
+  toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
+}
 function loadLowStock(){let h='',low=0;Object.values(wireStock).forEach(w=>{if(w.stock<w.min){low++;h+=`<div class="alert-item"><div><div class="alert-name">${w.name}</div><div style="font-size:11px;color:#f59e0b;margin-top:2px">${w.loc}</div></div><div class="alert-stock">${w.stock}/${w.min}</div></div>`;}});document.getElementById('low-stock-list').innerHTML=h||`<div class="alert-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="20 6 9 17 4 12"/></svg>All stock levels OK</div>`;document.getElementById('p-low').textContent=low;}
 function updatePagodaMetrics(){document.getElementById('p-pending').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;document.getElementById('p-stock').textContent=Object.values(wireStock).reduce((s,w)=>s+w.stock,0);const today=new Date().toDateString();document.getElementById('p-today').textContent=requests.filter(r=>new Date(r.time).toDateString()===today).length;const comp=requests.filter(r=>r.status==='completed').length;const rate=requests.length?Math.round(comp/requests.length*100):0;document.getElementById('p-rate').textContent=rate+'%';document.getElementById('p-rate-bar').style.width=rate+'%';}
 
-// ═══════════════ CUTTING ═════════════════════════════════════
 function renderCuttingRequests(){
   const reqs=requests.filter(r=>r.assignedTo==='cutting'&&r.status!=='completed');
   const el=document.getElementById('cutting-req-list');
@@ -1813,23 +1800,9 @@ function makeDeptCard(r,dept){
   const ip=r.status==='in_progress';const multi=r.items.length>1;const doneCount=r.items.filter(it=>it.deptStatus==='done').length;
   const progressHtml=multi&&doneCount>0?`<div style="margin:8px 0 3px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx-3);margin-bottom:4px"><span>${doneCount}/${r.items.length} processed</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${Math.round(doneCount/r.items.length*100)}%</span></div><div style="height:4px;background:var(--bg-04);border-radius:3px;overflow:hidden"><div style="width:${Math.round(doneCount/r.items.length*100)}%;height:100%;background:${dept==='cutting'?'linear-gradient(90deg,var(--green),#4ade80)':dept==='wpa'?'linear-gradient(90deg,var(--cyan),#67e8f9)':'linear-gradient(90deg,var(--purple),#c4b5fd)'};border-radius:3px;transition:width .4s"></div></div></div>`:'';
   const deptLabel=dept==='cutting'?'Cut':dept==='wpa'?'Prep':'Twist';
-  const itemsHtml=r.items.map(it=>{
-    let stBadge='';
-    if(it.deptStatus==='done')stBadge='<span class="wst wst-in">Done</span>';
-    else if(it.deptStatus==='in_progress')stBadge='<span class="wst" style="background:rgba(37,99,235,.12);color:var(--blue-lt);border:1px solid rgba(37,99,235,.2);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">In Progress</span>';
-    else stBadge='<span class="wst" style="background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid rgba(255,255,255,.08);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">Pending</span>';
-    return`<div class="rc-item" style="${it.deptStatus==='done'?'border-color:rgba(16,185,129,.25)':''}"><div><div class="rc-item-name">${it.wireName}</div><div class="rc-item-det">×${it.quantity} · ${it.reference}${it.layLength?' · Lay: '+it.layLength:''}${it.tinning?' · Tinning':''}</div></div><div>${stBadge}</div></div>`;
-  }).join('');
-  const btnHtml=multi
-    ?`<button class="btn btn-primary" onclick="openDeptModal('${r.id}','${dept}')">Process Items (${r.items.length})</button>`
-    :(ip?`<button class="btn btn-disabled" disabled>In Progress…</button>`:`<button class="btn btn-primary" onclick="startReq('${r.id}')">Start ${deptLabel}</button>`)
-    +`<button class="btn btn-success" onclick="completeReq('${r.id}')">Complete</button>`;
-  return`<div class="req-card rc-${r.urgency}">
-    <div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span>${multi?`<span class="badge badge-blue">${r.items.length} wires</span>`:''}</div></div>
-    <div class="rc-items">${itemsHtml}</div>${progressHtml}
-    <div class="rc-foot"><div class="status-pill"><span class="sdot2 ${ip?'sp-progress':'sp-pending'}"></span>${ip?'In Progress':'Pending'}</div><span class="time-lbl">${timeAgo(r.time)}</span></div>
-    <div class="btn-row">${btnHtml}</div>
-  </div>`;
+  const itemsHtml=r.items.map(it=>{let stBadge='';if(it.deptStatus==='done')stBadge='<span class="wst wst-in">Done</span>';else if(it.deptStatus==='in_progress')stBadge='<span class="wst" style="background:rgba(37,99,235,.12);color:var(--blue-lt);border:1px solid rgba(37,99,235,.2);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">In Progress</span>';else stBadge='<span class="wst" style="background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid rgba(255,255,255,.08);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">Pending</span>';return`<div class="rc-item" style="${it.deptStatus==='done'?'border-color:rgba(16,185,129,.25)':''}"><div><div class="rc-item-name">${it.wireName}</div><div class="rc-item-det">×${it.quantity} · ${it.reference}${it.layLength?' · Lay: '+it.layLength:''}${it.tinning?' · Tinning':''}</div></div><div>${stBadge}</div></div>`;}).join('');
+  const btnHtml=multi?`<button class="btn btn-primary" onclick="openDeptModal('${r.id}','${dept}')">Process Items (${r.items.length})</button>`:(ip?`<button class="btn btn-disabled" disabled>In Progress…</button>`:`<button class="btn btn-primary" onclick="startReq('${r.id}')">Start ${deptLabel}</button>`)+`<button class="btn btn-success" onclick="completeReq('${r.id}')">Complete</button>`;
+  return`<div class="req-card rc-${r.urgency}"><div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span>${multi?`<span class="badge badge-blue">${r.items.length} wires</span>`:''}</div></div><div class="rc-items">${itemsHtml}</div>${progressHtml}<div class="rc-foot"><div class="status-pill"><span class="sdot2 ${ip?'sp-progress':'sp-pending'}"></span>${ip?'In Progress':'Pending'}</div><span class="time-lbl">${timeAgo(r.time)}</span></div><div class="btn-row">${btnHtml}</div></div>`;
 }
 
 function openDeptModal(reqId,dept){
@@ -1844,43 +1817,22 @@ function openDeptModal(reqId,dept){
   const doneCount=()=>r.items.filter(it=>it.deptStatus==='done').length;
   function body(){
     const done=doneCount();const pct=Math.round(done/r.items.length*100);
-    return`<div class="mbar"><span style="font-size:12px;color:var(--tx-3)">${done} of ${r.items.length} processed</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%;background:linear-gradient(90deg,${dept==='cutting'?'var(--green),#4ade80':dept==='wpa'?'var(--cyan),#67e8f9':'var(--purple),#c4b5fd'})"></div></div><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div>
-    ${r.items.map((it,idx)=>{
-      const st=it.deptStatus;const isDone=st==='done';const isIP=st==='in_progress';
-      const rowStyle=isDone?'border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.04)':isIP?'border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.04)':'';
-      const tag=isDone?`<span class="wst wst-in">${actionLabel}</span>`:isIP?'<span class="wst" style="background:rgba(37,99,235,.12);color:var(--blue-lt);border:1px solid rgba(37,99,235,.2);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">In Progress</span>':'';
-      let btns='';
-      if(!st){btns=`<button class="wbtn" style="background:${deptColor};color:${dept==='cutting'||dept==='twist'?'#fff':'var(--bg-base)'};padding:5px 11px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .2s" onclick="setDeptItem('${reqId}',${idx},'in_progress','${dept}')">Start</button>`;}
-      else if(isIP){btns=`<button class="wbtn wbtn-ok" onclick="setDeptItem('${reqId}',${idx},'done','${dept}')">${actionLabel} ✓</button><button class="wbtn wbtn-undo" onclick="setDeptItem('${reqId}',${idx},null,'${dept}')">Undo</button>`;}
-      else{btns=`<button class="wbtn wbtn-undo" onclick="setDeptItem('${reqId}',${idx},null,'${dept}')">Undo</button>`;}
-      return`<div class="wire-action-row" style="${rowStyle}">
-        <div class="war-info"><div class="war-name">${it.wireName}</div><div class="war-det">×${it.quantity} · Ref: ${it.reference} · ${it.wireType.toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div>
-        ${it._rawRow?`<div class="war-det" style="margin-top:3px;opacity:.6">${Object.entries(it._rawRow).map(([k,v])=>`${k}: ${v}`).join(' · ')}</div>`:''}</div>
-        <div style="display:flex;align-items:center;gap:8px">${tag}<div class="war-btns">${btns}</div></div>
-      </div>`;
-    }).join('')}`;
+    return`<div class="mbar"><span style="font-size:12px;color:var(--tx-3)">${done} of ${r.items.length} processed</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%;background:linear-gradient(90deg,${dept==='cutting'?'var(--green),#4ade80':dept==='wpa'?'var(--cyan),#67e8f9':'var(--purple),#c4b5fd'})"></div></div><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div>${r.items.map((it,idx)=>{const st=it.deptStatus;const isDone=st==='done';const isIP=st==='in_progress';const rowStyle=isDone?'border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.04)':isIP?'border-color:rgba(37,99,235,.3);background:rgba(37,99,235,.04)':'';const tag=isDone?`<span class="wst wst-in">${actionLabel}</span>`:isIP?'<span class="wst" style="background:rgba(37,99,235,.12);color:var(--blue-lt);border:1px solid rgba(37,99,235,.2);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">In Progress</span>':'';let btns='';if(!st){btns=`<button class="wbtn" style="background:${deptColor};color:${dept==='cutting'||dept==='twist'?'#fff':'var(--bg-base)'};padding:5px 11px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .2s" onclick="setDeptItem('${reqId}',${idx},'in_progress','${dept}')">Start</button>`;}else if(isIP){btns=`<button class="wbtn wbtn-ok" onclick="setDeptItem('${reqId}',${idx},'done','${dept}')">${actionLabel} ✓</button><button class="wbtn wbtn-undo" onclick="setDeptItem('${reqId}',${idx},null,'${dept}')">Undo</button>`;}else{btns=`<button class="wbtn wbtn-undo" onclick="setDeptItem('${reqId}',${idx},null,'${dept}')">Undo</button>`;}return`<div class="wire-action-row" style="${rowStyle}"><div class="war-info"><div class="war-name">${it.wireName}</div><div class="war-det">×${it.quantity} · Ref: ${it.reference} · ${it.wireType.toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div>${it._rawRow?`<div class="war-det" style="margin-top:3px;opacity:.6">${Object.entries(it._rawRow).map(([k,v])=>`${k}: ${v}`).join(' · ')}</div>`:''}</div><div style="display:flex;align-items:center;gap:8px">${tag}<div class="war-btns">${btns}</div></div></div>`;}).join('')}`;
   }
-  function refresh(){
-    document.getElementById('dm-body').innerHTML=body();
-    const done=doneCount();const fb=document.getElementById('dm-finalize');
-    if(fb){const allDone=done===r.items.length;fb.disabled=!allDone;fb.style.opacity=allDone?'1':'0.4';fb.textContent=allDone?`Complete All & Close`:`Complete (${done}/${r.items.length} done)`;}
-    if(dept==='cutting')renderCuttingRequests();else if(dept==='wpa')loadWPAFulfill();else if(dept==='twist')loadTwistFulfill();
-  }
-  modal.innerHTML=`<div class="modal" style="max-width:640px">
-    <div class="modal-hd" style="background:${deptHdrBg}">
-      <div><div class="modal-title">${r.id} · ${deptLabel} Processing</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · ${r.items.length} wire${r.items.length>1?'s':''}</div></div>
-      <button class="modal-close" onclick="closeDeptModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body" id="dm-body">${body()}</div>
-    <div class="modal-footer"><button class="btn btn-outline" onclick="closeDeptModal()" style="flex:0;padding:9px 20px">Close</button><button class="btn btn-success" id="dm-finalize" onclick="finalizeDeptModal('${r.id}','${dept}')" style="flex:1;opacity:0.4" disabled>Complete</button></div>
-  </div>`;
+  function refresh(){document.getElementById('dm-body').innerHTML=body();const done=doneCount();const fb=document.getElementById('dm-finalize');if(fb){const allDone=done===r.items.length;fb.disabled=!allDone;fb.style.opacity=allDone?'1':'0.4';fb.textContent=allDone?`Complete All & Close`:`Complete (${done}/${r.items.length} done)`;}if(dept==='cutting')renderCuttingRequests();else if(dept==='wpa')loadWPAFulfill();else if(dept==='twist')loadTwistFulfill();}
+  modal.innerHTML=`<div class="modal" style="max-width:640px"><div class="modal-hd" style="background:${deptHdrBg}"><div><div class="modal-title">${r.id} · ${deptLabel} Processing</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · ${r.items.length} wire${r.items.length>1?'s':''}</div></div><button class="modal-close" onclick="closeDeptModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="dm-body">${body()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closeDeptModal()" style="flex:0;padding:9px 20px">Close</button><button class="btn btn-success" id="dm-finalize" onclick="finalizeDeptModal('${r.id}','${dept}')" style="flex:1;opacity:0.4" disabled>Complete</button></div></div>`;
   modal._refresh=refresh;document.body.appendChild(modal);
 }
 function closeDeptModal(){const m=document.getElementById('dept-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>m.remove(),150);}}
 function setDeptItem(rid,idx,st,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].deptStatus=st;const m=document.getElementById('dept-modal');if(m?._refresh)m._refresh();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
-function finalizeDeptModal(rid,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();toast(`${rid} — all items processed & completed!`,'success');closeDeptModal();loadPage(currentPage);updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');if(currentPage==='history')renderHistoryPage();}
+function finalizeDeptModal(rid,dept){
+  const r=requests.find(x=>x.id===rid);if(!r)return;
+  r.status='completed';r.completedAt=new Date().toISOString();
+  saveRequest(r).catch(err => console.warn('Could not sync request:', err));
+  toast(`${rid} — all items processed & completed!`,'success');
+  closeDeptModal();loadPage(currentPage);updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');if(currentPage==='history')renderHistoryPage();
+}
 
-// ═══════════════ WPA / TWIST TABS ════════════════════════════
 function switchTab(dept,tab){
   const rp=document.getElementById(`${dept}-req-panel`);const fp=document.getElementById(`${dept}-fulfill-panel`);
   const rb=document.getElementById(`${dept}-tab-req`);const fb=document.getElementById(`${dept}-tab-fulfill`);
@@ -1904,263 +1856,84 @@ function loadTwistFulfill(){
   document.getElementById('twist-pairs-cnt').textContent=requests.filter(r=>r.assignedTo==='twist').reduce((s,r)=>s+r.items.reduce((ss,i)=>ss+i.quantity,0),0);
 }
 
-function startReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='in_progress';toast(`Started ${id}`,'info');loadPage(currentPage);updateBadges();}
-function completeReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();toast(`${id} completed!`,'success');loadPage(currentPage);updateBadges();renderAnalytics();if(currentPage==='history')renderHistoryPage();}
-
-function fmtDateTime(iso){
-  if(!iso)return'—';
-  const d=new Date(iso);
-  const date=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-  const time=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  return{date,time,full:`${date} ${time}`,ts:d};
-}
-function fmtDuration(ms){
-  if(!ms||ms<0)return null;
-  const s=Math.floor(ms/1000);
-  if(s<60)return`${s}s`;
-  const m=Math.floor(s/60);
-  if(m<60)return`${m}m ${s%60}s`;
-  const h=Math.floor(m/60);
-  return`${h}h ${m%60}m`;
+function startReq(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;
+  r.status='in_progress';
+  saveRequest(r).catch(err => console.warn('Could not sync request:', err));
+  toast(`Started ${id}`,'info');loadPage(currentPage);updateBadges();
 }
 
-// ═══════════════ HISTORY PAGE ════════════════════════════════
+function completeReq(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;
+  r.status='completed';r.completedAt=new Date().toISOString();
+  saveRequest(r).catch(err => console.warn('Could not sync request:', err));
+  toast(`${id} completed!`,'success');loadPage(currentPage);updateBadges();renderAnalytics();if(currentPage==='history')renderHistoryPage();
+}
+
+function fmtDateTime(iso){if(!iso)return'—';const d=new Date(iso);const date=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});const time=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});return{date,time,full:`${date} ${time}`,ts:d};}
+function fmtDuration(ms){if(!ms||ms<0)return null;const s=Math.floor(ms/1000);if(s<60)return`${s}s`;const m=Math.floor(s/60);if(m<60)return`${m}m ${s%60}s`;const h=Math.floor(m/60);return`${h}h ${m%60}m`;}
+
 function renderHistoryPage(){
   const search=(document.getElementById('hist-search')?.value||'').toLowerCase();
   const deptFilter=document.getElementById('hist-filter-dept')?.value||'';
   const statusFilter=document.getElementById('hist-filter-status')?.value||'';
-
-  // ALL requests go to history — not just completed
   let list=[...requests].sort((a,b)=>new Date(b.time)-new Date(a.time));
-
-  if(search) list=list.filter(r=>
-    r.id.toLowerCase().includes(search)||
-    r.project.toLowerCase().includes(search)||
-    r.items.some(i=>i.wireName.toLowerCase().includes(search))
-  );
-  if(deptFilter) list=list.filter(r=>r.requestedBy===deptFilter);
-  if(statusFilter) list=list.filter(r=>r.status===statusFilter);
-
-  const badge=document.getElementById('hist-total-badge');
-  if(badge)badge.textContent=`${list.length} order${list.length!==1?'s':''}`;
-  const countLbl=document.getElementById('hist-count-label');
-  if(countLbl)countLbl.textContent=`${list.length} of ${requests.length} order${requests.length!==1?'s':''}`;
-
-  const container=document.getElementById('hist-list');
-  if(!container)return;
+  if(search)list=list.filter(r=>r.id.toLowerCase().includes(search)||r.project.toLowerCase().includes(search)||r.items.some(i=>i.wireName.toLowerCase().includes(search)));
+  if(deptFilter)list=list.filter(r=>r.requestedBy===deptFilter);
+  if(statusFilter)list=list.filter(r=>r.status===statusFilter);
+  const badge=document.getElementById('hist-total-badge');if(badge)badge.textContent=`${list.length} order${list.length!==1?'s':''}`;
+  const countLbl=document.getElementById('hist-count-label');if(countLbl)countLbl.textContent=`${list.length} of ${requests.length} order${requests.length!==1?'s':''}`;
+  const container=document.getElementById('hist-list');if(!container)return;
   if(!list.length){container.innerHTML=`<div class="empty-state" style="margin-top:40px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px;height:48px;opacity:.3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><p style="margin-top:12px;color:var(--tx-4)">No orders match your filter</p></div>`;return;}
-
   container.innerHTML=list.map(r=>buildHistEntry(r)).join('');
 }
 
 function buildHistEntry(r){
-  const submitted=fmtDateTime(r.time);
-  const completed=r.completedAt?fmtDateTime(r.completedAt):null;
-
-  // Status dot color
-  const dotColor=r.status==='completed'?'var(--green)':r.status==='in_progress'?'var(--blue)':'var(--amber)';
-  const statusLabel=r.status==='completed'?'Completed':r.status==='in_progress'?'In Progress':'Pending';
-
-  // Dept badge color
+  const submitted=fmtDateTime(r.time);const dotColor=r.status==='completed'?'var(--green)':r.status==='in_progress'?'var(--blue)':'var(--amber)';const statusLabel=r.status==='completed'?'Completed':r.status==='in_progress'?'In Progress':'Pending';
   const deptColors={assembly:'rgba(232,168,58,.12)',wpa:'rgba(6,182,212,.12)',twist:'rgba(139,92,246,.12)',pagoda:'rgba(37,99,235,.12)',cutting:'rgba(16,185,129,.12)'};
   const deptTextColors={assembly:'var(--gold)',wpa:'var(--cyan)',twist:'var(--purple)',pagoda:'var(--blue-lt)',cutting:'var(--green-lt)'};
-  const dept=r.requestedBy;
-  const deptLabel=(dept||'').toUpperCase();
-
-  // Wire names preview (max 2 shown)
-  const wireNames=r.items.map(i=>i.wireName);
-  const wirePreview=wireNames.slice(0,2).join(', ')+(wireNames.length>2?` +${wireNames.length-2} more`:'');
-
-  // Urgency colors
-  const urgColors={normal:'badge-green',urgent:'badge-amber',critical:'badge-red'};
-
-  const entryId=`hist-${r.id.replace(/[^a-z0-9]/gi,'_')}`;
-
-  return`<div class="hist-entry" id="${entryId}" onclick="toggleHistEntry('${entryId}')">
-    <div class="hist-row">
-      <svg class="hist-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      <span class="hist-id">${r.id}</span>
-      <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0">
-        <div class="hist-wires" title="${wireNames.join(', ')}">${wirePreview}</div>
-      </div>
-      <span class="hist-project">${r.project}</span>
-      <span class="hist-dept-badge" style="background:${deptColors[dept]||'var(--bg-03)'};color:${deptTextColors[dept]||'var(--tx-2)'};border:1px solid ${deptTextColors[dept]||'var(--bd-1)'}22">${deptLabel}</span>
-      <span class="badge ${urgColors[r.urgency]||'badge-grey'}" style="font-size:9px">${(r.urgency||'').toUpperCase()}</span>
-      <div style="display:flex;align-items:center;gap:7px">
-        <div class="hist-status-dot" style="background:${dotColor};box-shadow:0 0 6px ${dotColor}"></div>
-        <span style="font-size:11px;color:var(--tx-2)">${statusLabel}</span>
-      </div>
-      <div class="hist-datetime">
-        <div>${submitted.date}</div>
-        <div style="color:var(--tx-2)">${submitted.time}</div>
-      </div>
-    </div>
-
-    <div class="hist-details">
-      ${buildHistDetails(r)}
-    </div>
-  </div>`;
+  const dept=r.requestedBy;const deptLabel=(dept||'').toUpperCase();
+  const wireNames=r.items.map(i=>i.wireName);const wirePreview=wireNames.slice(0,2).join(', ')+(wireNames.length>2?` +${wireNames.length-2} more`:'');
+  const urgColors={normal:'badge-green',urgent:'badge-amber',critical:'badge-red'};const entryId=`hist-${r.id.replace(/[^a-z0-9]/gi,'_')}`;
+  return`<div class="hist-entry" id="${entryId}" onclick="toggleHistEntry('${entryId}')"><div class="hist-row"><svg class="hist-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg><span class="hist-id">${r.id}</span><div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0"><div class="hist-wires" title="${wireNames.join(', ')}">${wirePreview}</div></div><span class="hist-project">${r.project}</span><span class="hist-dept-badge" style="background:${deptColors[dept]||'var(--bg-03)'};color:${deptTextColors[dept]||'var(--tx-2)'};border:1px solid ${deptTextColors[dept]||'var(--bd-1)'}22">${deptLabel}</span><span class="badge ${urgColors[r.urgency]||'badge-grey'}" style="font-size:9px">${(r.urgency||'').toUpperCase()}</span><div style="display:flex;align-items:center;gap:7px"><div class="hist-status-dot" style="background:${dotColor};box-shadow:0 0 6px ${dotColor}"></div><span style="font-size:11px;color:var(--tx-2)">${statusLabel}</span></div><div class="hist-datetime"><div>${submitted.date}</div><div style="color:var(--tx-2)">${submitted.time}</div></div></div><div class="hist-details">${buildHistDetails(r)}</div></div>`;
 }
 
 function buildHistDetails(r){
-  const submitted=fmtDateTime(r.time);
-  const completed=r.completedAt?fmtDateTime(r.completedAt):null;
-
-  // ── Timeline ──
-  // Step 1: Submitted
-  // Step 2: Pagoda review (with duration)
-  // Step 3: Downstream dept (cutting/wpa/twist) if applicable
-  // Step 4: Completed
-
-  const submittedTs=new Date(r.time);
-  let html=`<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:14px">Order Timeline</div>`;
-  html+=`<div class="hist-timeline">`;
-
-  // Step 1 — Submitted
-  html+=`<div class="ht-step">
-    <div class="ht-dot-wrap"><div class="ht-dot done"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
-    <div class="ht-body">
-      <div class="ht-label">Submitted by ${(r.requestedBy||'').toUpperCase()}</div>
-      <div class="ht-time">${submitted.date} · ${submitted.time}</div>
-    </div>
-  </div>`;
-
-  // Step 2 — Pagoda
-  const pagodaDone=r.pagodaStatus&&r.pagodaStatus!=='pending';
-  let pagodaEntryTs=submittedTs; // pagoda starts immediately when assigned
-  let pagodaExitTs=null;
-
-  // Estimate pagoda processing: if downstream exists, use downstream creation; else use completedAt
-  if(pagodaDone){
-    // Try to find when pagoda finished via downstream req
-    const ds=requests.filter(x=>x.parentId===r.id||x.id.startsWith(r.id+'-'));
-    if(ds.length>0){
-      // earliest downstream = pagoda done time (approx)
-      pagodaExitTs=new Date(Math.min(...ds.map(x=>new Date(x.time))));
-    } else if(r.completedAt){
-      pagodaExitTs=new Date(r.completedAt);
-    }
-  }
-  const pagodaDurMs=pagodaDone&&pagodaExitTs?(pagodaExitTs-pagodaEntryTs):null;
-  const pagodaDur=pagodaDurMs!==null?fmtDuration(pagodaDurMs):null;
-
+  const submitted=fmtDateTime(r.time);const submittedTs=new Date(r.time);
+  let html=`<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:14px">Order Timeline</div><div class="hist-timeline">`;
+  html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot done"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="ht-body"><div class="ht-label">Submitted by ${(r.requestedBy||'').toUpperCase()}</div><div class="ht-time">${submitted.date} · ${submitted.time}</div></div></div>`;
+  const pagodaDone=r.pagodaStatus&&r.pagodaStatus!=='pending';let pagodaExitTs=null;
+  if(pagodaDone){const ds=requests.filter(x=>x.parentId===r.id||x.id.startsWith(r.id+'-'));if(ds.length>0){pagodaExitTs=new Date(Math.min(...ds.map(x=>new Date(x.time))));}else if(r.completedAt){pagodaExitTs=new Date(r.completedAt);}}
+  const pagodaDurMs=pagodaDone&&pagodaExitTs?(pagodaExitTs-submittedTs):null;const pagodaDur=pagodaDurMs!==null?fmtDuration(pagodaDurMs):null;
   const pagodaStatusText=r.pagodaStatus==='in_stock'?'All wires in stock — fulfilled directly':r.pagodaStatus==='out_of_stock'?'All wires out of stock — routed downstream':r.pagodaStatus==='partial'?'Partial stock — some routed downstream':'Awaiting review';
   const pagodaStepCls=pagodaDone?'done':r.status==='pending'?'active':'waiting';
-  html+=`<div class="ht-step">
-    <div class="ht-dot-wrap"><div class="ht-dot ${pagodaStepCls}">${pagodaDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:'P'}</div></div>
-    <div class="ht-body">
-      <div class="ht-label" style="${pagodaDone?'color:var(--blue-lt)':''}">Pagoda Hub Review</div>
-      <div class="ht-sub">${pagodaStatusText}</div>
-      ${pagodaDur?`<div class="ht-duration">⏱ Processing time: ${pagodaDur}</div>`:''}
-    </div>
-  </div>`;
-
-  // Step 3 — Downstream dept(s)
+  html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot ${pagodaStepCls}">${pagodaDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:'P'}</div></div><div class="ht-body"><div class="ht-label" style="${pagodaDone?'color:var(--blue-lt)':''}">Pagoda Hub Review</div><div class="ht-sub">${pagodaStatusText}</div>${pagodaDur?`<div class="ht-duration">⏱ Processing time: ${pagodaDur}</div>`:''}</div></div>`;
   const downstreams=requests.filter(x=>x.parentId===r.id||x.id.startsWith(r.id+'-'));
   const deptColors2={cutting:'var(--green-lt)',wpa:'var(--cyan)',twist:'var(--purple)'};
-
   if(downstreams.length>0){
     downstreams.forEach(ds=>{
-      const dsDone=ds.status==='completed';
-      const dsIP=ds.status==='in_progress';
-      const dsEntryTs=new Date(ds.time);
-      const dsExitTs=ds.completedAt?new Date(ds.completedAt):null;
-      const dsDurMs=dsDone&&dsExitTs?(dsExitTs-dsEntryTs):null;
-      const dsDur=dsDurMs!==null?fmtDuration(dsDurMs):null;
-      const waitMs=dsEntryTs-submittedTs;
-      const waitDur=waitMs>0?fmtDuration(waitMs):null;
-      const deptCl=deptColors2[ds.assignedTo]||'var(--tx-2)';
-      const stepCls=dsDone?'done':dsIP?'active':'waiting';
-      const doneItems=ds.items.filter(i=>i.deptStatus==='done').length;
-      html+=`<div class="ht-step">
-        <div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}">
-          ${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:ds.assignedTo.charAt(0).toUpperCase()}
-        </div></div>
-        <div class="ht-body">
-          <div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}">
-            ${(ds.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}
-          </div>
-          <div class="ht-sub">${doneItems}/${ds.items.length} wire${ds.items.length>1?'s':''} processed</div>
-          ${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:waitDur?`<div class="ht-duration" style="background:rgba(255,255,255,.04);color:var(--tx-3);border-color:var(--bd-1)">⏳ Waiting since ${waitDur}</div>`:''}
-          ${ds.completedAt?`<div class="ht-time" style="margin-top:4px">Completed: ${fmtDateTime(ds.completedAt).full}</div>`:''}
-        </div>
-      </div>`;
+      const dsDone=ds.status==='completed';const dsIP=ds.status==='in_progress';const dsEntryTs=new Date(ds.time);const dsExitTs=ds.completedAt?new Date(ds.completedAt):null;const dsDurMs=dsDone&&dsExitTs?(dsExitTs-dsEntryTs):null;const dsDur=dsDurMs!==null?fmtDuration(dsDurMs):null;const waitMs=dsEntryTs-submittedTs;const waitDur=waitMs>0?fmtDuration(waitMs):null;const deptCl=deptColors2[ds.assignedTo]||'var(--tx-2)';const stepCls=dsDone?'done':dsIP?'active':'waiting';const doneItems=ds.items.filter(i=>i.deptStatus==='done').length;
+      html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}">${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:ds.assignedTo.charAt(0).toUpperCase()}</div></div><div class="ht-body"><div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}"> ${(ds.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}</div><div class="ht-sub">${doneItems}/${ds.items.length} wire${ds.items.length>1?'s':''} processed</div>${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:waitDur?`<div class="ht-duration" style="background:rgba(255,255,255,.04);color:var(--tx-3);border-color:var(--bd-1)">⏳ Waiting since ${waitDur}</div>`:''} ${ds.completedAt?`<div class="ht-time" style="margin-top:4px">Completed: ${fmtDateTime(ds.completedAt).full}</div>`:''}</div></div>`;
     });
   } else if(r.assignedTo&&r.assignedTo!=='pagoda'&&r.pagodaStatus==='out_of_stock'){
-    const deptCl=deptColors2[r.assignedTo]||'var(--tx-2)';
-    const dsDone=r.status==='completed';const dsIP=r.status==='in_progress';
-    const stepCls=dsDone?'done':dsIP?'active':'waiting';
-    const doneItems=r.items.filter(i=>i.deptStatus==='done').length;
-    const dsEntryTs=new Date(r.time);
-    const dsExitTs=r.completedAt?new Date(r.completedAt):null;
-    const dsDurMs=dsDone&&dsExitTs?(dsExitTs-dsEntryTs):null;
-    const dsDur=dsDurMs!==null?fmtDuration(dsDurMs):null;
-    html+=`<div class="ht-step">
-      <div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}">
-        ${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:(r.assignedTo||'?').charAt(0).toUpperCase()}
-      </div></div>
-      <div class="ht-body">
-        <div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}">
-          ${(r.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}
-        </div>
-        <div class="ht-sub">${doneItems}/${r.items.length} wire${r.items.length>1?'s':''} processed</div>
-        ${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:''}
-      </div>
-    </div>`;
+    const deptCl=deptColors2[r.assignedTo]||'var(--tx-2)';const dsDone=r.status==='completed';const dsIP=r.status==='in_progress';const stepCls=dsDone?'done':dsIP?'active':'waiting';const doneItems=r.items.filter(i=>i.deptStatus==='done').length;const dsExitTs=r.completedAt?new Date(r.completedAt):null;const dsDurMs=dsDone&&dsExitTs?(dsExitTs-submittedTs):null;const dsDur=dsDurMs!==null?fmtDuration(dsDurMs):null;
+    html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}"> ${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:(r.assignedTo||'?').charAt(0).toUpperCase()}</div></div><div class="ht-body"><div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}"> ${(r.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}</div><div class="ht-sub">${doneItems}/${r.items.length} wire${r.items.length>1?'s':''} processed</div>${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:''}</div></div>`;
   }
-
-  // Final step — completed
-  if(r.status==='completed'&&r.completedAt){
-    const comp=fmtDateTime(r.completedAt);
-    const totalMs=new Date(r.completedAt)-submittedTs;
-    const totalDur=fmtDuration(totalMs);
-    html+=`<div class="ht-step">
-      <div class="ht-dot-wrap"><div class="ht-dot done" style="background:var(--green);border-color:var(--green)"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
-      <div class="ht-body">
-        <div class="ht-label" style="color:var(--green-lt)">Order Completed</div>
-        <div class="ht-time">${comp.date} · ${comp.time}</div>
-        ${totalDur?`<div class="ht-duration" style="background:rgba(16,185,129,.1);color:var(--green-lt);border-color:rgba(16,185,129,.25)">✓ Total time: ${totalDur}</div>`:''}
-      </div>
-    </div>`;
-  }
-
-  html+=`</div>`; // end timeline
-
-  // ── Wire details table ──
-  html+=`<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:10px">Wire Details</div>`;
-  html+=`<table class="hist-wire-table">
-    <thead><tr>
-      <th>#</th><th>Wire Name</th><th>Reference</th><th>Qty</th><th>Status</th>
-    </tr></thead>
-    <tbody>
-    ${r.items.map((it,i)=>{
-      const st=it.pagodaStatus==='in_stock'?`<span class="wst wst-in">In Stock</span>`:
-               it.pagodaStatus==='out_of_stock'?`<span class="wst wst-oos">OOS — Routed</span>`:
-               it.deptStatus==='done'?`<span class="wst wst-in">Done</span>`:
-               it.deptStatus==='in_progress'?`<span class="wst" style="background:rgba(37,99,235,.12);color:var(--blue-lt);border:1px solid rgba(37,99,235,.2);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">In Progress</span>`:
-               `<span class="wst" style="background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid var(--bd-1);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">Pending</span>`;
-      return`<tr><td style="color:var(--tx-4);font-family:'JetBrains Mono',monospace">${i+1}</td><td style="font-weight:600;color:var(--tx-1)">${it.wireName}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx-3)">${it.reference||'—'}</td><td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue-lt)">${it.quantity}</td><td>${st}</td></tr>`;
-    }).join('')}
-    </tbody>
-  </table>`;
-
+  if(r.status==='completed'&&r.completedAt){const comp=fmtDateTime(r.completedAt);const totalMs=new Date(r.completedAt)-submittedTs;const totalDur=fmtDuration(totalMs);html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot done" style="background:var(--green);border-color:var(--green)"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="ht-body"><div class="ht-label" style="color:var(--green-lt)">Order Completed</div><div class="ht-time">${comp.date} · ${comp.time}</div>${totalDur?`<div class="ht-duration" style="background:rgba(16,185,129,.1);color:var(--green-lt);border-color:rgba(16,185,129,.25)">✓ Total time: ${totalDur}</div>`:''}</div></div>`;}
+  html+=`</div>`;
+  html+=`<div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:10px">Wire Details</div><table class="hist-wire-table"><thead><tr><th>#</th><th>Wire Name</th><th>Reference</th><th>Qty</th><th>Status</th></tr></thead><tbody>${r.items.map((it,i)=>{const st=it.pagodaStatus==='in_stock'?`<span class="wst wst-in">In Stock</span>`:it.pagodaStatus==='out_of_stock'?`<span class="wst wst-oos">OOS — Routed</span>`:it.deptStatus==='done'?`<span class="wst wst-in">Done</span>`:it.deptStatus==='in_progress'?`<span class="wst" style="background:rgba(37,99,235,.12);color:var(--blue-lt);border:1px solid rgba(37,99,235,.2);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">In Progress</span>`:`<span class="wst" style="background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid var(--bd-1);font-size:9px;font-weight:700;letter-spacing:.8px;padding:3px 8px;border-radius:20px;text-transform:uppercase">Pending</span>`;return`<tr><td style="color:var(--tx-4);font-family:'JetBrains Mono',monospace">${i+1}</td><td style="font-weight:600;color:var(--tx-1)">${it.wireName}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx-3)">${it.reference||'—'}</td><td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue-lt)">${it.quantity}</td><td>${st}</td></tr>`;}).join('')}</tbody></table>`;
   return html;
 }
 
-function toggleHistEntry(id){
-  const el=document.getElementById(id);if(!el)return;
-  el.classList.toggle('expanded');
-}
+function toggleHistEntry(id){const el=document.getElementById(id);if(!el)return;el.classList.toggle('expanded');}
 
 function loadHistory(tbodyId,dept,field){
-  // Legacy table-based history — keep for compatibility but hide; new page is main history
   const tbody=document.getElementById(tbodyId);if(!tbody)return;
   const comp=requests.filter(r=>r[field]===dept&&r.status==='completed').sort((a,b)=>new Date(b.completedAt||b.time)-new Date(a.completedAt||a.time));
   if(!comp.length){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--tx-4)">No completed orders yet</td></tr>`;return;}
   tbody.innerHTML=comp.map(r=>{const dt=new Date(r.completedAt||r.time);return`<tr><td class="mono">${r.id}</td><td>${r.items.map(i=>`${i.quantity}× ${i.wireName}`).join(', ')}</td>${field==='requestedBy'?`<td><span class="badge badge-grey">${r.project}</span></td>`:''}<td style="font-family:'JetBrains Mono',monospace;font-size:11px">${dt.toLocaleDateString()} ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td><span class="badge badge-green">Completed</span></td></tr>`;}).join('');
 }
 
-// ═══════════════ ANALYTICS ════════════════════════════════════
 function renderAnalytics(){
   document.getElementById('a-total').textContent=requests.length;
   document.getElementById('a-done').textContent=requests.filter(r=>r.status==='completed').length;
@@ -2184,7 +1957,6 @@ function renderAnalytics(){
   document.getElementById('proj-chart').innerHTML=tp.map(([n,c])=>`<div class="wbar-item"><span class="wbar-name">${n}</span><div class="wbar-track"><div class="wbar-fill" style="width:${(c/mp*100).toFixed(0)}%;background:var(--green)"></div></div><span class="wbar-count">${c}</span></div>`).join('')||'<div class="empty-state"><p>No data yet</p></div>';
 }
 
-// ═══════════════ CLOCK ════════════════════════════════════════
 function updateClock(){
   const n=new Date();
   document.getElementById('clk-time').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
@@ -2192,10 +1964,429 @@ function updateClock(){
   const h=n.getHours();document.getElementById('clk-shift').textContent=h>=6&&h<14?'Morning 06–14':h>=14&&h<22?'Afternoon 14–22':'Night 22–06';
 }
 
-// ═══════════════ SIDEBAR MOBILE ═══════════════════════════════
 function toggleSB(){const s=document.querySelector('.sidebar');const o=document.getElementById('sb-overlay');s.classList.contains('open')?closeSB():(s.classList.add('open'),o.classList.add('show'),document.body.style.overflow='hidden');}
 function closeSB(){document.querySelector('.sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('show');document.body.style.overflow='';}
-document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.nb').forEach(b=>{b.addEventListener('click',()=>{if(window.innerWidth<=900)closeSB();});});});
+document.addEventListener('DOMContentLoaded',()=>{
+initSupabase();
+document.querySelectorAll('.nb').forEach(b=>{b.addEventListener('click',()=>{if(window.innerWidth<=900)closeSB();});});
+});
 </script>
+
+<!-- Notification System -->
+<script>
+// Notification data structure
+let notifications = [];
+let currentUser = { department: 'pagoda', id: 'ME-001' }; // Will be set on login
+
+// Department colors and icons
+const DEPT_CONFIG = {
+  assembly: { color: '#e8a83a', icon: '🔧' },
+  pagoda: { color: '#2563eb', icon: '🏭' },
+  cutting: { color: '#10b981', icon: '✂️' },
+  wpa: { color: '#06b6d4', icon: '🔌' },
+  twist: { color: '#8b5cf6', icon: '🔄' }
+};
+
+// Notification functions
+function addNotification(type, title, message, priority = 'info', department = null, actions = []) {
+  const notification = {
+    id: Date.now() + Math.random(),
+    type,
+    title,
+    message,
+    priority,
+    department: department || currentUser.department,
+    timestamp: new Date(),
+    read: false,
+    actions
+  };
+
+  notifications.unshift(notification);
+  updateNotificationUI();
+  showToast(notification);
+
+  // Send push notification if supported
+  if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
+    sendPushNotification(notification);
+  }
+
+  return notification.id;
+}
+
+function sendPushNotification(notification) {
+  navigator.serviceWorker.ready.then(registration => {
+    registration.showNotification(notification.title, {
+      body: notification.message,
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/icon-72x72.png',
+      tag: notification.id,
+      data: notification,
+      requireInteraction: notification.priority === 'critical',
+      actions: [
+        { action: 'view', title: 'View' },
+        { action: 'mark-read', title: 'Mark Read' }
+      ]
+    });
+  });
+}
+
+function updateNotificationUI() {
+  const unreadCount = notifications.filter(n => !n.read).length;
+  const badge = document.getElementById('bell-badge');
+  
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  renderNotificationDropdown();
+  renderNotificationCenter();
+}
+
+function renderNotificationDropdown() {
+  const list = document.getElementById('bell-list');
+  const recent = notifications.slice(0, 10);
+  
+  if (recent.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:40px;text-align:center;color:var(--tx-3);"><p>No notifications yet</p></div>';
+    return;
+  }
+
+  list.innerHTML = recent.map(n => `
+    <div class="bell-item ${n.read ? '' : 'unread'}" onclick="markNotificationRead('${n.id}'); openNotificationCenter('${n.id}')">
+      <div class="bell-icon ${n.department}">${DEPT_CONFIG[n.department]?.icon || '📢'}</div>
+      <div class="bell-content">
+        <div class="bell-msg">${n.title}: ${n.message}</div>
+        <div class="bell-time">${formatTimeAgo(n.timestamp)}</div>
+      </div>
+      <div class="bell-priority ${n.priority}">${n.priority}</div>
+    </div>
+  `).join('');
+}
+
+function renderNotificationCenter(filter = 'all') {
+  const list = document.getElementById('nc-list');
+  let filtered = notifications;
+
+  if (filter === 'unread') filtered = notifications.filter(n => !n.read);
+  else if (filter !== 'all') filtered = notifications.filter(n => n.priority === filter);
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:60px;text-align:center;color:var(--tx-3);"><p>No notifications found</p></div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(n => `
+    <div class="nc-item ${n.read ? '' : 'unread'}">
+      <div class="nc-item-header">
+        <div class="nc-item-icon ${n.department}">${DEPT_CONFIG[n.department]?.icon || '📢'}</div>
+        <div class="nc-item-title">${n.title}</div>
+        <div class="nc-item-time">${formatTimeAgo(n.timestamp)}</div>
+      </div>
+      <div class="nc-item-msg">${n.message}</div>
+      <div class="nc-item-actions">
+        ${n.actions.map(action => `<button class="nc-btn" onclick="${action.action}('${n.id}')">${action.title}</button>`).join('')}
+        <button class="nc-btn" onclick="markNotificationRead('${n.id}')">${n.read ? 'Mark Unread' : 'Mark Read'}</button>
+        <button class="nc-btn" onclick="deleteNotification('${n.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showToast(notification) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${notification.priority}`;
+  toast.innerHTML = `
+    <div style="display:flex;gap:12px;align-items:flex-start;">
+      <div class="bell-icon ${notification.department}" style="flex-shrink:0;">${DEPT_CONFIG[notification.department]?.icon || '📢'}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;margin-bottom:4px;">${notification.title}</div>
+        <div>${notification.message}</div>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:inherit;cursor:pointer;padding:0;">×</button>
+    </div>
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.remove();
+    }
+  }, 5000);
+}
+
+function toggleNotificationDropdown() {
+  const dropdown = document.getElementById('bell-dropdown');
+  dropdown.classList.toggle('show');
+  
+  // Close when clicking outside
+  document.addEventListener('click', function closeDropdown(e) {
+    if (!dropdown.contains(e.target) && !e.target.closest('.bell-btn')) {
+      dropdown.classList.remove('show');
+      document.removeEventListener('click', closeDropdown);
+    }
+  });
+}
+
+function openNotificationCenter(notificationId = null) {
+  document.getElementById('notification-center').style.display = 'block';
+  if (notificationId) {
+    // Scroll to specific notification
+    setTimeout(() => {
+      const item = document.querySelector(`[data-id="${notificationId}"]`);
+      if (item) item.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+}
+
+function closeNotificationCenter() {
+  document.getElementById('notification-center').style.display = 'none';
+}
+
+function filterNotifications(filter) {
+  document.querySelectorAll('.nc-filter').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  renderNotificationCenter(filter);
+}
+
+function markNotificationRead(id) {
+  const notification = notifications.find(n => n.id == id);
+  if (notification) {
+    notification.read = !notification.read;
+    updateNotificationUI();
+  }
+}
+
+function markAllNotificationsRead() {
+  notifications.forEach(n => n.read = true);
+  updateNotificationUI();
+}
+
+function deleteNotification(id) {
+  notifications = notifications.filter(n => n.id != id);
+  updateNotificationUI();
+}
+
+function showModal(title, content, onAcknowledge = null) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-content').innerHTML = content;
+  document.getElementById('modal-overlay').style.display = 'flex';
+  
+  window.currentModalCallback = onAcknowledge;
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+}
+
+function acknowledgeNotification() {
+  if (window.currentModalCallback) {
+    window.currentModalCallback();
+  }
+  closeModal();
+}
+
+function formatTimeAgo(date) {
+  const now = new Date();
+  const diff = now - date;
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
+}
+
+// Simulate some notifications for demo
+function initDemoNotifications() {
+  setTimeout(() => {
+    addNotification('request', 'Assembly → Pagoda', 'New wire request #REQ-123 for XE-456', 'urgent', 'assembly');
+    addNotification('fulfillment', 'Pagoda → Assembly', 'Your request #REQ-123 is ready for pickup', 'important', 'pagoda');
+    addNotification('alert', 'System Alert', 'Low stock alert - 5 wires below minimum', 'critical', 'pagoda');
+  }, 2000);
+}
+
+// Initialize notifications on login
+function initNotifications() {
+  updateNotificationUI();
+  initDemoNotifications();
+}
+
+// WebSocket simulation for real-time notifications
+function initWebSocket() {
+  // Simulate WebSocket connection
+  setInterval(() => {
+    if (Math.random() < 0.1) { // 10% chance every 30 seconds
+      const depts = ['assembly', 'pagoda', 'cutting', 'wpa', 'twist'];
+      const dept = depts[Math.floor(Math.random() * depts.length)];
+      const messages = [
+        'New wire request received',
+        'Request completed',
+        'Stock level updated',
+        'Production line status changed'
+      ];
+      const message = messages[Math.floor(Math.random() * messages.length)];
+      addNotification('update', dept.toUpperCase(), message, 'info', dept);
+    }
+  }, 30000);
+}
+</script>
+
+<!-- PWA Registration -->
+<script>
+// PWA Installation
+let deferredPrompt;
+const installBtn = document.createElement('button');
+installBtn.id = 'install-btn';
+installBtn.innerHTML = '📱 Install App';
+installBtn.style.cssText = `
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #b8841e, #e8a83a);
+  color: #07090f;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(232,168,58,.3);
+  z-index: 1000;
+  display: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+`;
+document.body.appendChild(installBtn);
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBtn.style.display = 'block';
+});
+
+installBtn.addEventListener('click', () => {
+  installBtn.style.display = 'none';
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    }
+    deferredPrompt = null;
+  });
+});
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(registration => {
+        console.log('SW registered: ', registration);
+        
+        // Check for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateNotification();
+            }
+          });
+        });
+      })
+      .catch(registrationError => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
+}
+
+// Update notification
+function showUpdateNotification() {
+  const updateToast = document.createElement('div');
+  updateToast.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--bd-gold);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: var(--sh-lg);
+      z-index: 1001;
+      max-width: 300px;
+    ">
+      <p style="margin: 0 0 12px 0; color: var(--tx-1); font-size: 14px;">App update available!</p>
+      <button onclick="location.reload()" style="
+        background: var(--gold);
+        color: var(--bg-base);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+      ">Update Now</button>
+    </div>
+  `;
+  document.body.appendChild(updateToast);
+}
+
+// Offline indicator
+let offlineToast;
+function showOfflineIndicator() {
+  if (offlineToast) return;
+  offlineToast = document.createElement('div');
+  offlineToast.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: var(--red);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: var(--sh-md);
+      z-index: 1000;
+      font-weight: 600;
+    ">
+      🔴 Offline Mode - Changes will sync when online
+    </div>
+  `;
+  document.body.appendChild(offlineToast);
+}
+
+function hideOfflineIndicator() {
+  if (offlineToast) {
+    offlineToast.remove();
+    offlineToast = null;
+  }
+}
+
+window.addEventListener('online', hideOfflineIndicator);
+window.addEventListener('offline', showOfflineIndicator);
+
+// Check initial online status
+if (!navigator.onLine) {
+  showOfflineIndicator();
+}
+
+// Request notification permission
+if ('Notification' in window && navigator.serviceWorker) {
+  if (Notification.permission === 'default') {
+    // Show notification permission prompt after login
+    setTimeout(() => {
+      if (document.getElementById('app').style.display !== 'none') {
+        Notification.requestPermission();
+      }
+    }, 2000);
+  }
+}
+</script>
+
 </body>
 </html>
