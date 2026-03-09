@@ -1558,7 +1558,11 @@ function doLogin(){
   const defaultBtn=document.querySelector(`.nav-btn[onclick*="'${dept}'"]`);
   if(defaultBtn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
   loadPage(dept);updateBadges();
-  toast(`Welcome, ${currentUser.name}! Select a project to get started.`,'success');
+  toast(`Welcome, ${currentUser.name}! Loading saved data…`,'info');
+  loadStoreFromDb().then(()=>{
+    toast(`Welcome, ${currentUser.name}! Data ready.`,'success');
+    renderRequestArea(dept);
+  });
 }
 
 // ═══════════════ NAVIGATION ══════════════════════════════════
@@ -1821,6 +1825,7 @@ async function handleRefsUpload(e,dept,key){
     if(!store[dept])store[dept]={};
     if(!store[dept][key])store[dept][key]={refs:[],refData:{}};
     store[dept][key].refs=refs;formState[dept].refSearch='';
+    await dbSaveRefs(dept,key,refs);
     toast(`${refs.length} references loaded for ${projectLabel(key)}`,'success');
     renderRequestArea(dept);
   }catch(err){toast('Error reading file: '+err.message,'error');}
@@ -1837,6 +1842,7 @@ async function handleWireUpload(e,dept,key,refId){
     if(!store[dept][key])store[dept][key]={refs:[],refData:{}};
     if(!store[dept][key].refData)store[dept][key].refData={};
     store[dept][key].refData[refId]=wires;
+    await dbSaveWires(dept,key,refId,wires);
     toast(`${wires.length} wires loaded for reference ${refId} (${headers.length} columns)`,'success');
     renderRequestArea(dept);
   }catch(err){toast('Error reading file: '+err.message,'error');}
@@ -1844,6 +1850,7 @@ async function handleWireUpload(e,dept,key,refId){
 }
 function clearProjectRefs(dept,key){
   store[dept][key]={refs:[],refData:{}};navState[dept].level='refs';navState[dept].refId=null;formState[dept].refSearch='';
+  dbDeleteProjectData(dept,key);
   renderRequestArea(dept);toast('References cleared','info');
 }
 
@@ -2298,12 +2305,12 @@ async function initSupabase(){
   try {
     const { createClient } = supabase;
     sb = createClient(SUPABASE_URL, SUPABASE_ANON);
-    // quick ping to verify credentials
     const { error } = await sb.from('wire_requests').select('id').limit(1);
     if(error) throw error;
     sbReady = true;
     showDbIndicator(true);
     await loadRequestsFromDb();
+    await loadStoreFromDb();
     subscribeRealtime();
     console.log('[Supabase] Connected ✓');
   } catch(e){
@@ -2587,6 +2594,90 @@ window.addEventListener('load', ()=>{
     showDbIndicator(false);
   }
 });
+
+
+// ── STORE PERSISTENCE ───────────────────────────────────────────
+
+// Save reference list for a dept+projectKey to DB
+async function dbSaveRefs(dept, key, refs){
+  if(!sbReady) return;
+  // upsert a single row representing this dept+key refs list
+  const { error } = await sb.from('reference_lists').upsert({
+    id: dept + '||' + key,
+    department: dept,
+    project_key: key,
+    refs_data: refs.map(r => ({ id: r.id, desc: r.desc||'', project: r.project||'', raw: r._raw, cols: r._cols }))
+  }, { onConflict: 'id' });
+  if(error) console.error('[Supabase] dbSaveRefs error:', error);
+}
+
+// Save wire data for a dept+projectKey+refId to DB
+async function dbSaveWires(dept, key, refId, wires){
+  if(!sbReady) return;
+  const { error } = await sb.from('wire_data').upsert({
+    id: dept + '||' + key + '||' + refId,
+    department: dept,
+    project_key: key,
+    ref_id: refId,
+    wires_data: wires.map(w => ({
+      wireName: w.wireName, wireType: w.wireType, quantity: w.quantity,
+      section: w.section||null, color: w.color||null, tinning: w.tinning,
+      layLength: w.layLength||null, raw: w._raw, cols: w._cols
+    }))
+  }, { onConflict: 'id' });
+  if(error) console.error('[Supabase] dbSaveWires error:', error);
+}
+
+// Delete all refs + wires for a dept+projectKey (on clear)
+async function dbDeleteProjectData(dept, key){
+  if(!sbReady) return;
+  await sb.from('reference_lists').delete().eq('id', dept + '||' + key);
+  await sb.from('wire_data').delete().like('id', dept + '||' + key + '||%');
+}
+
+// Load all store data (reference_lists + wire_data) from DB into store[]
+async function loadStoreFromDb(){
+  if(!sbReady) return;
+  try {
+    // Load reference lists
+    const { data: refRows, error: e1 } = await sb.from('reference_lists').select('*');
+    if(e1){ console.error('[Supabase] loadStoreFromDb refs error:', e1); }
+    else {
+      (refRows || []).forEach(row => {
+        const dept = row.department;
+        const key  = row.project_key;
+        if(!store[dept]) store[dept] = {};
+        if(!store[dept][key]) store[dept][key] = { refs: [], refData: {} };
+        store[dept][key].refs = (row.refs_data || []).map(r => ({
+          id: r.id, desc: r.desc||'', project: r.project||'', _raw: r.raw||{}, _cols: r.cols||[]
+        }));
+      });
+    }
+
+    // Load wire data
+    const { data: wireRows, error: e2 } = await sb.from('wire_data').select('*');
+    if(e2){ console.error('[Supabase] loadStoreFromDb wires error:', e2); }
+    else {
+      (wireRows || []).forEach(row => {
+        const dept  = row.department;
+        const key   = row.project_key;
+        const refId = row.ref_id;
+        if(!store[dept]) store[dept] = {};
+        if(!store[dept][key]) store[dept][key] = { refs: [], refData: {} };
+        if(!store[dept][key].refData) store[dept][key].refData = {};
+        store[dept][key].refData[refId] = (row.wires_data || []).map(w => ({
+          wireName: w.wireName, wireType: w.wireType, quantity: w.quantity,
+          section: w.section||null, color: w.color||null, tinning: w.tinning||false,
+          layLength: w.layLength||null, _raw: w.raw||{}, _cols: w.cols||[]
+        }));
+      });
+    }
+
+    console.log('[Supabase] Store data restored from DB ✓');
+  } catch(err) {
+    console.error('[Supabase] loadStoreFromDb error:', err);
+  }
+}
 
 // ── 11. refreshAll helper (re-renders everything) ───────────────
 function refreshAll(){
