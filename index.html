@@ -1954,14 +1954,61 @@ function renderStatusTracker(r){
 }
 
 function renderCard(r){
+  // Get live child requests to show real dept status
+  const downstreams=getDownstreamReqs(r.id);
+  const allChildren=downstreams.length>0;
+  const allChildrenDone=allChildren&&downstreams.every(ds=>ds.status==='completed');
+  const anyChildInProgress=allChildren&&downstreams.some(ds=>ds.status==='in_progress');
+  const anyChildPending=allChildren&&downstreams.some(ds=>ds.status==='pending');
+
+  // Build live status text and dot
   let stTxt='Pending at Pagoda',dotCls='sd-pending';
-  if(r.status==='completed'){stTxt='Completed';dotCls='sd-done';}
+  if(r.status==='completed'&&!allChildren){stTxt='Completed';dotCls='sd-done';}
+  else if(allChildren){
+    if(allChildrenDone){stTxt='All departments completed';dotCls='sd-done';}
+    else if(anyChildInProgress){
+      const ipDepts=downstreams.filter(ds=>ds.status==='in_progress').map(ds=>ds.assignedTo.toUpperCase()).join(', ');
+      stTxt='In progress at '+ipDepts;dotCls='sd-progress';
+    } else {
+      const pendDepts=downstreams.filter(ds=>ds.status==='pending').map(ds=>ds.assignedTo.toUpperCase()).join(', ');
+      stTxt='Routed to '+pendDepts;dotCls='sd-progress';
+    }
+  }
   else if(r.status==='in_progress'){stTxt='In progress at '+r.assignedTo.toUpperCase();dotCls='sd-progress';}
   else if(r.pagodaStatus==='out_of_stock'){stTxt='Routed to '+r.assignedTo.toUpperCase();dotCls='sd-progress';}
-  else if(r.pagodaStatus==='partial'){stTxt='Partial — routed to dept';dotCls='sd-progress';}
-  const itemsHtml=r.items.map(it=>`<div class="rc-item"><div><div class="rc-item-name">${it.wireName}</div><div class="rc-item-det">×${it.quantity} · Ref: ${it.reference}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div></div><div>${wireStatusBadge(it,r.status,r.pagodaStatus)}</div></div>`).join('');
+  else if(r.pagodaStatus==='partial'){stTxt='Routed to departments';dotCls='sd-progress';}
+
+  // Per-item badge: look up item status from child requests too
+  const itemsHtml=r.items.map(it=>{
+    // Find if this item appears in a child request and get its real status
+    let resolvedIt=it;
+    if(allChildren){
+      for(const ds of downstreams){
+        const match=ds.items.find(ci=>ci.wireName===it.wireName&&ci.reference===it.reference);
+        if(match){resolvedIt=match;break;}
+      }
+    }
+    return`<div class="rc-item"><div><div class="rc-item-name">${it.wireName}</div><div class="rc-item-det">×${it.quantity} · Ref: ${it.reference}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div></div><div>${wireStatusBadgeResolved(resolvedIt,r)}</div></div>`;
+  }).join('');
+
   const lockedBanner=r.locked?`<div class="locked-banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>This order is <strong>locked</strong> — submitted orders cannot be modified</span></div>`:'';
   return`<div class="req-card rc-${r.urgency}">${lockedBanner}<div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span></div></div><div class="rc-items">${itemsHtml}</div>${renderStatusTracker(r)}<div class="rc-foot"><div class="status-pill"><span class="s-dot ${dotCls}"></span>${stTxt}</div><span class="time-label">${timeAgo(r.time)}</span></div></div>`;
+}
+
+// Resolved badge: shows real live status including child request progress
+function wireStatusBadgeResolved(it, parentReq){
+  if(it.deptStatus==='done') return'<span class="wst wst-in">Done ✓</span>';
+  if(it.deptStatus==='in_progress') return'<span class="wst" style="background:rgba(74,158,255,.12);color:var(--steel-lt);border:1px solid rgba(74,158,255,.25);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">In Progress</span>';
+  if(it.pagodaStatus==='in_stock') return'<span class="wst wst-in">In Stock</span>';
+  if(it.pagodaStatus==='out_of_stock'){
+    // Show which dept it was routed to
+    const dept=it.wireType==='simple'?'CUTTING':it.wireType==='twist'?'TWIST':'WPA';
+    return`<span class="wst wst-oos">→ ${dept}</span>`;
+  }
+  if(parentReq.status==='completed') return'<span class="wst wst-in">Completed</span>';
+  if(parentReq.pagodaStatus==='out_of_stock'||parentReq.pagodaStatus==='partial') return'<span class="wst wst-oos">Routed</span>';
+  if(parentReq.status==='in_progress') return'<span class="wst" style="background:rgba(74,158,255,.12);color:var(--steel-lt);border:1px solid rgba(74,158,255,.25);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">In Progress</span>';
+  return'<span class="wst" style="background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid var(--bd-1);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">Pending</span>';
 }
 
 function renderReqList(dept){
@@ -1970,7 +2017,7 @@ function renderReqList(dept){
   const reqs=requests.filter(r=>r.requestedBy===dept).sort((a,b)=>new Date(b.time)-new Date(a.time));
   el.innerHTML=reqs.length?reqs.map(renderCard).join(''):emptyState('No requests yet. Select a project above to get started.');
 }
-setInterval(()=>{if(currentPage==='assembly')renderReqList('assembly');else if(currentPage==='wpa')renderReqList('wpa');else if(currentPage==='twist')renderReqList('twist');},4000);
+setInterval(()=>{renderReqList('assembly');renderReqList('wpa');renderReqList('twist');},2000);
 
 // ═══════════════ PAGODA ══════════════════════════════════════
 function renderPagodaRequests(){
@@ -2010,15 +2057,16 @@ function openPagodaModal(reqId){
     }).join('')}`;
   }
   function refresh(){
-    document.getElementById('pm-body').innerHTML=body();
+    const pmBody=document.getElementById('pm-body');
+    if(!pmBody)return;
+    pmBody.innerHTML=body();
     const done=doneCount();const fb=document.getElementById('pm-finalize');
     if(fb){fb.disabled=done<r.items.length;fb.style.opacity=done<r.items.length?'0.4':'1';fb.textContent=done<r.items.length?`Finalize (${done}/${r.items.length})`:'Finalize & Route';}
-    renderPagodaRequests();
   }
   modal.innerHTML=`<div class="modal" style="max-width:620px"><div class="modal-hd" style="background:linear-gradient(135deg,#070e28,#0e2060)"><div><div class="modal-title">${r.id} · Wire Review</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · from ${r.requestedBy.toUpperCase()}</div></div><button class="modal-close" onclick="closePM()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="pm-body">${body()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closePM()" style="flex:0;padding:8px 18px">Cancel</button><button class="btn btn-success" id="pm-finalize" onclick="finalizePagoda('${r.id}')" style="flex:1;opacity:0.4" disabled>Finalize</button></div></div>`;
   modal._refresh=refresh;document.body.appendChild(modal);refresh();
 }
-function closePM(){const m=document.getElementById('pagoda-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>m.remove(),150);}}
+function closePM(){const m=document.getElementById('pagoda-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>{m.remove();renderPagodaRequests();updateBadges();},160);}}
 function setPagodaItem(rid,idx,st){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].pagodaStatus=st;const m=document.getElementById('pagoda-modal');if(m?._refresh)m._refresh();}
 function finalizePagoda(rid){
   const r=requests.find(x=>x.id===rid);if(!r)return;
@@ -2087,16 +2135,17 @@ function openDeptModal(reqId,dept){
     }).join('')}`;
   }
   function refresh(){
-    document.getElementById('dm-body').innerHTML=body();
+    const dmBody=document.getElementById('dm-body');
+    if(!dmBody)return;
+    dmBody.innerHTML=body();
     const done=doneCount();const fb=document.getElementById('dm-finalize');
     if(fb){const allDone=done===r.items.length;fb.disabled=!allDone;fb.style.opacity=allDone?'1':'0.4';fb.textContent=allDone?'Complete All & Close':`Complete (${done}/${r.items.length} done)`;}
-    if(dept==='cutting')renderCuttingRequests();else if(dept==='wpa')loadWPAFulfill();else if(dept==='twist')loadTwistFulfill();
   }
   modal.innerHTML=`<div class="modal" style="max-width:620px"><div class="modal-hd" style="background:${deptHdrBg}"><div><div class="modal-title">${r.id} · ${deptLabel} Processing</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · ${r.items.length} wire${r.items.length>1?'s':''}</div></div><button class="modal-close" onclick="closeDeptModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="dm-body">${body()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closeDeptModal()" style="flex:0;padding:8px 18px">Close</button><button class="btn btn-success" id="dm-finalize" onclick="finalizeDeptModal('${r.id}','${dept}')" style="flex:1;opacity:0.4" disabled>Complete</button></div></div>`;
   modal._refresh=refresh;document.body.appendChild(modal);
 }
-function closeDeptModal(){const m=document.getElementById('dept-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>m.remove(),150);}}
-function setDeptItem(rid,idx,st,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].deptStatus=st;const m=document.getElementById('dept-modal');if(m?._refresh)m._refresh();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
+function closeDeptModal(){const m=document.getElementById('dept-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>{m.remove();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');updateBadges();},160);}}
+function setDeptItem(rid,idx,st,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].deptStatus=st;const m=document.getElementById('dept-modal');if(m?._refresh)m._refresh();}
 function finalizeDeptModal(rid,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();toast(`${rid} — all items processed & completed!`,'success');closeDeptModal();loadPage(currentPage);updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');if(currentPage==='history')renderHistoryPage();}
 
 // ═══════════════ WPA / TWIST TABS ════════════════════════════
@@ -2295,6 +2344,7 @@ function closeSB(){document.querySelector('.sidebar').classList.remove('open');d
 // 🔑 PUT YOUR SUPABASE CREDENTIALS HERE:
 const SUPABASE_URL  = 'https://ylnrtgzcdmglwunnsxjl.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsbnJ0Z3pjZG1nbHd1bm5zeGpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMjQ2NTcsImV4cCI6MjA4ODYwMDY1N30.aWwzA76g5_-5oXUPZmt9V85XetwPhJ8l0hqlGSqM7ew';
+// ────────────────────────────────────────────────────────────────;
 // ────────────────────────────────────────────────────────────────
 
 let sb = null;         // supabase client
