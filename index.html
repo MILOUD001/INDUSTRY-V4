@@ -1554,7 +1554,6 @@ function doLogin(){
       else{store[d][p.id]={refs:[],refData:{}};}
     });
   });
-  updateClock();setInterval(updateClock,1000);
   setInterval(refreshAll,12000);
   const defaultBtn=document.querySelector(`.nav-btn[onclick*="'${dept}'"]`);
   if(defaultBtn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
@@ -2573,6 +2572,9 @@ async function applyDbConfig(){
 
 // ── 10. AUTO-INIT ON LOAD ───────────────────────────────────────
 window.addEventListener('load', ()=>{
+  // Start clock immediately on load (fixes --:--:-- bug)
+  updateClock();
+  setInterval(updateClock, 1000);
   // Only auto-connect if real credentials are set
   if(SUPABASE_URL !== 'https://YOUR_PROJECT.supabase.co' && SUPABASE_ANON !== 'YOUR_ANON_KEY_HERE'){
     initSupabase();
