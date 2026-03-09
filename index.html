@@ -1895,6 +1895,7 @@ function submitRequest(dept){
   });
   const req={id:`REQ-2026-${String(requests.length+1).padStart(3,'0')}`,items,urgency,status:'pending',assignedTo:'pagoda',project:pl,projectKey:key,time:new Date().toISOString(),requestedBy:dept,pagodaStatus:'pending',completedAt:null,locked:true};
   requests.push(req);
+  dbSave(req);
   toast(`Request ${req.id} submitted — ${items.length} wire${items.length>1?'s':''} from ${refId}`,'success');
   navState[dept].level='refs';navState[dept].refId=null;
   renderRequestArea(dept);renderReqList(dept);updateBadges();renderAnalytics();
@@ -2067,7 +2068,7 @@ function openPagodaModal(reqId){
   modal._refresh=refresh;document.body.appendChild(modal);refresh();
 }
 function closePM(){const m=document.getElementById('pagoda-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>{m.remove();renderPagodaRequests();updateBadges();},160);}}
-function setPagodaItem(rid,idx,st){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].pagodaStatus=st;const m=document.getElementById('pagoda-modal');if(m?._refresh)m._refresh();}
+function setPagodaItem(rid,idx,st){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].pagodaStatus=st;const m=document.getElementById('pagoda-modal');if(m&&m._refresh)m._refresh();dbSave(r);}
 function finalizePagoda(rid){
   const r=requests.find(x=>x.id===rid);if(!r)return;
   const inStock=r.items.filter(it=>it.pagodaStatus==='in_stock');const oos=r.items.filter(it=>it.pagodaStatus==='out_of_stock');
@@ -2078,10 +2079,13 @@ function finalizePagoda(rid){
     Object.entries(groups).forEach(([d,items])=>{requests.push({id:`${rid}-${d.toUpperCase()}`,items,urgency:r.urgency,status:'pending',assignedTo:d,project:r.project,time:new Date().toISOString(),requestedBy:r.requestedBy,pagodaStatus:'out_of_stock',completedAt:null,parentId:rid});});
     r.status='completed';r.pagodaStatus='partial';r.completedAt=new Date().toISOString();toast(`${inStock.length} in stock · ${oos.length} routed`,'success');
   }
+  // Save parent and any new child requests to DB
+  dbSave(r);
+  requests.filter(x=>x.parentId===rid).forEach(child=>dbSave(child));
   closePM();loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
 }
-function markInStock(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
-function markOOS(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
+function markInStock(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
+function markOOS(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';dbSave(r);toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
 function loadLowStock(){let h='',low=0;Object.values(wireStock).forEach(w=>{if(w.stock<w.min){low++;h+=`<div class="alert-item"><div><div class="alert-name">${w.name}</div><div style="font-size:10px;color:var(--amber);margin-top:1px">${w.loc}</div></div><div class="alert-stock">${w.stock}/${w.min}</div></div>`;}});document.getElementById('low-stock-list').innerHTML=h||`<div class="alert-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>All stock levels OK</div>`;document.getElementById('p-low').textContent=low;}
 function updatePagodaMetrics(){document.getElementById('p-pending').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;document.getElementById('p-stock').textContent=Object.values(wireStock).reduce((s,w)=>s+w.stock,0);const today=new Date().toDateString();document.getElementById('p-today').textContent=requests.filter(r=>new Date(r.time).toDateString()===today).length;const comp=requests.filter(r=>r.status==='completed').length;const rate=requests.length?Math.round(comp/requests.length*100):0;document.getElementById('p-rate').textContent=rate+'%';document.getElementById('p-rate-bar').style.width=rate+'%';}
 
@@ -2145,8 +2149,8 @@ function openDeptModal(reqId,dept){
   modal._refresh=refresh;document.body.appendChild(modal);
 }
 function closeDeptModal(){const m=document.getElementById('dept-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>{m.remove();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');updateBadges();},160);}}
-function setDeptItem(rid,idx,st,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].deptStatus=st;const m=document.getElementById('dept-modal');if(m?._refresh)m._refresh();}
-function finalizeDeptModal(rid,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();toast(`${rid} — all items processed & completed!`,'success');closeDeptModal();loadPage(currentPage);updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');if(currentPage==='history')renderHistoryPage();}
+function setDeptItem(rid,idx,st,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].deptStatus=st;const m=document.getElementById('dept-modal');if(m&&m._refresh)m._refresh();dbSave(r);}
+function finalizeDeptModal(rid,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);toast(`${rid} — all items processed & completed!`,'success');closeDeptModal();loadPage(currentPage);updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');if(currentPage==='history')renderHistoryPage();}
 
 // ═══════════════ WPA / TWIST TABS ════════════════════════════
 function switchTab(dept,tab){
@@ -2171,8 +2175,8 @@ function loadTwistFulfill(){
   document.getElementById('twist-prog-cnt').textContent=requests.filter(r=>r.assignedTo==='twist'&&r.status==='in_progress').length;
   document.getElementById('twist-pairs-cnt').textContent=requests.filter(r=>r.assignedTo==='twist').reduce((s,r)=>s+r.items.reduce((ss,i)=>ss+i.quantity,0),0);
 }
-function startReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='in_progress';toast(`Started ${id}`,'info');loadPage(currentPage);updateBadges();}
-function completeReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();toast(`${id} completed!`,'success');loadPage(currentPage);updateBadges();renderAnalytics();if(currentPage==='history')renderHistoryPage();}
+function startReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='in_progress';dbSave(r);toast(`Started ${id}`,'info');loadPage(currentPage);updateBadges();}
+function completeReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);toast(`${id} completed!`,'success');loadPage(currentPage);updateBadges();renderAnalytics();if(currentPage==='history')renderHistoryPage();}
 
 function fmtDateTime(iso){
   if(!iso)return{date:'—',time:'—',full:'—',ts:null};
@@ -2462,78 +2466,9 @@ async function dbSave(req){
   if(error) console.error('[Supabase] Save error:', error);
 }
 
-// ── 8. PATCH EXISTING FUNCTIONS ─────────────────────────────────
-// Wrap submitRequest to also save to DB
-const _origSubmit = submitRequest;
-submitRequest = async function(dept){
-  _origSubmit(dept);
-  const latest = requests[requests.length - 1];
-  if(latest) await dbSave(latest);
-};
-
-// Wrap markInStock
-const _origMIS = markInStock;
-markInStock = async function(id){
-  _origMIS(id);
-  const r = requests.find(x => x.id === id);
-  if(r) await dbSave(r);
-};
-
-// Wrap markOOS
-const _origMOOS = markOOS;
-markOOS = async function(id){
-  _origMOOS(id);
-  const r = requests.find(x => x.id === id);
-  if(r) await dbSave(r);
-};
-
-// Wrap finalizePagoda
-const _origFP = finalizePagoda;
-finalizePagoda = async function(rid){
-  _origFP(rid);
-  const r = requests.find(x => x.id === rid);
-  if(r) await dbSave(r);
-};
-
-// Wrap startReq
-const _origSR = startReq;
-startReq = async function(id){
-  _origSR(id);
-  const r = requests.find(x => x.id === id);
-  if(r) await dbSave(r);
-};
-
-// Wrap completeReq
-const _origCR = completeReq;
-completeReq = async function(id){
-  _origCR(id);
-  const r = requests.find(x => x.id === id);
-  if(r) await dbSave(r);
-};
-
-// Wrap finalizeDeptModal
-const _origFDM = finalizeDeptModal;
-finalizeDeptModal = async function(rid, dept){
-  _origFDM(rid, dept);
-  const r = requests.find(x => x.id === rid);
-  if(r) await dbSave(r);
-};
-
-// Wrap setPagodaItem (saves after each item toggle)
-const _origSPI = setPagodaItem;
-setPagodaItem = async function(rid, idx, st){
-  _origSPI(rid, idx, st);
-  const r = requests.find(x => x.id === rid);
-  if(r) await dbSave(r);
-};
-
-// Wrap setDeptItem
-const _origSDI = setDeptItem;
-setDeptItem = async function(rid, idx, st, dept){
-  _origSDI(rid, idx, st, dept);
-  const r = requests.find(x => x.id === rid);
-  if(r) await dbSave(r);
-};
+// ── 8. EXPOSE ALL ACTION FUNCTIONS ON window SO onclick= WORKS ──
+// DB save is called inside each function via dbSave() directly.
+// Do NOT use wrapper pattern — reassigning non-window vars breaks onclick.
 
 // ── 9. CONFIG MODAL ─────────────────────────────────────────────
 function openDbConfig(){
