@@ -1818,6 +1818,8 @@ async function handleRefsUpload(e,dept,key){
     if(!rows.length){toast('File appears empty','error');return;}
     const refs=rows.map(normalizeRef).filter(r=>r.id&&r.id!=='undefined');
     if(!refs.length){toast('Could not detect a reference column. Add a column named "Reference" or "ID".','error');return;}
+    if(!store[dept])store[dept]={};
+    if(!store[dept][key])store[dept][key]={refs:[],refData:{}};
     store[dept][key].refs=refs;formState[dept].refSearch='';
     toast(`${refs.length} references loaded for ${projectLabel(key)}`,'success');
     renderRequestArea(dept);
@@ -1831,6 +1833,9 @@ async function handleWireUpload(e,dept,key,refId){
     if(!rows.length){toast('File appears empty','error');return;}
     const wires=rows.map(row=>normalizeWire(row,headers)).filter(w=>w.wireName&&w.wireName!=='undefined');
     if(!wires.length){toast('Could not detect wire data.','error');return;}
+    if(!store[dept])store[dept]={};
+    if(!store[dept][key])store[dept][key]={refs:[],refData:{}};
+    if(!store[dept][key].refData)store[dept][key].refData={};
     store[dept][key].refData[refId]=wires;
     toast(`${wires.length} wires loaded for reference ${refId} (${headers.length} columns)`,'success');
     renderRequestArea(dept);
