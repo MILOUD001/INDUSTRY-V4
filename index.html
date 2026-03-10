@@ -1236,6 +1236,20 @@ body::before{
   .page{padding:8px}
 }
 .dt-scroll,.excel-scroll{-webkit-overflow-scrolling:touch;overflow-x:auto}
+.dept-hint{display:flex;align-items:center;gap:8px;background:rgba(196,154,42,.08);border:1px solid rgba(196,154,42,.2);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--copper);margin-bottom:4px}
+.dept-hint svg{flex-shrink:0;opacity:.7}
+/* ── Auth tabs & extras ── */
+.auth-tabs{display:flex;gap:0;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:18px;max-width:340px;margin-left:auto;margin-right:auto}
+.auth-tab{flex:1;background:none;border:none;color:var(--tx-3);font-size:13px;font-weight:600;padding:8px 0;border-radius:7px;cursor:pointer;transition:all .2s;letter-spacing:.4px}
+.auth-tab.active{background:var(--copper);color:#fff;box-shadow:0 2px 12px rgba(196,154,42,.35)}
+.auth-tab:hover:not(.active){color:var(--tx-1)}
+.auth-link{background:none;border:none;color:var(--copper);font-size:12px;cursor:pointer;text-decoration:underline;padding:0 4px}
+.auth-link:hover{color:var(--copper-lt)}
+.auth-msg{font-size:12px;padding:9px 12px;border-radius:8px;margin-bottom:10px;text-align:center}
+.auth-err{background:rgba(224,92,106,.1);border:1px solid rgba(224,92,106,.3);color:#e05c6a}
+.auth-ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#10b981}
+.pw-strength-bar{height:4px;background:var(--bg-04);border-radius:2px;margin-top:6px;overflow:hidden}
+#pw-strength-fill{height:100%;width:0;border-radius:2px;transition:all .3s}
 </style>
 </head>
 <body>
@@ -1254,22 +1268,107 @@ body::before{
       <div class="login-brand">MILOUD <em>EZZAKY</em></div>
       <div class="login-version">Industry V.7 &nbsp;·&nbsp; Wire Harness Manufacturing</div>
     </div>
-    <div class="login-card">
-      <div class="login-card-title">Secure Access</div>
-      <div class="login-card-sub">Authenticate to enter the wire management system</div>
+
+    <!-- ── TAB SWITCHER ── -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-signin" onclick="showAuthPanel('signin')">Sign In</button>
+      <button class="auth-tab" id="tab-signup" onclick="showAuthPanel('signup')">Sign Up</button>
+    </div>
+
+    <!-- ══ SIGN IN PANEL ══ -->
+    <div class="login-card" id="panel-signin">
+      <div class="login-card-title">Welcome Back</div>
+      <div class="login-card-sub">Sign in with your Employee ID and password</div>
+      <div class="form-group"><label class="form-label">Employee ID</label>
+        <input type="text" class="form-input" id="si-uid" placeholder="e.g. ME-001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="form-group"><label class="form-label">Password</label>
+        <div style="position:relative">
+          <input type="password" class="form-input" id="si-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px">
+          <button type="button" onclick="togglePw('si-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="si-error" class="auth-msg auth-err" style="display:none"></div>
+      <button class="login-submit" onclick="doLogin()">Sign In →</button>
+      <div style="text-align:center;margin-top:14px">
+        <button class="auth-link" onclick="showAuthPanel('forgot')">Forgot password?</button>
+      </div>
+    </div>
+
+    <!-- ══ SIGN UP PANEL ══ -->
+    <div class="login-card" id="panel-signup" style="display:none">
+      <div class="login-card-title">Create Account</div>
+      <div class="login-card-sub">Register with your department — admin approval required</div>
+      <div class="form-group"><label class="form-label">Full Name</label>
+        <input type="text" class="form-input" id="su-name" placeholder="e.g. Ahmed Benali" autocomplete="name">
+      </div>
+      <div class="form-group"><label class="form-label">Employee ID</label>
+        <input type="text" class="form-input" id="su-uid" placeholder="e.g. ME-042" autocomplete="username">
+      </div>
       <div class="form-group"><label class="form-label">Department</label>
-        <select id="dept-select" class="form-input">
+        <select id="su-dept" class="form-input">
           <option value="assembly">ASSEMBLY — Request Only</option>
           <option value="pagoda">PAGODA — Central Hub</option>
           <option value="cutting">CUTTING AREA</option>
-          <option value="wpa">WIRE PREP AREA — Request & Fulfill</option>
-          <option value="twist">TWIST DEPARTMENT — Request & Fulfill</option>
+          <option value="wpa">WIRE PREP AREA</option>
+          <option value="twist">TWIST DEPARTMENT</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label">Employee ID</label><input type="text" class="form-input" id="login-uid" value="ME-001" placeholder="ME-001"></div>
-      <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="login-pw" value="123456" placeholder="••••••••"></div>
-      <button class="login-submit" onclick="doLogin()">Access System →</button>
+      <div class="form-group"><label class="form-label">Security Answer <span style="color:var(--tx-3);font-size:10px">(for password recovery)</span></label>
+        <input type="text" class="form-input" id="su-secret" placeholder="e.g. your mother's first name">
+      </div>
+      <div class="form-group"><label class="form-label">Password</label>
+        <div style="position:relative">
+          <input type="password" class="form-input" id="su-pw" placeholder="Min 6 characters" style="padding-right:40px" oninput="checkPwStrength(this.value)">
+          <button type="button" onclick="togglePw('su-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="pw-strength-bar"><div id="pw-strength-fill"></div></div>
+        <div id="pw-strength-label" style="font-size:10px;color:var(--tx-3);margin-top:3px"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Confirm Password</label>
+        <input type="password" class="form-input" id="su-pw2" placeholder="Repeat password">
+      </div>
+      <div id="su-error" class="auth-msg auth-err" style="display:none"></div>
+      <div id="su-success" class="auth-msg auth-ok" style="display:none"></div>
+      <button class="login-submit" onclick="doSignUp()">Create Account →</button>
+      <div style="text-align:center;margin-top:14px">
+        <span style="font-size:11px;color:var(--tx-3)">Already have an account?</span>
+        <button class="auth-link" onclick="showAuthPanel('signin')">Sign In</button>
+      </div>
     </div>
+
+    <!-- ══ FORGOT PASSWORD PANEL ══ -->
+    <div class="login-card" id="panel-forgot" style="display:none">
+      <div class="login-card-title">Reset Password</div>
+      <div class="login-card-sub">Enter your Employee ID and security answer</div>
+      <div class="form-group"><label class="form-label">Employee ID</label>
+        <input type="text" class="form-input" id="fp-uid" placeholder="e.g. ME-001">
+      </div>
+      <div class="form-group" id="fp-secret-group">
+        <label class="form-label">Security Answer</label>
+        <input type="text" class="form-input" id="fp-secret" placeholder="Your recovery answer">
+      </div>
+      <div class="form-group" id="fp-newpw-group" style="display:none">
+        <label class="form-label">New Password</label>
+        <div style="position:relative">
+          <input type="password" class="form-input" id="fp-newpw" placeholder="Min 6 characters" style="padding-right:40px">
+          <button type="button" onclick="togglePw('fp-newpw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="fp-error" class="auth-msg auth-err" style="display:none"></div>
+      <div id="fp-success" class="auth-msg auth-ok" style="display:none"></div>
+      <button class="login-submit" id="fp-btn" onclick="doForgotStep()">Verify Identity →</button>
+      <div style="text-align:center;margin-top:14px">
+        <button class="auth-link" onclick="showAuthPanel('signin')">← Back to Sign In</button>
+      </div>
+    </div>
+
     <div class="login-footer">© 2026 Miloud Ezzaky Industry V.7 &nbsp;·&nbsp; Project → Reference → Wire</div>
   </div>
 </div>
@@ -1288,34 +1387,34 @@ body::before{
     <nav class="sb-nav">
       <div class="nav-section">
         <span class="nav-section-label">Overview</span>
-        <button class="nav-btn active" onclick="switchPage('analytics',this)">
+        <button class="nav-btn active" onclick="switchPage('analytics',this)" data-page="analytics">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           Analytics
         </button>
-        <button class="nav-btn" onclick="switchPage('history',this)">
+        <button class="nav-btn" onclick="switchPage('history',this)" data-page="history">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Order History<span class="nav-badge nb-copper" id="b-history">0</span>
         </button>
       </div>
       <div class="nav-section">
         <span class="nav-section-label">Departments</span>
-        <button class="nav-btn" onclick="switchPage('assembly',this)">
+        <button class="nav-btn" onclick="switchPage('assembly',this)" data-page="assembly">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
           Assembly<span class="nav-badge nb-copper" id="b-assembly">0</span>
         </button>
-        <button class="nav-btn" onclick="switchPage('pagoda',this)">
+        <button class="nav-btn" onclick="switchPage('pagoda',this)" data-page="pagoda">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
           Pagoda Hub<span class="nav-badge nb-crimson" id="b-pagoda">0</span>
         </button>
-        <button class="nav-btn" onclick="switchPage('cutting',this)">
+        <button class="nav-btn" onclick="switchPage('cutting',this)" data-page="cutting">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
           Cutting<span class="nav-badge nb-steel" id="b-cutting">0</span>
         </button>
-        <button class="nav-btn" onclick="switchPage('wpa',this)">
+        <button class="nav-btn" onclick="switchPage('wpa',this)" data-page="wpa">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           Wire Prep Area<span class="nav-badge nb-teal" id="b-wpa">0</span>
         </button>
-        <button class="nav-btn" onclick="switchPage('twist',this)">
+        <button class="nav-btn" onclick="switchPage('twist',this)" data-page="twist">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg>
           Twist<span class="nav-badge nb-violet" id="b-twist">0</span>
         </button>
@@ -1334,6 +1433,7 @@ body::before{
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="topbar-title" id="topbar-title">Analytics Dashboard</div>
+      <div id="topbar-user-chip" style="display:none;align-items:center;gap:4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;margin-right:6px"></div>
       <button class="topbar-btn" onclick="refreshAll()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg>
         Refresh
@@ -1398,8 +1498,8 @@ body::before{
         <span class="badge badge-emerald">Request Only</span>
       </div>
       <div id="asm-request-area"></div>
-      <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">My Requests</div><span class="badge badge-steel">Real-time</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div>
-      <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">Order History</div></div><div style="overflow-x:auto"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Project</th><th>Completed</th><th>Status</th></tr></thead><tbody id="asm-hist"></tbody></table></div></div>
+      <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Active Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-copper" id="asm-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div>
+      <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="asm-hist-count">0</span></div><div class="card-body" id="asm-hist"></div></div>
     </div>
 
     <!-- ─── PAGODA ─────────────────────────────────────────── -->
@@ -1416,7 +1516,7 @@ body::before{
       <div class="two-col">
         <div>
           <div class="card"><div class="card-head"><div class="card-title">Pending Requests</div><span class="badge badge-copper" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div>
-          <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">Order History</div></div><div style="overflow-x:auto"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Completed</th><th>Status</th></tr></thead><tbody id="pagoda-hist"></tbody></table></div></div>
+          <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="pagoda-hist-count">0</span></div><div class="card-body" id="pagoda-hist"></div></div>
         </div>
         <div style="display:flex;flex-direction:column;gap:14px">
           <div class="card"><div class="card-head"><div class="card-title">Low Stock Alerts</div></div><div class="card-body" id="low-stock-list"></div></div>
@@ -1436,7 +1536,7 @@ body::before{
         <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="c-done">0</div><div class="kpi-label">Done Today</div></div>
       </div>
       <div class="card"><div class="card-head"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div>
-      <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">History</div></div><div style="overflow-x:auto"><table class="hist-table"><thead><tr><th>Request ID</th><th>Items</th><th>Completed</th><th>Status</th></tr></thead><tbody id="cutting-hist"></tbody></table></div></div>
+      <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="cutting-hist-count">0</span></div><div class="card-body" id="cutting-hist"></div></div>
     </div>
 
     <!-- ─── WPA ───────────────────────────────────────────── -->
@@ -1445,10 +1545,15 @@ body::before{
       <div class="tab-row">
         <button id="wpa-tab-req" class="topbar-btn" style="background:var(--teal);color:var(--bg-base);border-color:var(--teal)" onclick="switchTab('wpa','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button>
         <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchTab('wpa','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-teal" id="wpa-fc" style="margin-left:4px">0</span></button>
+        <button id="wpa-tab-hist" class="topbar-btn" onclick="switchTab('wpa','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button>
       </div>
       <div id="wpa-req-panel">
         <div id="wpa-request-area"></div>
-        <div class="card"><div class="card-head"><div class="card-title">My WPA Requests</div></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div>
+        <div class="card"><div class="card-head"><div class="card-title">Active WPA Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-teal" id="wpa-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div>
+        <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="wpa-req-hist-count">0</span></div><div class="card-body" id="wpa-req-hist"></div></div>
+      </div>
+      <div id="wpa-hist-panel" style="display:none">
+        <div class="card"><div class="card-head"><div class="card-title">✓ WPA Completed History</div><span class="badge badge-emerald" id="wpa-hist-count">0</span></div><div class="card-body" id="wpa-hist"></div></div>
       </div>
       <div id="wpa-fulfill-panel" style="display:none">
         <div class="three-col">
@@ -1467,10 +1572,15 @@ body::before{
       <div class="tab-row">
         <button id="twist-tab-req" class="topbar-btn" style="background:var(--violet);color:#fff;border-color:var(--violet)" onclick="switchTab('twist','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button>
         <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTab('twist','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-violet" id="twist-fc" style="margin-left:4px">0</span></button>
+        <button id="twist-tab-hist" class="topbar-btn" onclick="switchTab('twist','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button>
       </div>
       <div id="twist-req-panel">
         <div id="twist-request-area"></div>
-        <div class="card"><div class="card-head"><div class="card-title">My Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div>
+        <div class="card"><div class="card-head"><div class="card-title">Active Twist Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-violet" id="twist-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div>
+        <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="twist-req-hist-count">0</span></div><div class="card-body" id="twist-req-hist"></div></div>
+      </div>
+      <div id="twist-hist-panel" style="display:none">
+        <div class="card"><div class="card-head"><div class="card-title">✓ Twist Completed History</div><span class="badge badge-emerald" id="twist-hist-count">0</span></div><div class="card-body" id="twist-hist"></div></div>
       </div>
       <div id="twist-fulfill-panel" style="display:none">
         <div class="three-col">
@@ -1534,20 +1644,172 @@ function toast(msg,type='info'){
   setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(18px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},3500);
 }
 
-// ═══════════════ LOGIN ════════════════════════════════════════
+// ═══════════════ AUTH SYSTEM ══════════════════════════════════
+// Pages each department is allowed to access
+const DEPT_PAGES={
+  assembly:['analytics','history','assembly'],
+  pagoda:['analytics','history','pagoda'],
+  cutting:['analytics','history','cutting'],
+  wpa:['analytics','history','wpa'],
+  twist:['analytics','history','twist'],
+  admin:['analytics','history','assembly','pagoda','cutting','wpa','twist']
+};
+
+// ── User store (persisted in localStorage) ─────────────────
+function getUsers(){
+  try{return JSON.parse(localStorage.getItem('me_v7_users')||'{}');}catch(e){return {};}
+}
+function saveUsers(u){localStorage.setItem('me_v7_users',JSON.stringify(u));}
+// Seed a default admin if no users exist yet
+(function seedAdmin(){
+  const u=getUsers();
+  if(!u['admin']){
+    u['admin']={uid:'admin',name:'Admin',dept:'admin',pw:btoa('admin2026'),secret:'admin',createdAt:new Date().toISOString()};
+    saveUsers(u);
+  }
+})();
+
+// ── Panel switcher ─────────────────────────────────────────
+let fpVerified=false;
+function showAuthPanel(panel){
+  ['signin','signup','forgot'].forEach(p=>{
+    const el=document.getElementById('panel-'+p);
+    if(el)el.style.display=p===panel?'':'none';
+  });
+  // Tabs (only signin/signup have tabs)
+  document.getElementById('tab-signin').classList.toggle('active',panel==='signin');
+  document.getElementById('tab-signup').classList.toggle('active',panel==='signup');
+  // Reset forgot state
+  if(panel==='forgot'){
+    fpVerified=false;
+    document.getElementById('fp-newpw-group').style.display='none';
+    document.getElementById('fp-secret-group').style.display='';
+    document.getElementById('fp-btn').textContent='Verify Identity →';
+    authMsg('fp-error','');authMsg('fp-success','');
+  }
+  // Clear errors
+  ['si-error','su-error','su-success'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+}
+
+// ── Helpers ────────────────────────────────────────────────
+function authMsg(id,msg,isOk){
+  const el=document.getElementById(id);if(!el)return;
+  if(!msg){el.style.display='none';return;}
+  el.textContent=msg;
+  el.className='auth-msg '+(isOk?'auth-ok':'auth-err');
+  el.style.display='block';
+}
+function togglePw(inputId,btn){
+  const inp=document.getElementById(inputId);if(!inp)return;
+  const show=inp.type==='password';
+  inp.type=show?'text':'password';
+  btn.innerHTML=show
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+function checkPwStrength(val){
+  const fill=document.getElementById('pw-strength-fill');
+  const label=document.getElementById('pw-strength-label');
+  if(!fill)return;
+  let score=0;
+  if(val.length>=6)score++;
+  if(val.length>=10)score++;
+  if(/[A-Z]/.test(val))score++;
+  if(/[0-9]/.test(val))score++;
+  if(/[^A-Za-z0-9]/.test(val))score++;
+  const levels=[
+    {w:'0%',c:'transparent',t:''},
+    {w:'25%',c:'#e05c6a',t:'Weak'},
+    {w:'50%',c:'#f59e0b',t:'Fair'},
+    {w:'75%',c:'#3b82f6',t:'Good'},
+    {w:'90%',c:'#10b981',t:'Strong'},
+    {w:'100%',c:'#10b981',t:'Very Strong'},
+  ];
+  const l=levels[Math.min(score,5)];
+  fill.style.width=l.w;fill.style.background=l.c;
+  label.textContent=l.t;label.style.color=l.c;
+}
+
+// ── SIGN IN ────────────────────────────────────────────────
 function doLogin(){
-  const dept=document.getElementById('dept-select').value;
-  const uid=document.getElementById('login-uid').value;
-  currentUser={username:uid,department:dept,name:uid==='ME-001'?'Miloud Ezzaky':'Operator'};
+  const uid=document.getElementById('si-uid').value.trim();
+  const pw=document.getElementById('si-pw').value;
+  if(!uid){authMsg('si-error','Please enter your Employee ID.');return;}
+  if(!pw){authMsg('si-error','Please enter your password.');return;}
+  const users=getUsers();
+  const user=users[uid];
+  if(!user){authMsg('si-error','Employee ID not found. Please sign up first.');return;}
+  if(atob(user.pw)!==pw){authMsg('si-error','Incorrect password.');document.getElementById('si-pw').focus();return;}
+  authMsg('si-error','');
+  // Successful login
+  const dept=user.dept;
+  currentUser={username:uid,department:dept,name:user.name||uid};
+  enterApp(dept);
+}
+
+// ── SIGN UP ────────────────────────────────────────────────
+function doSignUp(){
+  const name=document.getElementById('su-name').value.trim();
+  const uid=document.getElementById('su-uid').value.trim();
+  const dept=document.getElementById('su-dept').value;
+  const secret=document.getElementById('su-secret').value.trim();
+  const pw=document.getElementById('su-pw').value;
+  const pw2=document.getElementById('su-pw2').value;
+  authMsg('su-error','');authMsg('su-success','');
+  if(!name){authMsg('su-error','Please enter your full name.');return;}
+  if(!uid){authMsg('su-error','Please enter an Employee ID.');return;}
+  if(!secret){authMsg('su-error','Please provide a security answer for password recovery.');return;}
+  if(pw.length<6){authMsg('su-error','Password must be at least 6 characters.');return;}
+  if(pw!==pw2){authMsg('su-error','Passwords do not match.');return;}
+  const users=getUsers();
+  if(users[uid]){authMsg('su-error',`Employee ID "${uid}" is already registered.`);return;}
+  users[uid]={uid,name,dept,pw:btoa(pw),secret:secret.toLowerCase().trim(),createdAt:new Date().toISOString()};
+  saveUsers(users);
+  authMsg('su-success',`Account created for ${name}! You can now sign in.`,true);
+  // Clear fields
+  ['su-name','su-uid','su-secret','su-pw','su-pw2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  checkPwStrength('');
+  setTimeout(()=>showAuthPanel('signin'),1800);
+}
+
+// ── FORGOT PASSWORD ────────────────────────────────────────
+function doForgotStep(){
+  if(!fpVerified){
+    // Step 1: verify identity
+    const uid=document.getElementById('fp-uid').value.trim();
+    const secret=document.getElementById('fp-secret').value.trim().toLowerCase();
+    authMsg('fp-error','');authMsg('fp-success','');
+    if(!uid){authMsg('fp-error','Please enter your Employee ID.');return;}
+    const users=getUsers();
+    const user=users[uid];
+    if(!user){authMsg('fp-error','Employee ID not found.');return;}
+    if(user.secret!==secret){authMsg('fp-error','Security answer incorrect.');return;}
+    // Identity verified — show new password field
+    fpVerified=true;
+    document.getElementById('fp-secret-group').style.display='none';
+    document.getElementById('fp-newpw-group').style.display='';
+    document.getElementById('fp-btn').textContent='Set New Password →';
+    authMsg('fp-success','Identity verified! Enter your new password.',true);
+  } else {
+    // Step 2: set new password
+    const uid=document.getElementById('fp-uid').value.trim();
+    const newpw=document.getElementById('fp-newpw').value;
+    authMsg('fp-error','');
+    if(newpw.length<6){authMsg('fp-error','Password must be at least 6 characters.');return;}
+    const users=getUsers();
+    users[uid].pw=btoa(newpw);
+    saveUsers(users);
+    authMsg('fp-success','Password reset successfully! Redirecting to sign in…',true);
+    setTimeout(()=>showAuthPanel('signin'),1800);
+  }
+}
+
+// ── ENTER APP ─────────────────────────────────────────────
+function enterApp(dept){
   const ls=document.getElementById('login-screen');
   ls.style.opacity='0';ls.style.transition='opacity .4s';
-  setTimeout(()=>{
-    ls.style.display='none';
-    document.getElementById('app').style.display='flex';
-  },400);
-  document.getElementById('sb-uname').textContent=currentUser.name;
-  document.getElementById('sb-avatar').textContent=currentUser.name[0].toUpperCase();
-  document.getElementById('sb-udept').textContent=dept.toUpperCase();
+  setTimeout(()=>{ls.style.display='none';document.getElementById('app').style.display='flex';},400);
+  applyDeptNav(dept);
   ['assembly','wpa','twist'].forEach(d=>{
     PROJECTS.forEach(p=>{
       if(p.isMain){p.subs.forEach(s=>{store[d][p.id+'__'+s.replace(/ /g,'_')]={refs:[],refData:{}};});store[d][p.id]={refs:[],refData:{}};}
@@ -1555,19 +1817,42 @@ function doLogin(){
     });
   });
   setInterval(refreshAll,12000);
-  const defaultBtn=document.querySelector(`.nav-btn[onclick*="'${dept}'"]`);
+  const landing=dept==='admin'?'analytics':dept;
+  const defaultBtn=document.querySelector(`.nav-btn[data-page="${landing}"]`);
   if(defaultBtn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
-  loadPage(dept);updateBadges();
+  loadPage(landing);updateBadges();
   toast(`Welcome, ${currentUser.name}! Loading saved data…`,'info');
   loadStoreFromDb().then(()=>{
     toast(`Welcome, ${currentUser.name}! Data ready.`,'success');
-    renderRequestArea(dept);
+    if(['assembly','wpa','twist'].includes(dept))renderRequestArea(dept);
   });
 }
+function applyDeptNav(dept){
+  const allowed=DEPT_PAGES[dept]||[];
+  document.querySelectorAll('.nav-btn[data-page]').forEach(btn=>{
+    const page=btn.getAttribute('data-page');
+    btn.style.display=allowed.includes(page)?'':'none';
+  });
+  const chip=document.getElementById('topbar-user-chip');
+  if(chip){
+    chip.innerHTML=`<span style="font-weight:700;color:var(--copper)">${currentUser.name}</span><span style="opacity:.6;margin-left:6px;font-size:10px;text-transform:uppercase;letter-spacing:1px">${dept}</span><button onclick="doLogout()" style="margin-left:10px;background:rgba(224,92,106,.13);border:1px solid rgba(224,92,106,.3);color:#e05c6a;border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;font-weight:600">Logout</button>`;
+    chip.style.display='flex';
+  }
+}
+function doLogout(){
+  if(!confirm('Logout and return to login screen?'))return;
+  location.reload();
+}
+function onDeptChange(){}// kept for compat
 
 // ═══════════════ NAVIGATION ══════════════════════════════════
 const PAGE_TITLES={analytics:'Analytics Dashboard',history:'Order History',assembly:'Assembly Department',pagoda:'Pagoda · Central Hub',cutting:'Cutting Area',wpa:'Wire Prep Area',twist:'Twist Department'};
 function switchPage(page,btn){
+  const allowed=DEPT_PAGES[currentUser.department]||[];
+  if(currentUser.department&&!allowed.includes(page)){
+    toast('Access restricted to your department only.','error');
+    return;
+  }
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
   loadPage(page);
@@ -1581,12 +1866,20 @@ function loadPage(page){
   if(page==='analytics')renderAnalytics();
   else if(page==='history')renderHistoryPage();
   else if(page==='assembly'){renderRequestArea('assembly');renderReqList('assembly');}
-  else if(page==='pagoda'){renderPagodaRequests();loadLowStock();updatePagodaMetrics();}
-  else if(page==='cutting'){renderCuttingRequests();updateCuttingMetrics();}
+  else if(page==='pagoda'){renderPagodaRequests();loadLowStock();updatePagodaMetrics();loadHistory('pagoda-hist','pagoda','assignedTo');const ph=document.getElementById('pagoda-hist-count');if(ph)ph.textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='completed').length;}
+  else if(page==='cutting'){renderCuttingRequests();updateCuttingMetrics();loadHistory('cutting-hist','cutting','assignedTo');const ch=document.getElementById('cutting-hist-count');if(ch)ch.textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='completed').length;}
   else if(page==='wpa'){renderRequestArea('wpa');renderReqList('wpa');}
   else if(page==='twist'){renderRequestArea('twist');renderReqList('twist');}
 }
-function refreshAll(){loadPage(currentPage);updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');if(currentPage==='history')renderHistoryPage();}
+function isModalOpen(){return !!(document.getElementById('pagoda-modal')||document.getElementById('dept-modal'));}
+function refreshAll(){
+  updateBadges();renderAnalytics();
+  if(!isModalOpen()){
+    loadPage(currentPage);
+    renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
+    if(currentPage==='history')renderHistoryPage();
+  }
+}
 
 function updateBadges(){
   document.getElementById('b-assembly').textContent=requests.filter(r=>r.requestedBy==='assembly').length;
@@ -2015,10 +2308,30 @@ function wireStatusBadgeResolved(it, parentReq){
 function renderReqList(dept){
   const listId=dept==='assembly'?'asm-req-list':dept==='wpa'?'wpa-req-list':'twist-req-list';
   const el=document.getElementById(listId);if(!el)return;
-  const reqs=requests.filter(r=>r.requestedBy===dept).sort((a,b)=>new Date(b.time)-new Date(a.time));
-  el.innerHTML=reqs.length?reqs.map(renderCard).join(''):emptyState('No requests yet. Select a project above to get started.');
+  const all=requests.filter(r=>r.requestedBy===dept);
+  const active=all.filter(r=>r.status!=='completed').sort((a,b)=>new Date(b.time)-new Date(a.time));
+  el.innerHTML=active.length?active.map(renderCard).join(''):emptyState('No active requests. Select a project above to submit a new request.');
+  const completed=all.filter(r=>r.status==='completed');
+  // Assembly
+  if(dept==='assembly'){
+    const badge=document.getElementById('asm-active-count');if(badge)badge.textContent=active.length;
+    loadHistory('asm-hist','assembly','requestedBy');
+    const hb=document.getElementById('asm-hist-count');if(hb)hb.textContent=completed.length;
+  }
+  // WPA
+  if(dept==='wpa'){
+    const badge=document.getElementById('wpa-active-count');if(badge)badge.textContent=active.length;
+    loadHistory('wpa-req-hist','wpa','requestedBy');
+    const hb=document.getElementById('wpa-req-hist-count');if(hb)hb.textContent=completed.length;
+  }
+  // Twist
+  if(dept==='twist'){
+    const badge=document.getElementById('twist-active-count');if(badge)badge.textContent=active.length;
+    loadHistory('twist-req-hist','twist','requestedBy');
+    const hb=document.getElementById('twist-req-hist-count');if(hb)hb.textContent=completed.length;
+  }
 }
-setInterval(()=>{renderReqList('assembly');renderReqList('wpa');renderReqList('twist');},2000);
+setInterval(()=>{if(!isModalOpen()){renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}},2000);
 
 // ═══════════════ PAGODA ══════════════════════════════════════
 function renderPagodaRequests(){
@@ -2094,7 +2407,7 @@ function renderCuttingRequests(){
   const reqs=requests.filter(r=>r.assignedTo==='cutting'&&r.status!=='completed');
   const el=document.getElementById('cutting-req-list');
   el.innerHTML=reqs.length?reqs.map(r=>makeDeptCard(r,'cutting')).join(''):emptyState('No cutting requests');
-  loadHistory('cutting-hist','cutting','assignedTo');
+  if(!isModalOpen()){loadHistory('cutting-hist','cutting','assignedTo');const ch=document.getElementById('cutting-hist-count');if(ch)ch.textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='completed').length;}
 }
 function updateCuttingMetrics(){document.getElementById('c-pending').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='pending').length;document.getElementById('c-prog').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='in_progress').length;document.getElementById('c-done').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='completed').length;}
 
@@ -2154,11 +2467,31 @@ function finalizeDeptModal(rid,dept){const r=requests.find(x=>x.id===rid);if(!r)
 
 // ═══════════════ WPA / TWIST TABS ════════════════════════════
 function switchTab(dept,tab){
-  const rp=document.getElementById(`${dept}-req-panel`);const fp=document.getElementById(`${dept}-fulfill-panel`);
-  const rb=document.getElementById(`${dept}-tab-req`);const fb=document.getElementById(`${dept}-tab-fulfill`);
+  const rp=document.getElementById(`${dept}-req-panel`);
+  const fp=document.getElementById(`${dept}-fulfill-panel`);
+  const hp=document.getElementById(`${dept}-hist-panel`);
+  const rb=document.getElementById(`${dept}-tab-req`);
+  const fb=document.getElementById(`${dept}-tab-fulfill`);
+  const hb=document.getElementById(`${dept}-tab-hist`);
   const activeColor=dept==='wpa'?'var(--teal)':'var(--violet)';const activeTextColor=dept==='wpa'?'var(--bg-base)':'#fff';
-  if(tab==='req'){rp.style.display='block';fp.style.display='none';rb.style.cssText=`background:${activeColor};color:${activeTextColor};border-color:${activeColor}`;fb.style.cssText='';}
-  else{rp.style.display='none';fp.style.display='block';fb.style.cssText=`background:${activeColor};color:${activeTextColor};border-color:${activeColor}`;rb.style.cssText='';if(dept==='wpa')loadWPAFulfill();else loadTwistFulfill();}
+  // Reset all
+  [rp,fp,hp].forEach(p=>{if(p)p.style.display='none';});
+  [rb,fb,hb].forEach(b=>{if(b)b.style.cssText='';});
+  if(tab==='req'){
+    if(rp)rp.style.display='block';
+    if(rb)rb.style.cssText=`background:${activeColor};color:${activeTextColor};border-color:${activeColor}`;
+  } else if(tab==='fulfill'){
+    if(fp)fp.style.display='block';
+    if(fb)fb.style.cssText=`background:${activeColor};color:${activeTextColor};border-color:${activeColor}`;
+    if(dept==='wpa')loadWPAFulfill();else loadTwistFulfill();
+  } else if(tab==='hist'){
+    if(hp)hp.style.display='block';
+    if(hb)hb.style.cssText=`background:${activeColor};color:${activeTextColor};border-color:${activeColor}`;
+    loadHistory(`${dept}-hist`,dept,'assignedTo');
+    // Update badge count
+    const cnt=requests.filter(r=>r.assignedTo===dept&&r.status==='completed').length;
+    const badge=document.getElementById(`${dept}-hist-count`);if(badge)badge.textContent=cnt;
+  }
 }
 function loadWPAFulfill(){
   const wpa=requests.filter(r=>r.assignedTo==='wpa'&&r.status!=='completed');
@@ -2176,7 +2509,21 @@ function loadTwistFulfill(){
   document.getElementById('twist-pairs-cnt').textContent=requests.filter(r=>r.assignedTo==='twist').reduce((s,r)=>s+r.items.reduce((ss,i)=>ss+i.quantity,0),0);
 }
 function startReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='in_progress';dbSave(r);toast(`Started ${id}`,'info');loadPage(currentPage);updateBadges();}
-function completeReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);toast(`${id} completed!`,'success');loadPage(currentPage);updateBadges();renderAnalytics();if(currentPage==='history')renderHistoryPage();}
+function completeReq(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;
+  r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);
+  toast(`${id} completed!`,'success');
+  updateBadges();renderAnalytics();
+  if(!isModalOpen())loadPage(currentPage);
+  else{
+    // Just refresh the history section without destroying the modal
+    const dept=r.assignedTo;
+    loadHistory(`${dept}-hist`,dept,'assignedTo');
+    const badge=document.getElementById(`${dept}-hist-count`);
+    if(badge)badge.textContent=requests.filter(x=>x.assignedTo===dept&&x.status==='completed').length;
+  }
+  if(currentPage==='history')renderHistoryPage();
+}
 
 function fmtDateTime(iso){
   if(!iso)return{date:'—',time:'—',full:'—',ts:null};
@@ -2297,11 +2644,63 @@ function buildHistDetails(r){
 
 function toggleHistEntry(id){const el=document.getElementById(id);if(!el)return;el.classList.toggle('expanded');}
 
-function loadHistory(tbodyId,dept,field){
-  const tbody=document.getElementById(tbodyId);if(!tbody)return;
+function loadHistory(containerId,dept,field){
+  const container=document.getElementById(containerId);if(!container)return;
   const comp=requests.filter(r=>r[field]===dept&&r.status==='completed').sort((a,b)=>new Date(b.completedAt||b.time)-new Date(a.completedAt||a.time));
-  if(!comp.length){tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--tx-4)">No completed orders yet</td></tr>`;return;}
-  tbody.innerHTML=comp.map(r=>{const dt=new Date(r.completedAt||r.time);return`<tr><td class="mono">${r.id}</td><td>${r.items.map(i=>`${i.quantity}× ${i.wireName}`).join(', ')}</td>${field==='requestedBy'?`<td><span class="badge badge-grey">${r.project}</span></td>`:''}<td style="font-family:'IBM Plex Mono',monospace;font-size:10px">${dt.toLocaleDateString()} ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</td><td><span class="badge badge-emerald">Completed</span></td></tr>`;}).join('');
+  if(!comp.length){
+    container.innerHTML=`<div class="empty-state" style="margin:24px 0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;opacity:.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><p style="margin-top:8px;font-size:11px">No completed orders yet</p></div>`;
+    return;
+  }
+  const deptColors={assembly:'var(--copper)',wpa:'var(--teal)',twist:'var(--violet)',pagoda:'var(--steel-lt)',cutting:'var(--emerald)'};
+  container.innerHTML=comp.map(r=>{
+    const dt=fmtDateTime(r.completedAt||r.time);
+    const entryId='dh_'+r.id.replace(/[^a-z0-9]/gi,'_');
+    const totalMs=r.completedAt&&r.time?new Date(r.completedAt)-new Date(r.time):null;
+    const dur=totalMs!==null?fmtDuration(totalMs):'';
+    const wirePreview=r.items.slice(0,2).map(i=>`${i.quantity}× ${i.wireName}`).join(', ')+(r.items.length>2?` +${r.items.length-2} more`:'');
+    const urgColors={normal:'badge-emerald',urgent:'badge-amber',critical:'badge-crimson'};
+    // Wire detail rows
+    const wireRows=r.items.map((it,i)=>{
+      const st=it.pagodaStatus==='in_stock'?'<span class="wst wst-in">In Stock</span>':
+               it.pagodaStatus==='out_of_stock'?'<span class="wst wst-oos">OOS→Routed</span>':
+               it.deptStatus==='done'?'<span class="wst wst-in">Done ✓</span>':
+               it.deptStatus==='in_progress'?'<span class="wst" style="background:rgba(74,158,255,.1);color:var(--steel-lt);border:1px solid rgba(74,158,255,.2);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">In Progress</span>':
+               '<span class="wst" style="background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid var(--bd-1);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">—</span>';
+      const rawTxt=it._rawRow?'<div style="font-size:9px;color:var(--tx-4);margin-top:2px">'+Object.entries(it._rawRow).map(([k,v])=>k+': '+v).join(' · ')+'</div>':'';
+      return`<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd-1);gap:12px">
+        <div style="min-width:0;flex:1">
+          <div style="font-size:12px;font-weight:700;color:var(--tx-1)">${it.wireName}</div>
+          <div style="font-size:10px;color:var(--tx-3);margin-top:2px">×${it.quantity} · Ref: ${it.reference||'—'} · ${(it.wireType||'').toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div>
+          ${rawTxt}
+        </div>
+        <div style="flex-shrink:0">${st}</div>
+      </div>`;
+    }).join('');
+    // Timeline mini
+    const timelineHtml=buildHistDetails(r);
+    return`<div class="hist-entry dept-hist-entry" id="${entryId}" onclick="toggleHistEntry('${entryId}')" style="margin-bottom:8px;border-radius:12px;border:1px solid var(--bd-1);background:var(--bg-01);overflow:hidden;cursor:pointer;transition:border-color .2s" onmouseenter="this.style.borderColor='var(--bd-2)'" onmouseleave="this.style.borderColor='var(--bd-1)'">
+      <div class="hist-row" style="padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <svg class="hist-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;color:var(--tx-4);flex-shrink:0;transition:transform .2s"><polyline points="9 18 15 12 9 6"/></svg>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--tx-1);flex-shrink:0">${r.id}</span>
+        <div style="flex:1;min-width:0;font-size:11px;color:var(--tx-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${wirePreview}</div>
+        <span class="badge badge-grey" style="flex-shrink:0">${r.project}</span>
+        <span class="badge ${urgColors[r.urgency]||'badge-grey'}" style="font-size:9px;flex-shrink:0">${(r.urgency||'').toUpperCase()}</span>
+        ${dur?`<span style="font-size:10px;color:var(--tx-3);flex-shrink:0;font-family:'IBM Plex Mono',monospace">⏱ ${dur}</span>`:''}
+        <div style="display:flex;align-items:center;gap:5px;flex-shrink:0"><div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 5px var(--emerald)"></div><span style="font-size:11px;color:var(--tx-2)">Completed</span></div>
+        <div style="font-size:10px;color:var(--tx-4);flex-shrink:0;font-family:'IBM Plex Mono',monospace;text-align:right"><div>${dt.date}</div><div>${dt.time}</div></div>
+      </div>
+      <div class="hist-details" style="padding:0 16px">
+        <div style="padding-bottom:16px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:10px;margin-top:4px">Wire Details (${r.items.length} wire${r.items.length!==1?'s':''})</div>
+          ${wireRows}
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bd-1)">
+            <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:10px">Order Timeline</div>
+            ${timelineHtml}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ═══════════════ ANALYTICS ════════════════════════════════════
@@ -2346,9 +2745,8 @@ function closeSB(){document.querySelector('.sidebar').classList.remove('open');d
 
 // ── 1. CONFIG  ──────────────────────────────────────────────────
 // 🔑 PUT YOUR SUPABASE CREDENTIALS HERE:
-const SUPABASE_URL  = 'https://ylnrtgzcdmglwunnsxjl.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsbnJ0Z3pjZG1nbHd1bm5zeGpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMjQ2NTcsImV4cCI6MjA4ODYwMDY1N30.aWwzA76g5_-5oXUPZmt9V85XetwPhJ8l0hqlGSqM7ew';
-// ────────────────────────────────────────────────────────────────
+const SUPABASE_URL  = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_ANON = 'YOUR_ANON_KEY_HERE';
 // ────────────────────────────────────────────────────────────────
 
 let sb = null;         // supabase client
@@ -2573,7 +2971,7 @@ window.addEventListener('load', ()=>{
   updateClock();
   setInterval(updateClock, 1000);
   // Only auto-connect if real credentials are set
-  if(SUPABASE_URL !== 'https://YOUR_PROJECT.supabase.co' && SUPABASE_ANON !== 'YOUR_ANON_KEY_HERE'){
+  if(SUPABASE_URL !== 'https://ylnrtgzcdmglwunnsxjl.supabase.co' && SUPABASE_ANON !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsbnJ0Z3pjZG1nbHd1bm5zeGpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMjQ2NTcsImV4cCI6MjA4ODYwMDY1N30.aWwzA76g5_-5oXUPZmt9V85XetwPhJ8l0hqlGSqM7ew'){
     initSupabase();
   } else {
     showDbIndicator(false);
