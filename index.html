@@ -1300,9 +1300,16 @@ body::before{
     <!-- ══ SIGN UP PANEL ══ -->
     <div class="login-card" id="panel-signup" style="display:none">
       <div class="login-card-title">Create Account</div>
-      <div class="login-card-sub">Register with your department — admin approval required</div>
+      <div class="login-card-sub">Register with your Gmail — login is always with Employee ID &amp; password</div>
       <div class="form-group"><label class="form-label">Full Name</label>
         <input type="text" class="form-input" id="su-name" placeholder="e.g. Ahmed Benali" autocomplete="name">
+      </div>
+      <div class="form-group"><label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(used for account recovery)</span></label>
+        <div style="position:relative">
+          <input type="email" class="form-input" id="su-gmail" placeholder="yourname@gmail.com" autocomplete="email" oninput="validateGmail(this)" style="padding-right:36px">
+          <span id="su-gmail-icon" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none"></span>
+        </div>
+        <div id="su-gmail-hint" style="font-size:10px;color:var(--tx-3);margin-top:4px">Must be a @gmail.com address</div>
       </div>
       <div class="form-group"><label class="form-label">Employee ID</label>
         <input type="text" class="form-input" id="su-uid" placeholder="e.g. ME-042" autocomplete="username">
@@ -1315,9 +1322,6 @@ body::before{
           <option value="wpa">WIRE PREP AREA</option>
           <option value="twist">TWIST DEPARTMENT</option>
         </select>
-      </div>
-      <div class="form-group"><label class="form-label">Security Answer <span style="color:var(--tx-3);font-size:10px">(for password recovery)</span></label>
-        <input type="text" class="form-input" id="su-secret" placeholder="e.g. your mother's first name">
       </div>
       <div class="form-group"><label class="form-label">Password</label>
         <div style="position:relative">
@@ -1344,13 +1348,13 @@ body::before{
     <!-- ══ FORGOT PASSWORD PANEL ══ -->
     <div class="login-card" id="panel-forgot" style="display:none">
       <div class="login-card-title">Reset Password</div>
-      <div class="login-card-sub">Enter your Employee ID and security answer</div>
+      <div class="login-card-sub">Verify your identity using your Employee ID and Gmail</div>
       <div class="form-group"><label class="form-label">Employee ID</label>
         <input type="text" class="form-input" id="fp-uid" placeholder="e.g. ME-001">
       </div>
       <div class="form-group" id="fp-secret-group">
-        <label class="form-label">Security Answer</label>
-        <input type="text" class="form-input" id="fp-secret" placeholder="Your recovery answer">
+        <label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(registered at sign up)</span></label>
+        <input type="email" class="form-input" id="fp-secret" placeholder="yourname@gmail.com">
       </div>
       <div class="form-group" id="fp-newpw-group" style="display:none">
         <label class="form-label">New Password</label>
@@ -1359,6 +1363,9 @@ body::before{
           <button type="button" onclick="togglePw('fp-newpw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
+        </div>
+        <div class="form-group" style="margin-top:10px"><label class="form-label">Confirm New Password</label>
+          <input type="password" class="form-input" id="fp-newpw2" placeholder="Repeat new password">
         </div>
       </div>
       <div id="fp-error" class="auth-msg auth-err" style="display:none"></div>
@@ -1731,74 +1738,126 @@ function checkPwStrength(val){
 }
 
 // ── SIGN IN ────────────────────────────────────────────────
-function doLogin(){
+async function doLogin(){
   const uid=document.getElementById('si-uid').value.trim();
   const pw=document.getElementById('si-pw').value;
   if(!uid){authMsg('si-error','Please enter your Employee ID.');return;}
   if(!pw){authMsg('si-error','Please enter your password.');return;}
-  const users=getUsers();
-  const user=users[uid];
+  // Try DB first (if connected), then fall back to localStorage
+  let user=null;
+  if(sbReady){
+    const {data,error}=await sb.from('app_users').select('*').eq('uid',uid).single();
+    if(!error&&data){
+      // Sync DB user into localStorage
+      const users=getUsers();
+      users[uid]={uid,name:data.full_name,dept:data.department,pw:data.pw_hash,secret:data.secret||'',createdAt:data.created_at};
+      saveUsers(users);
+      user=users[uid];
+    }
+  }
+  if(!user){
+    const users=getUsers();
+    user=users[uid];
+  }
   if(!user){authMsg('si-error','Employee ID not found. Please sign up first.');return;}
+  if(!user.is_active&&user.is_active===false){authMsg('si-error','This account has been deactivated. Contact admin.');return;}
   if(atob(user.pw)!==pw){authMsg('si-error','Incorrect password.');document.getElementById('si-pw').focus();return;}
   authMsg('si-error','');
-  // Successful login
-  const dept=user.dept;
-  currentUser={username:uid,department:dept,name:user.name||uid};
+  const dept=user.dept||user.department;
+  currentUser={username:uid,department:dept,name:user.name||user.full_name||uid};
   enterApp(dept);
 }
 
+// ── Gmail validation ───────────────────────────────────────
+function validateGmail(input){
+  const val=input.value.trim();
+  const icon=document.getElementById('su-gmail-icon');
+  const hint=document.getElementById('su-gmail-hint');
+  const valid=val.toLowerCase().endsWith('@gmail.com')&&val.length>10;
+  if(!val){if(icon)icon.textContent='';if(hint){hint.textContent='Must be a @gmail.com address';hint.style.color='var(--tx-3)';}return;}
+  if(valid){
+    if(icon)icon.textContent='✓';icon.style.color='#10b981';
+    if(hint){hint.textContent='Valid Gmail address';hint.style.color='#10b981';}
+  } else {
+    if(icon)icon.textContent='✗';icon.style.color='#e05c6a';
+    if(hint){hint.textContent='Must be a valid @gmail.com address';hint.style.color='#e05c6a';}
+  }
+}
+
 // ── SIGN UP ────────────────────────────────────────────────
-function doSignUp(){
+async function doSignUp(){
   const name=document.getElementById('su-name').value.trim();
+  const gmail=document.getElementById('su-gmail').value.trim().toLowerCase();
   const uid=document.getElementById('su-uid').value.trim();
   const dept=document.getElementById('su-dept').value;
-  const secret=document.getElementById('su-secret').value.trim();
   const pw=document.getElementById('su-pw').value;
   const pw2=document.getElementById('su-pw2').value;
   authMsg('su-error','');authMsg('su-success','');
   if(!name){authMsg('su-error','Please enter your full name.');return;}
+  if(!gmail||!gmail.endsWith('@gmail.com')){authMsg('su-error','Please enter a valid @gmail.com address.');return;}
   if(!uid){authMsg('su-error','Please enter an Employee ID.');return;}
-  if(!secret){authMsg('su-error','Please provide a security answer for password recovery.');return;}
   if(pw.length<6){authMsg('su-error','Password must be at least 6 characters.');return;}
   if(pw!==pw2){authMsg('su-error','Passwords do not match.');return;}
   const users=getUsers();
   if(users[uid]){authMsg('su-error',`Employee ID "${uid}" is already registered.`);return;}
-  users[uid]={uid,name,dept,pw:btoa(pw),secret:secret.toLowerCase().trim(),createdAt:new Date().toISOString()};
+  // Check Gmail not already used
+  const gmailUsed=Object.values(users).find(u=>u.gmail===gmail);
+  if(gmailUsed){authMsg('su-error','This Gmail is already linked to another account.');return;}
+  const newUser={uid,name,dept,gmail,pw:btoa(pw),secret:gmail,createdAt:new Date().toISOString()};
+  users[uid]=newUser;
   saveUsers(users);
-  authMsg('su-success',`Account created for ${name}! You can now sign in.`,true);
-  // Clear fields
-  ['su-name','su-uid','su-secret','su-pw','su-pw2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  // Sync to Supabase
+  if(sbReady){
+    const {error}=await sb.from('app_users').upsert({
+      uid,full_name:name,department:dept,pw_hash:btoa(pw),secret:gmail
+    },{onConflict:'uid'});
+    if(error)console.warn('[Supabase] app_users upsert error:',error);
+  }
+  authMsg('su-success',`Account created for ${name}! Sign in with your Employee ID and password.`,true);
+  ['su-name','su-gmail','su-uid','su-pw','su-pw2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const icon=document.getElementById('su-gmail-icon');if(icon)icon.textContent='';
   checkPwStrength('');
-  setTimeout(()=>showAuthPanel('signin'),1800);
+  setTimeout(()=>showAuthPanel('signin'),2000);
 }
 
 // ── FORGOT PASSWORD ────────────────────────────────────────
-function doForgotStep(){
+async function doForgotStep(){
   if(!fpVerified){
-    // Step 1: verify identity
+    // Step 1: verify identity with Gmail
     const uid=document.getElementById('fp-uid').value.trim();
-    const secret=document.getElementById('fp-secret').value.trim().toLowerCase();
+    const gmail=document.getElementById('fp-secret').value.trim().toLowerCase();
     authMsg('fp-error','');authMsg('fp-success','');
     if(!uid){authMsg('fp-error','Please enter your Employee ID.');return;}
-    const users=getUsers();
-    const user=users[uid];
+    if(!gmail){authMsg('fp-error','Please enter your Gmail address.');return;}
+    if(!gmail.endsWith('@gmail.com')){authMsg('fp-error','Must be a valid @gmail.com address.');return;}
+    // Check DB first if connected
+    let user=null;
+    if(sbReady){
+      const {data}=await sb.from('app_users').select('*').eq('uid',uid).single();
+      if(data){const users=getUsers();users[uid]={uid,name:data.full_name,dept:data.department,pw:data.pw_hash,secret:data.secret||'',gmail:data.secret||'',createdAt:data.created_at};saveUsers(users);user=users[uid];}
+    }
+    if(!user){const users=getUsers();user=users[uid];}
     if(!user){authMsg('fp-error','Employee ID not found.');return;}
-    if(user.secret!==secret){authMsg('fp-error','Security answer incorrect.');return;}
-    // Identity verified — show new password field
+    const storedGmail=(user.gmail||user.secret||'').toLowerCase().trim();
+    if(storedGmail!==gmail){authMsg('fp-error','Gmail address does not match our records.');return;}
+    // Identity verified
     fpVerified=true;
     document.getElementById('fp-secret-group').style.display='none';
     document.getElementById('fp-newpw-group').style.display='';
     document.getElementById('fp-btn').textContent='Set New Password →';
-    authMsg('fp-success','Identity verified! Enter your new password.',true);
+    authMsg('fp-success','Gmail verified! Enter your new password.',true);
   } else {
     // Step 2: set new password
     const uid=document.getElementById('fp-uid').value.trim();
     const newpw=document.getElementById('fp-newpw').value;
+    const newpw2=document.getElementById('fp-newpw2').value;
     authMsg('fp-error','');
     if(newpw.length<6){authMsg('fp-error','Password must be at least 6 characters.');return;}
+    if(newpw!==newpw2){authMsg('fp-error','Passwords do not match.');return;}
     const users=getUsers();
     users[uid].pw=btoa(newpw);
     saveUsers(users);
+    if(sbReady){await sb.from('app_users').update({pw_hash:btoa(newpw)}).eq('uid',uid);}
     authMsg('fp-success','Password reset successfully! Redirecting to sign in…',true);
     setTimeout(()=>showAuthPanel('signin'),1800);
   }
@@ -2745,8 +2804,8 @@ function closeSB(){document.querySelector('.sidebar').classList.remove('open');d
 
 // ── 1. CONFIG  ──────────────────────────────────────────────────
 // 🔑 PUT YOUR SUPABASE CREDENTIALS HERE:
-const SUPABASE_URL  = 'https://YOUR_PROJECT.supabase.co';
-const SUPABASE_ANON = 'YOUR_ANON_KEY_HERE';
+const SUPABASE_URL  = 'https://ylnrtgzcdmglwunnsxjl.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsbnJ0Z3pjZG1nbHd1bm5zeGpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMjQ2NTcsImV4cCI6MjA4ODYwMDY1N30.aWwzA76g5_-5oXUPZmt9V85XetwPhJ8l0hqlGSqM7ew';
 // ────────────────────────────────────────────────────────────────
 
 let sb = null;         // supabase client
@@ -2797,9 +2856,19 @@ function showDbIndicator(connected){
 // ── 4. LOAD FROM DB ─────────────────────────────────────────────
 async function loadRequestsFromDb(){
   if(!sbReady) return;
+  // Load wire requests
   const { data, error } = await sb.from('wire_requests').select('*').order('time', { ascending: false });
   if(error){ console.error('[Supabase] Load error:', error); return; }
   requests = (data || []).map(dbRowToReq);
+  // Also sync app_users from DB into localStorage
+  const { data: uData } = await sb.from('app_users').select('*');
+  if(uData){
+    const users=getUsers();
+    uData.forEach(row=>{
+      users[row.uid]={uid:row.uid,name:row.full_name,dept:row.department,pw:row.pw_hash,secret:row.secret||'',createdAt:row.created_at,is_active:row.is_active};
+    });
+    saveUsers(users);
+  }
   refreshAll();
 }
 
@@ -2908,25 +2977,65 @@ function openDbConfig(){
 
           <div style="background:rgba(74,158,255,.05);border:1px solid rgba(74,158,255,.15);border-radius:8px;padding:14px;margin-bottom:4px">
             <div style="font-size:11px;font-weight:700;color:var(--steel-lt);margin-bottom:8px">Required SQL (run once in Supabase SQL Editor)</div>
-            <pre id="db-sql" style="background:var(--bg-base);border:1px solid var(--bd-1);border-radius:6px;padding:11px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--tx-2);overflow-x:auto;margin:0;line-height:1.7;white-space:pre-wrap">CREATE TABLE IF NOT EXISTS wire_requests (
+            <pre id="db-sql" style="background:var(--bg-base);border:1px solid var(--bd-1);border-radius:6px;padding:11px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--tx-2);overflow-x:auto;margin:0;line-height:1.7;white-space:pre-wrap">-- TABLE 1: app_users (employee accounts)
+CREATE TABLE IF NOT EXISTS app_users (
+  uid TEXT PRIMARY KEY,
+  full_name TEXT NOT NULL,
+  department TEXT NOT NULL CHECK (department IN ('assembly','pagoda','cutting','wpa','twist','admin')),
+  pw_hash TEXT NOT NULL,
+  secret TEXT NOT NULL DEFAULT '',
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+INSERT INTO app_users (uid,full_name,department,pw_hash,secret)
+VALUES ('admin','Admin','admin','YWRtaW4yMDI2','admin')
+ON CONFLICT (uid) DO NOTHING;
+
+-- TABLE 2: wire_requests
+CREATE TABLE IF NOT EXISTS wire_requests (
   id TEXT PRIMARY KEY,
   items JSONB NOT NULL DEFAULT '[]',
   urgency TEXT NOT NULL DEFAULT 'normal',
   status TEXT NOT NULL DEFAULT 'pending',
   assigned_to TEXT NOT NULL DEFAULT 'pagoda',
+  requested_by TEXT NOT NULL DEFAULT 'assembly',
   project TEXT NOT NULL DEFAULT '',
   project_key TEXT,
-  time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  requested_by TEXT NOT NULL DEFAULT 'assembly',
   pagoda_status TEXT,
+  locked BOOLEAN NOT NULL DEFAULT TRUE,
+  parent_id TEXT REFERENCES wire_requests(id) ON DELETE SET NULL,
+  time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   completed_at TIMESTAMPTZ,
-  locked BOOLEAN DEFAULT TRUE,
-  parent_id TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-ALTER PUBLICATION supabase_realtime ADD TABLE wire_requests;
+DO $$ BEGIN ALTER PUBLICATION supabase_realtime ADD TABLE wire_requests;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 ALTER TABLE wire_requests ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow all" ON wire_requests FOR ALL USING (true) WITH CHECK (true);</pre>
+CREATE POLICY "wr_allow_all" ON wire_requests FOR ALL USING (true) WITH CHECK (true);
+
+-- TABLE 3: reference_lists
+CREATE TABLE IF NOT EXISTS reference_lists (
+  id TEXT PRIMARY KEY,
+  department TEXT NOT NULL,
+  project_key TEXT NOT NULL,
+  refs_data JSONB NOT NULL DEFAULT '[]',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE reference_lists ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "rl_allow_all" ON reference_lists FOR ALL USING (true) WITH CHECK (true);
+
+-- TABLE 4: wire_data
+CREATE TABLE IF NOT EXISTS wire_data (
+  id TEXT PRIMARY KEY,
+  department TEXT NOT NULL,
+  project_key TEXT NOT NULL,
+  ref_id TEXT NOT NULL,
+  wires_data JSONB NOT NULL DEFAULT '[]',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE wire_data ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "wd_allow_all" ON wire_data FOR ALL USING (true) WITH CHECK (true);</pre>
             <button onclick="navigator.clipboard.writeText(document.getElementById('db-sql').textContent).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy SQL',1800)})" style="margin-top:9px;padding:5px 14px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:6px;font-size:11px;font-weight:600;color:var(--tx-2);cursor:pointer;font-family:'Outfit',sans-serif">Copy SQL</button>
           </div>
         </div>
@@ -2971,7 +3080,7 @@ window.addEventListener('load', ()=>{
   updateClock();
   setInterval(updateClock, 1000);
   // Only auto-connect if real credentials are set
-  if(SUPABASE_URL !== 'https://ylnrtgzcdmglwunnsxjl.supabase.co' && SUPABASE_ANON !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsbnJ0Z3pjZG1nbHd1bm5zeGpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMjQ2NTcsImV4cCI6MjA4ODYwMDY1N30.aWwzA76g5_-5oXUPZmt9V85XetwPhJ8l0hqlGSqM7ew'){
+  if(SUPABASE_URL !== 'https://YOUR_PROJECT.supabase.co' && SUPABASE_ANON !== 'YOUR_ANON_KEY_HERE'){
     initSupabase();
   } else {
     showDbIndicator(false);
