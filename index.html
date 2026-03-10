@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ═══ RESET & BASE ═══════════════════════════════════════════ */
+/*  RESET & BASE  */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
   /* Core palette */
@@ -101,7 +101,7 @@ body::before{
   pointer-events:none;z-index:0;
 }
 
-/* ═══ LOGIN ═══════════════════════════════════════════════════ */
+/*  LOGIN  */
 #login-screen{
   position:fixed;inset:0;z-index:999;
   background:var(--bg-base);
@@ -215,10 +215,10 @@ body::before{
 .login-submit:active{transform:translateY(0)}
 .login-footer{text-align:center;margin-top:18px;font-size:10px;color:var(--tx-4);letter-spacing:.5px}
 
-/* ═══ APP SHELL ═══════════════════════════════════════════════ */
+/*  APP SHELL  */
 #app{display:none;min-height:100vh;position:relative}
 
-/* ═══ SIDEBAR ════════════════════════════════════════════════ */
+/*  SIDEBAR  */
 .sidebar{
   position:fixed;left:0;top:0;bottom:0;
   width:var(--sb-w);
@@ -337,7 +337,7 @@ body::before{
 }
 @keyframes shiftPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.5)}}
 
-/* ═══ MAIN CONTENT ════════════════════════════════════════════ */
+/*  MAIN CONTENT  */
 .main{margin-left:var(--sb-w);min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1}
 
 .topbar{
@@ -377,12 +377,12 @@ body::before{
 .topbar-btn:hover{border-color:var(--copper);color:var(--copper);background:var(--copper-subtle)}
 .topbar-btn svg{width:12px;height:12px}
 
-/* ═══ PAGES ══════════════════════════════════════════════════ */
+/*  PAGES  */
 .page{display:none;padding:24px;animation:pageIn .3s var(--ease) both}
 .page.active{display:block}
 @keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/* ═══ KPI CARDS ══════════════════════════════════════════════ */
+/*  KPI CARDS  */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
 .kpi-card{
   background:var(--bg-card);
@@ -425,11 +425,11 @@ body::before{
 }
 .kpi-label{font-size:10px;font-weight:600;color:var(--tx-3);text-transform:uppercase;letter-spacing:1.5px}
 
-/* ═══ LAYOUT GRIDS ═══════════════════════════════════════════ */
+/*  LAYOUT GRIDS  */
 .two-col{display:grid;grid-template-columns:1fr 340px;gap:16px}
 .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
 
-/* ═══ CARDS ══════════════════════════════════════════════════ */
+/*  CARDS  */
 .card{
   background:var(--bg-card);
   border:1px solid var(--bd-1);
@@ -450,7 +450,7 @@ body::before{
 }
 .card-body{padding:16px 18px}
 
-/* ═══ BADGES ═════════════════════════════════════════════════ */
+/*  BADGES  */
 .badge{
   display:inline-flex;align-items:center;gap:4px;
   padding:3px 8px;border-radius:20px;
@@ -465,7 +465,7 @@ body::before{
 .badge-violet{background:rgba(168,85,247,.1);color:var(--violet-lt);border:1px solid rgba(168,85,247,.2)}
 .badge-teal{background:rgba(20,184,166,.1);color:var(--teal);border:1px solid rgba(20,184,166,.2)}
 
-/* ═══ DEPT BANNER ════════════════════════════════════════════ */
+/*  DEPT BANNER  */
 .dept-banner{
   border-radius:var(--r-lg);
   padding:20px 24px;
@@ -493,7 +493,7 @@ body::before{
 }
 .db-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
 
-/* ═══ BACK BUTTON ════════════════════════════════════════════ */
+/*  BACK BUTTON  */
 .back-btn{
   display:inline-flex;align-items:center;gap:7px;
   padding:8px 15px;
@@ -507,7 +507,7 @@ body::before{
 .back-btn svg{width:13px;height:13px;transition:transform .2s}
 .back-btn:hover svg{transform:translateX(-2px)}
 
-/* ═══ PROJECTS GRID ══════════════════════════════════════════ */
+/*  PROJECTS GRID  */
 .projects-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
@@ -556,7 +556,7 @@ body::before{
 .project-card:hover .pc-arrow{background:var(--steel);border-color:var(--steel);color:#fff;box-shadow:0 2px 8px rgba(74,158,255,.4)}
 .pc-arrow svg{width:10px;height:10px}
 
-/* ─── Volvo subs ─────────────────────────────────────────── */
+/*  Volvo subs  */
 .volvo-header{
   background:linear-gradient(135deg,rgba(224,123,57,.07),rgba(224,123,57,.03));
   border:1px solid rgba(224,123,57,.18);
@@ -586,7 +586,7 @@ body::before{
 .vsub-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--tx-1);margin-bottom:3px}
 .vsub-meta{font-size:11px;color:var(--tx-3)}
 
-/* ─── Breadcrumb ────────────────────────────────────────── */
+/*  Breadcrumb  */
 .breadcrumb{display:flex;align-items:center;gap:6px;margin-bottom:18px;flex-wrap:wrap}
 .bc-item{
   font-size:11px;font-weight:500;color:var(--tx-3);
@@ -598,7 +598,7 @@ body::before{
 .bc-item.active{color:var(--tx-1);cursor:default;background:var(--bg-03);border-color:var(--bd-1)}
 .bc-sep{color:var(--tx-4);font-size:14px}
 
-/* ─── Reference / wire upload section ─────────────────── */
+/*  Reference / wire upload section  */
 .level-header{
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:14px;flex-wrap:wrap;gap:10px;
@@ -660,7 +660,7 @@ body::before{
   border-radius:20px;border:1px solid rgba(74,158,255,.14);
 }
 
-/* ═══ DATA TABLE ═════════════════════════════════════════════ */
+/*  DATA TABLE  */
 .data-table-wrap{background:var(--bg-card);border:1px solid var(--bd-1);border-radius:var(--r-lg);overflow:hidden}
 .dt-header{
   display:flex;align-items:center;justify-content:space-between;
@@ -719,7 +719,7 @@ body::before{
 }
 .select-btn:hover{opacity:.85;transform:translateX(2px)}
 
-/* ═══ EXCEL TABLE ════════════════════════════════════════════ */
+/*  EXCEL TABLE  */
 .excel-table-container{
   background:var(--bg-card);border:1px solid var(--bd-1);
   border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px;
@@ -796,7 +796,7 @@ body::before{
 .wt-sp{background:rgba(20,184,166,.1);color:var(--teal);border:1px solid rgba(20,184,166,.2)}
 .wt-twist{background:rgba(168,85,247,.1);color:var(--violet-lt);border:1px solid rgba(168,85,247,.2)}
 
-/* ─── Wire selection panel ──────────────────────────────── */
+/*  Wire selection panel  */
 .wire-panel{
   background:var(--bg-card);border:1px solid var(--bd-1);
   border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px;
@@ -888,7 +888,7 @@ body::before{
 .sb-wpa{background:linear-gradient(135deg,#071c35,#0b4a6e)}
 .sb-twist{background:linear-gradient(135deg,#1a0836,#4a1090)}
 
-/* ═══ REQUEST CARDS ══════════════════════════════════════════ */
+/*  REQUEST CARDS  */
 .req-list{display:flex;flex-direction:column;gap:9px;max-height:560px;overflow-y:auto;padding-right:2px}
 .req-card{
   background:var(--bg-card);border:1px solid var(--bd-1);
@@ -943,7 +943,7 @@ body::before{
 .btn-disabled{background:var(--bg-03);color:var(--tx-4);cursor:not-allowed;border:1px solid var(--bd-1)}
 .btn-disabled:hover{transform:none}
 
-/* ═══ STATUS TRACKER ═════════════════════════════════════════ */
+/*  STATUS TRACKER  */
 .tracker{display:flex;flex-direction:column;gap:0;margin:9px 0 3px;padding:11px 13px;background:rgba(255,255,255,.02);border:1px solid var(--bd-1);border-radius:var(--r-md)}
 .tracker-step{display:flex;align-items:flex-start;gap:10px;position:relative;padding-bottom:11px}
 .tracker-step:last-child{padding-bottom:0}
@@ -962,7 +962,7 @@ body::before{
 .ts-bar{height:2px;background:var(--bg-04);border-radius:3px;overflow:hidden;margin-top:5px;width:100%;max-width:180px}
 .ts-bar-fill{height:100%;border-radius:3px;transition:width .5s var(--ease)}
 
-/* ═══ HISTORY ════════════════════════════════════════════════ */
+/*  HISTORY  */
 .hist-table{width:100%;border-collapse:collapse}
 .hist-table th{text-align:left;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx-3);padding:8px 13px;border-bottom:1px solid var(--bd-1);background:var(--bg-02)}
 .hist-table td{padding:9px 13px;font-size:12px;color:var(--tx-2);border-bottom:1px solid rgba(255,255,255,.025);transition:background .1s}
@@ -1007,7 +1007,7 @@ body::before{
 .hist-wire-table tr:last-child td{border-bottom:none}
 .hist-wire-table tr:hover td{background:rgba(255,255,255,.02)}
 
-/* ═══ WIRE ACTION ROWS ═══════════════════════════════════════ */
+/*  WIRE ACTION ROWS  */
 .wire-action-row{
   background:var(--bg-02);border:1px solid var(--bd-1);
   border-radius:var(--r-md);padding:12px 14px;
@@ -1039,7 +1039,7 @@ body::before{
 .mbar-track{flex:1;height:3px;background:var(--bg-04);border-radius:3px;overflow:hidden}
 .mbar-fill{height:100%;background:linear-gradient(90deg,var(--emerald),var(--teal));border-radius:3px;transition:width .4s var(--ease)}
 
-/* ═══ PAGODA / DEPT STATS ════════════════════════════════════ */
+/*  PAGODA / DEPT STATS  */
 .perf-row{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--bd-1);margin-bottom:10px}
 .perf-row:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
 .perf-k{font-size:11px;color:var(--tx-3)}
@@ -1053,7 +1053,7 @@ body::before{
 .alert-stock{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--crimson)}
 .alert-ok{font-size:12px;color:var(--emerald);font-weight:500;display:flex;align-items:center;gap:5px}
 
-/* ═══ CHARTS ═════════════════════════════════════════════════ */
+/*  CHARTS  */
 .bar-track{display:flex;align-items:flex-end;gap:9px;height:130px}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
 .bar-fill{
@@ -1075,15 +1075,15 @@ body::before{
 .wbar-fill{height:100%;border-radius:3px;transition:width .5s var(--ease)}
 .wbar-count{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--tx-2);min-width:18px;text-align:right}
 
-/* ═══ TABS ═══════════════════════════════════════════════════ */
+/*  TABS  */
 .tab-row{display:flex;gap:7px;margin-bottom:18px;flex-wrap:wrap}
 
-/* ═══ EMPTY STATE ════════════════════════════════════════════ */
+/*  EMPTY STATE  */
 .empty-state{text-align:center;padding:40px 16px;color:var(--tx-4)}
 .empty-state svg{width:36px;height:36px;margin:0 auto 10px;display:block;opacity:.15}
 .empty-state p{font-size:12px;color:var(--tx-4)}
 
-/* ═══ MODAL ══════════════════════════════════════════════════ */
+/*  MODAL  */
 .modal-overlay{
   position:fixed;inset:0;z-index:500;
   background:rgba(0,0,0,.78);backdrop-filter:blur(10px);
@@ -1114,7 +1114,7 @@ body::before{
 .modal-body{padding:18px 22px;overflow-y:auto;flex:1}
 .modal-footer{padding:13px 22px;border-top:1px solid var(--bd-1);display:flex;gap:8px;flex-shrink:0;background:var(--bg-02)}
 
-/* ═══ TOAST ══════════════════════════════════════════════════ */
+/*  TOAST  */
 #toast{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
 .toast-item{
   background:var(--bg-card);color:var(--tx-1);
@@ -1130,7 +1130,7 @@ body::before{
 .toast-item.error{border-left-color:var(--crimson)}
 @keyframes toastSlide{from{opacity:0;transform:translateX(18px) scale(.96)}to{opacity:1;transform:translateX(0) scale(1)}}
 
-/* ═══ LOCKED BANNER ══════════════════════════════════════════ */
+/*  LOCKED BANNER  */
 .locked-banner{
   display:flex;align-items:center;gap:9px;padding:9px 13px;
   background:rgba(255,71,87,.05);border:1px solid rgba(255,71,87,.16);
@@ -1138,12 +1138,12 @@ body::before{
 }
 .locked-banner svg{flex-shrink:0;width:13px;height:13px;color:#ff6b7a}
 
-/* ═══ SECTION INTRO ══════════════════════════════════════════ */
+/*  SECTION INTRO  */
 .section-intro{margin-bottom:20px}
 .section-heading{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--tx-1);margin-bottom:5px}
 .section-subtext{font-size:12px;color:var(--tx-3)}
 
-/* ═══ SIDEBAR OVERLAY ════════════════════════════════════════ */
+/*  SIDEBAR OVERLAY  */
 .sb-overlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.65);backdrop-filter:blur(4px)}
 .sb-overlay.show{display:block}
 
@@ -1153,7 +1153,7 @@ body::before{
 .fulfill-stat-val{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--tx-1)}
 .fulfill-stat-lbl{font-size:9px;color:var(--tx-3);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
 
-/* ═══ PAGINATION ═════════════════════════════════════════════ */
+/*  PAGINATION  */
 .pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--bd-1);background:var(--bg-02);flex-wrap:wrap;gap:8px}
 .pagination-info{font-size:11px;color:var(--tx-3);font-family:'IBM Plex Mono',monospace}
 .pagination-btns{display:flex;gap:5px}
@@ -1168,7 +1168,7 @@ body::before{
 .pg-btn.active{background:var(--copper);border-color:var(--copper);color:#fff}
 .pg-btn:disabled{opacity:.3;cursor:not-allowed}
 
-/* ═══ RESPONSIVE ═════════════════════════════════════════════ */
+/*  RESPONSIVE  */
 @media(max-width:1280px){
   .two-col{grid-template-columns:1fr}
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
@@ -1238,7 +1238,7 @@ body::before{
 .dt-scroll,.excel-scroll{-webkit-overflow-scrolling:touch;overflow-x:auto}
 .dept-hint{display:flex;align-items:center;gap:8px;background:rgba(196,154,42,.08);border:1px solid rgba(196,154,42,.2);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--copper);margin-bottom:4px}
 .dept-hint svg{flex-shrink:0;opacity:.7}
-/* ── Auth tabs & extras ── */
+/*  Auth tabs & extras  */
 .auth-tabs{display:flex;gap:0;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:18px;max-width:340px;margin-left:auto;margin-right:auto}
 .auth-tab{flex:1;background:none;border:none;color:var(--tx-3);font-size:13px;font-weight:600;padding:8px 0;border-radius:7px;cursor:pointer;transition:all .2s;letter-spacing:.4px}
 .auth-tab.active{background:var(--copper);color:#fff;box-shadow:0 2px 12px rgba(196,154,42,.35)}
@@ -1250,7 +1250,7 @@ body::before{
 .auth-ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#10b981}
 .pw-strength-bar{height:4px;background:var(--bg-04);border-radius:2px;margin-top:6px;overflow:hidden}
 #pw-strength-fill{height:100%;width:0;border-radius:2px;transition:all .3s}
-/* ── Notification Bell ── */
+/*  Notification Bell  */
 .notif-bell{position:relative;background:none;border:none;cursor:pointer;color:var(--tx-2);padding:6px;border-radius:8px;transition:all .2s;display:flex;align-items:center;justify-content:center}
 .notif-bell:hover{background:rgba(255,255,255,.06);color:var(--tx-1)}
 .notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--crimson);border-radius:50%;border:2px solid var(--bg-01);display:none;animation:pulseDot 1.8s infinite}
@@ -1280,383 +1280,19 @@ body::before{
 .notif-empty{text-align:center;padding:32px 16px;color:var(--tx-4);font-size:12px}
 </style>
 </head>
-<body>
-
-<!-- ═══ LOGIN ════════════════════════════════════════════════ -->
-<div id="login-screen">
-  <div class="login-wire-line" style="top:15%;width:60%;left:20%;animation-duration:9s;animation-delay:0s"></div>
-  <div class="login-wire-line" style="top:35%;width:40%;left:5%;animation-duration:12s;animation-delay:2s"></div>
-  <div class="login-wire-line" style="top:55%;width:70%;left:15%;animation-duration:8s;animation-delay:3.5s"></div>
-  <div class="login-wire-line" style="top:75%;width:50%;left:30%;animation-duration:11s;animation-delay:1s"></div>
-  <div class="login-wrap">
-    <div class="login-header">
-      <div class="login-logo">
-        <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#080b12"/><circle cx="10" cy="16" r="4" fill="#080b12"/><circle cx="22" cy="16" r="4" fill="#080b12"/><path d="M6 10L16 6l10 4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/><path d="M6 22l10 4 10-4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/></svg>
-      </div>
-      <div class="login-brand">MILOUD <em>EZZAKY</em></div>
-      <div class="login-version">Industry V.7 &nbsp;·&nbsp; Wire Harness Manufacturing</div>
-    </div>
-
-    <!-- ── TAB SWITCHER ── -->
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-signin" onclick="showAuthPanel('signin')">Sign In</button>
-      <button class="auth-tab" id="tab-signup" onclick="showAuthPanel('signup')">Sign Up</button>
-    </div>
-
-    <!-- ══ SIGN IN PANEL ══ -->
-    <div class="login-card" id="panel-signin">
-      <div class="login-card-title">Welcome Back</div>
-      <div class="login-card-sub">Sign in with your Employee ID and password</div>
-      <div class="form-group"><label class="form-label">Employee ID</label>
-        <input type="text" class="form-input" id="si-uid" placeholder="e.g. ME-001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
-      </div>
-      <div class="form-group"><label class="form-label">Password</label>
-        <div style="position:relative">
-          <input type="password" class="form-input" id="si-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px">
-          <button type="button" onclick="togglePw('si-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <div id="si-error" class="auth-msg auth-err" style="display:none"></div>
-      <button class="login-submit" onclick="doLogin()">Sign In →</button>
-      <div style="text-align:center;margin-top:14px">
-        <button class="auth-link" onclick="showAuthPanel('forgot')">Forgot password?</button>
-      </div>
-    </div>
-
-    <!-- ══ SIGN UP PANEL ══ -->
-    <div class="login-card" id="panel-signup" style="display:none">
-      <div class="login-card-title">Create Account</div>
-      <div class="login-card-sub">Register with your Gmail — login is always with Employee ID &amp; password</div>
-      <div class="form-group"><label class="form-label">Full Name</label>
-        <input type="text" class="form-input" id="su-name" placeholder="e.g. Ahmed Benali" autocomplete="name">
-      </div>
-      <div class="form-group"><label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(used for account recovery)</span></label>
-        <div style="position:relative">
-          <input type="email" class="form-input" id="su-gmail" placeholder="yourname@gmail.com" autocomplete="email" oninput="validateGmail(this)" style="padding-right:36px">
-          <span id="su-gmail-icon" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none"></span>
-        </div>
-        <div id="su-gmail-hint" style="font-size:10px;color:var(--tx-3);margin-top:4px">Must be a @gmail.com address</div>
-      </div>
-      <div class="form-group"><label class="form-label">Employee ID</label>
-        <input type="text" class="form-input" id="su-uid" placeholder="e.g. ME-042" autocomplete="username">
-      </div>
-      <div class="form-group"><label class="form-label">Department</label>
-        <select id="su-dept" class="form-input">
-          <option value="assembly">ASSEMBLY — Request Only</option>
-          <option value="pagoda">PAGODA — Central Hub</option>
-          <option value="cutting">CUTTING AREA</option>
-          <option value="wpa">WIRE PREP AREA</option>
-          <option value="twist">TWIST DEPARTMENT</option>
-        </select>
-      </div>
-      <div class="form-group"><label class="form-label">Password</label>
-        <div style="position:relative">
-          <input type="password" class="form-input" id="su-pw" placeholder="Min 6 characters" style="padding-right:40px" oninput="checkPwStrength(this.value)">
-          <button type="button" onclick="togglePw('su-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <div class="pw-strength-bar"><div id="pw-strength-fill"></div></div>
-        <div id="pw-strength-label" style="font-size:10px;color:var(--tx-3);margin-top:3px"></div>
-      </div>
-      <div class="form-group"><label class="form-label">Confirm Password</label>
-        <input type="password" class="form-input" id="su-pw2" placeholder="Repeat password">
-      </div>
-      <div id="su-error" class="auth-msg auth-err" style="display:none"></div>
-      <div id="su-success" class="auth-msg auth-ok" style="display:none"></div>
-      <button class="login-submit" onclick="doSignUp()">Create Account →</button>
-      <div style="text-align:center;margin-top:14px">
-        <span style="font-size:11px;color:var(--tx-3)">Already have an account?</span>
-        <button class="auth-link" onclick="showAuthPanel('signin')">Sign In</button>
-      </div>
-    </div>
-
-    <!-- ══ FORGOT PASSWORD PANEL ══ -->
-    <div class="login-card" id="panel-forgot" style="display:none">
-      <div class="login-card-title">Reset Password</div>
-      <div class="login-card-sub">Verify your identity using your Employee ID and Gmail</div>
-      <div class="form-group"><label class="form-label">Employee ID</label>
-        <input type="text" class="form-input" id="fp-uid" placeholder="e.g. ME-001">
-      </div>
-      <div class="form-group" id="fp-secret-group">
-        <label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(registered at sign up)</span></label>
-        <input type="email" class="form-input" id="fp-secret" placeholder="yourname@gmail.com">
-      </div>
-      <div class="form-group" id="fp-newpw-group" style="display:none">
-        <label class="form-label">New Password</label>
-        <div style="position:relative">
-          <input type="password" class="form-input" id="fp-newpw" placeholder="Min 6 characters" style="padding-right:40px">
-          <button type="button" onclick="togglePw('fp-newpw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <div class="form-group" style="margin-top:10px"><label class="form-label">Confirm New Password</label>
-          <input type="password" class="form-input" id="fp-newpw2" placeholder="Repeat new password">
-        </div>
-      </div>
-      <div id="fp-error" class="auth-msg auth-err" style="display:none"></div>
-      <div id="fp-success" class="auth-msg auth-ok" style="display:none"></div>
-      <button class="login-submit" id="fp-btn" onclick="doForgotStep()">Verify Identity →</button>
-      <div style="text-align:center;margin-top:14px">
-        <button class="auth-link" onclick="showAuthPanel('signin')">← Back to Sign In</button>
-      </div>
-    </div>
-
-    <div class="login-footer">© 2026 Miloud Ezzaky Industry V.7 &nbsp;·&nbsp; Project → Reference → Wire</div>
-  </div>
-</div>
-
-<!-- ═══ APP ══════════════════════════════════════════════════ -->
-<div id="app">
-  <div class="sb-overlay" id="sb-overlay" onclick="closeSB()"></div>
-  <aside class="sidebar">
-    <div class="sb-brand">
-      <div class="sb-icon">
-        <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#fff"/><circle cx="10" cy="16" r="4" fill="#fff"/><circle cx="22" cy="16" r="4" fill="#fff"/></svg>
-      </div>
-      <div><div class="sb-brand-name">Miloud Ezzaky</div><div class="sb-brand-ver">Industry V.7</div></div>
-    </div>
-
-    <nav class="sb-nav">
-      <div class="nav-section">
-        <span class="nav-section-label">Overview</span>
-        <button class="nav-btn active" onclick="switchPage('analytics',this)" data-page="analytics">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Analytics
-        </button>
-        <button class="nav-btn" onclick="switchPage('history',this)" data-page="history">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Order History<span class="nav-badge nb-copper" id="b-history">0</span>
-        </button>
-      </div>
-      <div class="nav-section">
-        <span class="nav-section-label">Departments</span>
-        <button class="nav-btn" onclick="switchPage('assembly',this)" data-page="assembly">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-          Assembly<span class="nav-badge nb-copper" id="b-assembly">0</span>
-        </button>
-        <button class="nav-btn" onclick="switchPage('pagoda',this)" data-page="pagoda">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-          Pagoda Hub<span class="nav-badge nb-crimson" id="b-pagoda">0</span>
-        </button>
-        <button class="nav-btn" onclick="switchPage('cutting',this)" data-page="cutting">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
-          Cutting<span class="nav-badge nb-steel" id="b-cutting">0</span>
-        </button>
-        <button class="nav-btn" onclick="switchPage('wpa',this)" data-page="wpa">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Wire Prep Area<span class="nav-badge nb-teal" id="b-wpa">0</span>
-        </button>
-        <button class="nav-btn" onclick="switchPage('twist',this)" data-page="twist">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg>
-          Twist<span class="nav-badge nb-violet" id="b-twist">0</span>
-        </button>
-      </div>
-    </nav>
-    <div class="sb-clock">
-      <div class="clk-time" id="clk-time">--:--:--</div>
-      <div class="clk-date" id="clk-date">…</div>
-      <div class="shift-tag"><span class="shift-dot"></span><span id="clk-shift">—</span></div>
-    </div>
-  </aside>
-
-  <div class="main">
-    <header class="topbar">
-      <button class="menu-toggle" onclick="toggleSB()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <div class="topbar-title" id="topbar-title">Analytics Dashboard</div>
-      <div id="topbar-user-chip" style="display:none;align-items:center;gap:4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;margin-right:6px"></div>
-      <button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifPanel()" title="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <span class="notif-dot" id="notif-dot"></span>
-        <span class="notif-badge" id="notif-badge">0</span>
-      </button>
-      <button class="topbar-btn" onclick="refreshAll()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg>
-        Refresh
-      </button>
-    </header>
-
-    <!-- ─── ANALYTICS ──────────────────────────────────────── -->
-    <div id="page-analytics" class="page active">
-      <div class="kpi-grid">
-        <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="kpi-val" id="a-total">0</div><div class="kpi-label">Total Requests</div></div>
-        <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="a-done">0</div><div class="kpi-label">Completed</div></div>
-        <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="a-pending">0</div><div class="kpi-label">Pending</div></div>
-        <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="a-prog">0</div><div class="kpi-label">In Progress</div></div>
-      </div>
-      <div class="two-col" style="margin-bottom:16px">
-        <div class="card"><div class="card-head"><div class="card-title">Daily Requests — Last 7 Days</div><span class="badge badge-steel">Live</span></div><div style="padding:18px"><div class="bar-track" id="daily-chart"></div></div></div>
-        <div class="card"><div class="card-head"><div class="card-title">Department Workload</div></div><div class="donut-wrap"><svg width="100" height="100" viewBox="0 0 100 100" id="donut-svg"><circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="12"/></svg><div id="donut-legend"></div></div></div>
-      </div>
-      <div class="two-col">
-        <div class="card"><div class="card-head"><div class="card-title">Top Requested Wires</div></div><div class="card-body" id="top-wires"></div></div>
-        <div class="card"><div class="card-head"><div class="card-title">Requests by Project</div></div><div class="card-body" id="proj-chart"></div></div>
-      </div>
-    </div>
-
-    <!-- ─── HISTORY ─────────────────────────────────────────── -->
-    <div id="page-history" class="page">
-      <div class="dept-banner" style="background:linear-gradient(135deg,#090e1c,#0e1d38)">
-        <div>
-          <div class="db-title" style="display:flex;align-items:center;gap:9px">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--copper)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Order History
-          </div>
-          <div class="db-sub">All submitted orders — click any row to expand full details</div>
-        </div>
-        <span class="badge badge-copper" id="hist-total-badge">0 orders</span>
-      </div>
-      <div class="card" style="margin-bottom:14px">
-        <div style="padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px">
-          <input id="hist-search" type="text" class="form-input" placeholder="Search order ID, wire name, project…" style="flex:1;min-width:150px;max-width:320px;padding:8px 12px;font-size:12px" oninput="renderHistoryPage()">
-          <select id="hist-filter-dept" class="form-input" style="width:155px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()">
-            <option value="">All Departments</option>
-            <option value="assembly">Assembly</option>
-            <option value="wpa">Wire Prep Area</option>
-            <option value="twist">Twist</option>
-          </select>
-          <select id="hist-filter-status" class="form-input" style="width:145px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()">
-            <option value="">All Statuses</option>
-            <option value="completed">Completed</option>
-            <option value="in_progress">In Progress</option>
-            <option value="pending">Pending</option>
-          </select>
-          <div style="font-size:10px;color:var(--tx-3);margin-left:auto;font-family:'IBM Plex Mono',monospace" id="hist-count-label">— orders</div>
-        </div>
-      </div>
-      <div id="hist-list"></div>
-    </div>
-
-    <!-- ─── ASSEMBLY ───────────────────────────────────────── -->
-    <div id="page-assembly" class="page">
-      <div class="dept-banner db-asm">
-        <div><div class="db-title">Assembly Department</div><div class="db-sub">Project → Reference → Wire → Submit Request</div></div>
-        <span class="badge badge-emerald">Request Only</span>
-      </div>
-      <div id="asm-request-area"></div>
-      <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Active Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-copper" id="asm-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div>
-      <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="asm-hist-count">0</span></div><div class="card-body" id="asm-hist"></div></div>
-    </div>
-
-    <!-- ─── PAGODA ─────────────────────────────────────────── -->
-    <div id="page-pagoda" class="page">
-      <div class="dept-banner" style="background:linear-gradient(135deg,#070e28,#0e2060)">
-        <div><div class="db-title">Pagoda · Central Hub</div><div class="db-sub">Review all incoming requests · Mark In Stock or Out of Stock</div></div>
-        <span class="badge badge-steel">Hub</span>
-      </div>
-      <div class="three-col">
-        <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="kpi-val" id="p-pending">0</div><div class="kpi-label">Pending</div></div>
-        <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><div class="kpi-val" id="p-stock">0</div><div class="kpi-label">Stock Items</div></div>
-        <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="kpi-val" id="p-low">0</div><div class="kpi-label">Low Stock</div></div>
-      </div>
-      <div class="two-col">
-        <div>
-          <div class="card"><div class="card-head"><div class="card-title">Pending Requests</div><span class="badge badge-copper" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div>
-          <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="pagoda-hist-count">0</span></div><div class="card-body" id="pagoda-hist"></div></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:14px">
-          <div class="card"><div class="card-head"><div class="card-title">Low Stock Alerts</div></div><div class="card-body" id="low-stock-list"></div></div>
-          <div class="card"><div class="card-head"><div class="card-title">Metrics</div></div><div class="card-body"><div class="perf-row"><span class="perf-k">Requests Today</span><span class="perf-v" id="p-today">0</span></div><div class="perf-row"><span class="perf-k">Fulfillment Rate</span><span class="perf-v" id="p-rate">0%</span></div><div class="prog-bar"><div class="prog-fill" id="p-rate-bar" style="width:0%"></div></div></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── CUTTING ────────────────────────────────────────── -->
-    <div id="page-cutting" class="page">
-      <div class="dept-banner" style="background:linear-gradient(135deg,#031f14,#054a30)">
-        <div><div class="db-title">Cutting Area</div><div class="db-sub">Simple wires routed from Pagoda when Out of Stock</div></div>
-      </div>
-      <div class="three-col">
-        <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="c-pending">0</div><div class="kpi-label">To Cut</div></div>
-        <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="c-prog">0</div><div class="kpi-label">In Progress</div></div>
-        <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="c-done">0</div><div class="kpi-label">Done Today</div></div>
-      </div>
-      <div class="card"><div class="card-head"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div>
-      <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="cutting-hist-count">0</span></div><div class="card-body" id="cutting-hist"></div></div>
-    </div>
-
-    <!-- ─── WPA ───────────────────────────────────────────── -->
-    <div id="page-wpa" class="page">
-      <div class="dept-banner db-wpa"><div><div class="db-title">Wire Prep Area</div><div class="db-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-teal">Request & Fulfill</span></div>
-      <div class="tab-row">
-        <button id="wpa-tab-req" class="topbar-btn" style="background:var(--teal);color:var(--bg-base);border-color:var(--teal)" onclick="switchTab('wpa','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button>
-        <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchTab('wpa','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-teal" id="wpa-fc" style="margin-left:4px">0</span></button>
-        <button id="wpa-tab-hist" class="topbar-btn" onclick="switchTab('wpa','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button>
-      </div>
-      <div id="wpa-req-panel">
-        <div id="wpa-request-area"></div>
-        <div class="card"><div class="card-head"><div class="card-title">Active WPA Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-teal" id="wpa-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div>
-        <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="wpa-req-hist-count">0</span></div><div class="card-body" id="wpa-req-hist"></div></div>
-      </div>
-      <div id="wpa-hist-panel" style="display:none">
-        <div class="card"><div class="card-head"><div class="card-title">✓ WPA Completed History</div><span class="badge badge-emerald" id="wpa-hist-count">0</span></div><div class="card-body" id="wpa-hist"></div></div>
-      </div>
-      <div id="wpa-fulfill-panel" style="display:none">
-        <div class="three-col">
-          <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="wpa-xe-cnt">0</div><div class="kpi-label">XE Wires</div></div>
-          <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0"/></svg></div><div class="kpi-val" id="wpa-sp-cnt">0</div><div class="kpi-label">SP Wires</div></div>
-          <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="wpa-prog-cnt">0</div><div class="kpi-label">In Progress</div></div>
-        </div>
-        <div class="card" style="margin-bottom:14px"><div class="card-head"><div class="card-title">XE Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-list"></div></div></div>
-        <div class="card"><div class="card-head"><div class="card-title">SP Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-list"></div></div></div>
-      </div>
-    </div>
-
-    <!-- ─── TWIST ──────────────────────────────────────────── -->
-    <div id="page-twist" class="page">
-      <div class="dept-banner db-twist"><div><div class="db-title">Twist Department</div><div class="db-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-violet">Request & Fulfill</span></div>
-      <div class="tab-row">
-        <button id="twist-tab-req" class="topbar-btn" style="background:var(--violet);color:#fff;border-color:var(--violet)" onclick="switchTab('twist','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button>
-        <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTab('twist','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-violet" id="twist-fc" style="margin-left:4px">0</span></button>
-        <button id="twist-tab-hist" class="topbar-btn" onclick="switchTab('twist','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button>
-      </div>
-      <div id="twist-req-panel">
-        <div id="twist-request-area"></div>
-        <div class="card"><div class="card-head"><div class="card-title">Active Twist Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-violet" id="twist-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div>
-        <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">✓ Completed History</div><span class="badge badge-emerald" id="twist-req-hist-count">0</span></div><div class="card-body" id="twist-req-hist"></div></div>
-      </div>
-      <div id="twist-hist-panel" style="display:none">
-        <div class="card"><div class="card-head"><div class="card-title">✓ Twist Completed History</div><span class="badge badge-emerald" id="twist-hist-count">0</span></div><div class="card-body" id="twist-hist"></div></div>
-      </div>
-      <div id="twist-fulfill-panel" style="display:none">
-        <div class="three-col">
-          <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="twist-pend-cnt">0</div><div class="kpi-label">To Twist</div></div>
-          <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="twist-prog-cnt">0</div><div class="kpi-label">In Progress</div></div>
-          <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0M3 12h18"/></svg></div><div class="kpi-val" id="twist-pairs-cnt">0</div><div class="kpi-label">Wire Pairs</div></div>
-        </div>
-        <div class="card"><div class="card-head"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-fulfill-list"></div></div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="toast"></div>
-
-<!-- ═══ NOTIFICATION PANEL ═══════════════════════════════════ -->
-<div id="notif-panel">
-  <div class="notif-hd">
-    <div class="notif-hd-title">🔔 Notifications</div>
-    <div class="notif-hd-actions">
-      <button class="notif-clear-btn" id="notif-sound-btn" onclick="toggleNotifSound(this)">🔊 Sound On</button>
-      <button class="notif-clear-btn" id="notif-desktop-btn" onclick="toggleDesktopNotif(this)">🖥 Desktop On</button>
-      <button class="notif-clear-btn" onclick="markAllRead()">Mark all read</button>
-      <button class="notif-clear-btn" onclick="clearAllNotifs()" style="color:var(--crimson)">Clear all</button>
-      <button onclick="toggleNotifPanel()" style="background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px;display:flex">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-  </div>
-  <div class="notif-list" id="notif-list"></div>
-</div>
-
-<script>
+<body> <!--  LOGIN  -->
+<div id="login-screen"> <div class="login-wire-line" style="top:15%;width:60%;left:20%;animation-duration:9s;animation-delay:0s"></div> <div class="login-wire-line" style="top:35%;width:40%;left:5%;animation-duration:12s;animation-delay:2s"></div> <div class="login-wire-line" style="top:55%;width:70%;left:15%;animation-duration:8s;animation-delay:3.5s"></div> <div class="login-wire-line" style="top:75%;width:50%;left:30%;animation-duration:11s;animation-delay:1s"></div> <div class="login-wrap"> <div class="login-header"> <div class="login-logo"> <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#080b12"/><circle cx="10" cy="16" r="4" fill="#080b12"/><circle cx="22" cy="16" r="4" fill="#080b12"/><path d="M6 10L16 6l10 4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/><path d="M6 22l10 4 10-4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/></svg> </div> <div class="login-brand">MILOUD <em>EZZAKY</em></div> <div class="login-version">Industry V.7 &nbsp;·&nbsp; Wire Harness Manufacturing</div> </div> <!--  TAB SWITCHER  --> <div class="auth-tabs"> <button class="auth-tab active" id="tab-signin" onclick="showAuthPanel('signin')">Sign In</button> <button class="auth-tab" id="tab-signup" onclick="showAuthPanel('signup')">Sign Up</button> </div> <!--  SIGN IN PANEL  --> <div class="login-card" id="panel-signin"> <div class="login-card-title">Welcome Back</div> <div class="login-card-sub">Sign in with your Employee ID and password</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="si-uid" placeholder="e.g. ME-001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="si-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px"> <button type="button" onclick="togglePw('si-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> </div> <div id="si-error" class="auth-msg auth-err" style="display:none"></div> <button class="login-submit" onclick="doLogin()">Sign In →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('forgot')">Forgot password?</button> </div> </div> <!--  SIGN UP PANEL  --> <div class="login-card" id="panel-signup" style="display:none"> <div class="login-card-title">Create Account</div> <div class="login-card-sub">Register with your Gmail — login is always with Employee ID &amp; password</div> <div class="form-group"><label class="form-label">Full Name</label> <input type="text" class="form-input" id="su-name" placeholder="e.g. Ahmed Benali" autocomplete="name"> </div> <div class="form-group"><label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(used for account recovery)</span></label> <div style="position:relative"> <input type="email" class="form-input" id="su-gmail" placeholder="yourname@gmail.com" autocomplete="email" oninput="validateGmail(this)" style="padding-right:36px"> <span id="su-gmail-icon" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none"></span> </div> <div id="su-gmail-hint" style="font-size:10px;color:var(--tx-3);margin-top:4px">Must be a @gmail.com address</div> </div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="su-uid" placeholder="e.g. ME-042" autocomplete="username"> </div> <div class="form-group"><label class="form-label">Department</label> <select id="su-dept" class="form-input"> <option value="assembly">ASSEMBLY — Request Only</option> <option value="pagoda">PAGODA — Central Hub</option> <option value="cutting">CUTTING AREA</option> <option value="wpa">WIRE PREP AREA</option> <option value="twist">TWIST DEPARTMENT</option> </select> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="su-pw" placeholder="Min 6 characters" style="padding-right:40px" oninput="checkPwStrength(this.value)"> <button type="button" onclick="togglePw('su-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="pw-strength-bar"><div id="pw-strength-fill"></div></div> <div id="pw-strength-label" style="font-size:10px;color:var(--tx-3);margin-top:3px"></div> </div> <div class="form-group"><label class="form-label">Confirm Password</label> <input type="password" class="form-input" id="su-pw2" placeholder="Repeat password"> </div> <div id="su-error" class="auth-msg auth-err" style="display:none"></div> <div id="su-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" onclick="doSignUp()">Create Account →</button> <div style="text-align:center;margin-top:14px"> <span style="font-size:11px;color:var(--tx-3)">Already have an account?</span> <button class="auth-link" onclick="showAuthPanel('signin')">Sign In</button> </div> </div> <!--  FORGOT PASSWORD PANEL  --> <div class="login-card" id="panel-forgot" style="display:none"> <div class="login-card-title">Reset Password</div> <div class="login-card-sub">Verify your identity using your Employee ID and Gmail</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="fp-uid" placeholder="e.g. ME-001"> </div> <div class="form-group" id="fp-secret-group"> <label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(registered at sign up)</span></label> <input type="email" class="form-input" id="fp-secret" placeholder="yourname@gmail.com"> </div> <div class="form-group" id="fp-newpw-group" style="display:none"> <label class="form-label">New Password</label> <div style="position:relative"> <input type="password" class="form-input" id="fp-newpw" placeholder="Min 6 characters" style="padding-right:40px"> <button type="button" onclick="togglePw('fp-newpw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="form-group" style="margin-top:10px"><label class="form-label">Confirm New Password</label> <input type="password" class="form-input" id="fp-newpw2" placeholder="Repeat new password"> </div> </div> <div id="fp-error" class="auth-msg auth-err" style="display:none"></div> <div id="fp-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" id="fp-btn" onclick="doForgotStep()">Verify Identity →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('signin')">← Back to Sign In</button> </div> </div> <div class="login-footer">© 2026 Miloud Ezzaky Industry V.7 &nbsp;·&nbsp; Project → Reference → Wire</div> </div>
+</div> <!--  APP  -->
+<div id="app"> <div class="sb-overlay" id="sb-overlay" onclick="closeSB()"></div> <aside class="sidebar"> <div class="sb-brand"> <div class="sb-icon"> <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#fff"/><circle cx="10" cy="16" r="4" fill="#fff"/><circle cx="22" cy="16" r="4" fill="#fff"/></svg> </div> <div><div class="sb-brand-name">Miloud Ezzaky</div><div class="sb-brand-ver">Industry V.7</div></div> </div> <nav class="sb-nav"> <div class="nav-section"> <span class="nav-section-label">Overview</span> <button class="nav-btn active" onclick="switchPage('analytics',this)" data-page="analytics"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Analytics
+        </button> <button class="nav-btn" onclick="switchPage('history',this)" data-page="history"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History<span class="nav-badge nb-copper" id="b-history">0</span> </button> </div> <div class="nav-section"> <span class="nav-section-label">Departments</span> <button class="nav-btn" onclick="switchPage('assembly',this)" data-page="assembly"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Assembly<span class="nav-badge nb-copper" id="b-assembly">0</span> </button> <button class="nav-btn" onclick="switchPage('pagoda',this)" data-page="pagoda"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> Pagoda Hub<span class="nav-badge nb-crimson" id="b-pagoda">0</span> </button> <button class="nav-btn" onclick="switchPage('cutting',this)" data-page="cutting"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg> Cutting<span class="nav-badge nb-steel" id="b-cutting">0</span> </button> <button class="nav-btn" onclick="switchPage('wpa',this)" data-page="wpa"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Wire Prep Area<span class="nav-badge nb-teal" id="b-wpa">0</span> </button> <button class="nav-btn" onclick="switchPage('twist',this)" data-page="twist"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg> Twist<span class="nav-badge nb-violet" id="b-twist">0</span> </button> </div> </nav> <div class="sb-clock"> <div class="clk-time" id="clk-time">--:--:--</div> <div class="clk-date" id="clk-date">…</div> <div class="shift-tag"><span class="shift-dot"></span><span id="clk-shift">—</span></div> </div> </aside> <div class="main"> <header class="topbar"> <button class="menu-toggle" onclick="toggleSB()"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> </button> <div class="topbar-title" id="topbar-title">Analytics Dashboard</div> <div id="topbar-user-chip" style="display:none;align-items:center;gap:4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;margin-right:6px"></div> <button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifPanel()" title="Notifications"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> <span class="notif-dot" id="notif-dot"></span> <span class="notif-badge" id="notif-badge">0</span> </button> <button class="topbar-btn" onclick="refreshAll()"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg> Refresh
+      </button> </header> <!--  ANALYTICS  --> <div id="page-analytics" class="page active"> <div class="kpi-grid"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="kpi-val" id="a-total">0</div><div class="kpi-label">Total Requests</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="a-done">0</div><div class="kpi-label">Completed</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="a-pending">0</div><div class="kpi-label">Pending</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="a-prog">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="two-col" style="margin-bottom:16px"> <div class="card"><div class="card-head"><div class="card-title">Daily Requests — Last 7 Days</div><span class="badge badge-steel">Live</span></div><div style="padding:18px"><div class="bar-track" id="daily-chart"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">Department Workload</div></div><div class="donut-wrap"><svg width="100" height="100" viewBox="0 0 100 100" id="donut-svg"><circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="12"/></svg><div id="donut-legend"></div></div></div> </div> <div class="two-col"> <div class="card"><div class="card-head"><div class="card-title">Top Requested Wires</div></div><div class="card-body" id="top-wires"></div></div> <div class="card"><div class="card-head"><div class="card-title">Requests by Project</div></div><div class="card-body" id="proj-chart"></div></div> </div> </div> <!--  HISTORY  --> <div id="page-history" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#090e1c,#0e1d38)"> <div> <div class="db-title" style="display:flex;align-items:center;gap:9px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--copper)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History
+          </div> <div class="db-sub">All submitted orders — click any row to expand full details</div> </div> <span class="badge badge-copper" id="hist-total-badge">0 orders</span> </div> <div class="card" style="margin-bottom:14px"> <div style="padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px"> <input id="hist-search" type="text" class="form-input" placeholder="Search order ID, wire name, project…" style="flex:1;min-width:150px;max-width:320px;padding:8px 12px;font-size:12px" oninput="renderHistoryPage()"> <select id="hist-filter-dept" class="form-input" style="width:155px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Departments</option> <option value="assembly">Assembly</option> <option value="wpa">Wire Prep Area</option> <option value="twist">Twist</option> </select> <select id="hist-filter-status" class="form-input" style="width:145px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Statuses</option> <option value="completed">Completed</option> <option value="in_progress">In Progress</option> <option value="pending">Pending</option> </select> <div style="font-size:10px;color:var(--tx-3);margin-left:auto;font-family:'IBM Plex Mono',monospace" id="hist-count-label">— orders</div> </div> </div> <div id="hist-list"></div> </div> <!--  ASSEMBLY  --> <div id="page-assembly" class="page"> <div class="dept-banner db-asm"> <div><div class="db-title">Assembly Department</div><div class="db-sub">Project → Reference → Wire → Submit Request</div></div> <span class="badge badge-emerald">Request Only</span> </div> <div id="asm-request-area"></div> <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Active Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-copper" id="asm-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="asm-hist-count">0</span></div><div class="card-body" id="asm-hist"></div></div> </div> <!--  PAGODA  --> <div id="page-pagoda" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#070e28,#0e2060)"> <div><div class="db-title">Pagoda · Central Hub</div><div class="db-sub">Review all incoming requests · Mark In Stock or Out of Stock</div></div> <span class="badge badge-steel">Hub</span> </div> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="kpi-val" id="p-pending">0</div><div class="kpi-label">Pending</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><div class="kpi-val" id="p-stock">0</div><div class="kpi-label">Stock Items</div></div> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="kpi-val" id="p-low">0</div><div class="kpi-label">Low Stock</div></div> </div> <div class="two-col"> <div> <div class="card"><div class="card-head"><div class="card-title">Pending Requests</div><span class="badge badge-copper" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="pagoda-hist-count">0</span></div><div class="card-body" id="pagoda-hist"></div></div> </div> <div style="display:flex;flex-direction:column;gap:14px"> <div class="card"><div class="card-head"><div class="card-title">Low Stock Alerts</div></div><div class="card-body" id="low-stock-list"></div></div> <div class="card"><div class="card-head"><div class="card-title">Metrics</div></div><div class="card-body"><div class="perf-row"><span class="perf-k">Requests Today</span><span class="perf-v" id="p-today">0</span></div><div class="perf-row"><span class="perf-k">Fulfillment Rate</span><span class="perf-v" id="p-rate">0%</span></div><div class="prog-bar"><div class="prog-fill" id="p-rate-bar" style="width:0%"></div></div></div></div> </div> </div> </div> <!--  CUTTING  --> <div id="page-cutting" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#031f14,#054a30)"> <div><div class="db-title">Cutting Area</div><div class="db-sub">Simple wires routed from Pagoda when Out of Stock</div></div> </div> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="c-pending">0</div><div class="kpi-label">To Cut</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="c-prog">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="c-done">0</div><div class="kpi-label">Done Today</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="cutting-hist-count">0</span></div><div class="card-body" id="cutting-hist"></div></div> </div> <!--  WPA  --> <div id="page-wpa" class="page"> <div class="dept-banner db-wpa"><div><div class="db-title">Wire Prep Area</div><div class="db-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-teal">Request & Fulfill</span></div> <div class="tab-row"> <button id="wpa-tab-req" class="topbar-btn" style="background:var(--teal);color:var(--bg-base);border-color:var(--teal)" onclick="switchTab('wpa','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchTab('wpa','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-teal" id="wpa-fc" style="margin-left:4px">0</span></button> <button id="wpa-tab-hist" class="topbar-btn" onclick="switchTab('wpa','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="wpa-req-panel"> <div id="wpa-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active WPA Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-teal" id="wpa-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="wpa-req-hist-count">0</span></div><div class="card-body" id="wpa-req-hist"></div></div> </div> <div id="wpa-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> WPA Completed History</div><span class="badge badge-emerald" id="wpa-hist-count">0</span></div><div class="card-body" id="wpa-hist"></div></div> </div> <div id="wpa-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="wpa-xe-cnt">0</div><div class="kpi-label">XE Wires</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0"/></svg></div><div class="kpi-val" id="wpa-sp-cnt">0</div><div class="kpi-label">SP Wires</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="wpa-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="card" style="margin-bottom:14px"><div class="card-head"><div class="card-title">XE Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-list"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">SP Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-list"></div></div></div> </div> </div> <!--  TWIST  --> <div id="page-twist" class="page"> <div class="dept-banner db-twist"><div><div class="db-title">Twist Department</div><div class="db-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-violet">Request & Fulfill</span></div> <div class="tab-row"> <button id="twist-tab-req" class="topbar-btn" style="background:var(--violet);color:#fff;border-color:var(--violet)" onclick="switchTab('twist','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTab('twist','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-violet" id="twist-fc" style="margin-left:4px">0</span></button> <button id="twist-tab-hist" class="topbar-btn" onclick="switchTab('twist','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="twist-req-panel"> <div id="twist-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active Twist Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-violet" id="twist-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="twist-req-hist-count">0</span></div><div class="card-body" id="twist-req-hist"></div></div> </div> <div id="twist-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> Twist Completed History</div><span class="badge badge-emerald" id="twist-hist-count">0</span></div><div class="card-body" id="twist-hist"></div></div> </div> <div id="twist-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="twist-pend-cnt">0</div><div class="kpi-label">To Twist</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="twist-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0M3 12h18"/></svg></div><div class="kpi-val" id="twist-pairs-cnt">0</div><div class="kpi-label">Wire Pairs</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-fulfill-list"></div></div></div> </div> </div> </div>
+</div> <div id="toast"></div> <!--  NOTIFICATION PANEL  -->
+<div id="notif-panel"> <div class="notif-hd"> <div class="notif-hd-title">Notifications</div> <div class="notif-hd-actions"> <button class="notif-clear-btn" id="notif-sound-btn" onclick="toggleNotifSound(this)"> Sound On</button> <button class="notif-clear-btn" id="notif-desktop-btn" onclick="toggleDesktopNotif(this)"> Desktop On</button> <button class="notif-clear-btn" onclick="markAllRead()">Mark all read</button> <button class="notif-clear-btn" onclick="clearAllNotifs()" style="color:var(--crimson)">Clear all</button> <button onclick="toggleNotifPanel()" style="background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px;display:flex"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> </button> </div> </div> <div class="notif-list" id="notif-list"></div>
+</div> <script>
 'use strict';
 
-// ═══════════════ PROJECTS ════════════════════════════════════
+//  PROJECTS 
 const PROJECTS=[
   {id:'VOLVO',name:'VOLVO',color:'#c49a2a',isMain:true,subs:['SMALL','MDEP','AFTER MARKET','STEP E','C1','C2','C3','DAL','VCE']},
   {id:'CLAAS',name:'CLAAS',color:'#16a06a'},
@@ -1672,7 +1308,7 @@ const PROJECTS=[
   {id:'DAF',name:'DAF',color:'#b45309'},
 ];
 
-// ═══════════════ STATE ═══════════════════════════════════════
+//  STATE 
 const store={assembly:{},wpa:{},twist:{}};
 const navState={
   assembly:{level:'projects',projectKey:null,refId:null},
@@ -1692,7 +1328,7 @@ const pagination={refs:{},history:{page:1,perPage:20}};
 // Sort state for dt tables
 const sortState={};
 
-// ═══════════════ TOAST ═══════════════════════════════════════
+//  TOAST 
 function toast(msg,type='info'){
   const c=document.getElementById('toast');
   const el=document.createElement('div');
@@ -1702,7 +1338,7 @@ function toast(msg,type='info'){
   setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(18px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},3500);
 }
 
-// ═══════════════ AUTH SYSTEM ══════════════════════════════════
+//  AUTH SYSTEM 
 // Pages each department is allowed to access
 const DEPT_PAGES={
   assembly:['analytics','history','assembly'],
@@ -1713,7 +1349,7 @@ const DEPT_PAGES={
   admin:['analytics','history','assembly','pagoda','cutting','wpa','twist']
 };
 
-// ── User store (persisted in localStorage) ─────────────────
+//  User store (persisted in localStorage) 
 function getUsers(){
   try{return JSON.parse(localStorage.getItem('me_v7_users')||'{}');}catch(e){return {};}
 }
@@ -1727,7 +1363,7 @@ function saveUsers(u){localStorage.setItem('me_v7_users',JSON.stringify(u));}
   }
 })();
 
-// ── Panel switcher ─────────────────────────────────────────
+//  Panel switcher 
 let fpVerified=false;
 function showAuthPanel(panel){
   ['signin','signup','forgot'].forEach(p=>{
@@ -1749,7 +1385,7 @@ function showAuthPanel(panel){
   ['si-error','su-error','su-success'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
 }
 
-// ── Helpers ────────────────────────────────────────────────
+//  Helpers 
 function authMsg(id,msg,isOk){
   const el=document.getElementById(id);if(!el)return;
   if(!msg){el.style.display='none';return;}
@@ -1788,7 +1424,7 @@ function checkPwStrength(val){
   label.textContent=l.t;label.style.color=l.c;
 }
 
-// ── SIGN IN ────────────────────────────────────────────────
+//  SIGN IN 
 async function doLogin(){
   const uid=document.getElementById('si-uid').value.trim();
   const pw=document.getElementById('si-pw').value;
@@ -1819,7 +1455,7 @@ async function doLogin(){
   enterApp(dept);
 }
 
-// ── Gmail validation ───────────────────────────────────────
+//  Gmail validation 
 function validateGmail(input){
   const val=input.value.trim();
   const icon=document.getElementById('su-gmail-icon');
@@ -1827,15 +1463,15 @@ function validateGmail(input){
   const valid=val.toLowerCase().endsWith('@gmail.com')&&val.length>10;
   if(!val){if(icon)icon.textContent='';if(hint){hint.textContent='Must be a @gmail.com address';hint.style.color='var(--tx-3)';}return;}
   if(valid){
-    if(icon)icon.textContent='✓';icon.style.color='#10b981';
+    if(icon)icon.textContent='';icon.style.color='#10b981';
     if(hint){hint.textContent='Valid Gmail address';hint.style.color='#10b981';}
   } else {
-    if(icon)icon.textContent='✗';icon.style.color='#e05c6a';
+    if(icon)icon.textContent='';icon.style.color='#e05c6a';
     if(hint){hint.textContent='Must be a valid @gmail.com address';hint.style.color='#e05c6a';}
   }
 }
 
-// ── SIGN UP ────────────────────────────────────────────────
+//  SIGN UP 
 async function doSignUp(){
   const name=document.getElementById('su-name').value.trim();
   const gmail=document.getElementById('su-gmail').value.trim().toLowerCase();
@@ -1871,7 +1507,7 @@ async function doSignUp(){
   setTimeout(()=>showAuthPanel('signin'),2000);
 }
 
-// ── FORGOT PASSWORD ────────────────────────────────────────
+//  FORGOT PASSWORD 
 async function doForgotStep(){
   if(!fpVerified){
     // Step 1: verify identity with Gmail
@@ -1914,7 +1550,7 @@ async function doForgotStep(){
   }
 }
 
-// ── ENTER APP ─────────────────────────────────────────────
+//  ENTER APP 
 function saveSession(){
   try{sessionStorage.setItem('me_v7_session',JSON.stringify({uid:currentUser.username,dept:currentUser.department,name:currentUser.name}));}catch(e){}
 }
@@ -1938,13 +1574,20 @@ function enterApp(dept){
   const defaultBtn=document.querySelector(`.nav-btn[data-page="${landing}"]`);
   if(defaultBtn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
   loadPage(landing);updateBadges();renderNotifBell();
-  requestNotifPermission();
+  requestNotifPermission(); // silently ask for permission on login
   // Init toggle button labels from saved settings
   setTimeout(()=>{
     const sb=document.getElementById('notif-sound-btn');
     const db=document.getElementById('notif-desktop-btn');
-    if(sb)sb.textContent=isNotifSoundOn()?'🔊 Sound On':'🔇 Sound Off';
-    if(db)db.textContent=isDesktopNotifOn()?'🖥 Desktop On':'🖥 Desktop Off';
+    if(sb){sb.textContent=isNotifSoundOn()?'Sound  ON':'Sound  OFF';sb.style.color=isNotifSoundOn()?'var(--emerald)':'var(--tx-3)';}
+    if(db){
+      if(typeof Notification!=='undefined'&&Notification.permission==='denied'){
+        db.textContent='Desktop BLOCKED';db.style.color='var(--crimson)';
+      } else {
+        db.textContent=isDesktopNotifOn()?'Desktop  ON':'Desktop  OFF';
+        db.style.color=isDesktopNotifOn()?'var(--emerald)':'var(--tx-3)';
+      }
+    }
   },300);
   toast(`Welcome, ${currentUser.name}! Loading saved data…`,'info');
   loadStoreFromDb().then(()=>{
@@ -1971,7 +1614,7 @@ function doLogout(){
 }
 function onDeptChange(){}// kept for compat
 
-// ═══════════════ NAVIGATION ══════════════════════════════════
+//  NAVIGATION 
 const PAGE_TITLES={analytics:'Analytics Dashboard',history:'Order History',assembly:'Assembly Department',pagoda:'Pagoda · Central Hub',cutting:'Cutting Area',wpa:'Wire Prep Area',twist:'Twist Department'};
 function switchPage(page,btn){
   const allowed=DEPT_PAGES[currentUser.department]||[];
@@ -2019,7 +1662,7 @@ function updateBadges(){
   const hb=document.getElementById('b-history');if(hb)hb.textContent=requests.length;
 }
 
-// ═══════════════ EXCEL PARSER ════════════════════════════════
+//  EXCEL PARSER 
 function parseExcel(file){
   return new Promise((res,rej)=>{
     const r=new FileReader();
@@ -2055,13 +1698,11 @@ function projectLabel(key){if(key.includes('__')){const[pid,sid]=key.split('__')
 function projectColor(key){const pid=key.split('__')[0];const p=PROJECTS.find(x=>x.id===pid);return p?p.color:'#4a9eff';}
 
 function backBtn(dept,targetLevel,label){
-  return`<button class="back-btn" onclick="navTo('${dept}','${targetLevel}')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    ${label}
+  return`<button class="back-btn" onclick="navTo('${dept}','${targetLevel}')"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg> ${label}
   </button>`;
 }
 
-// ═══════════════ RENDER REQUEST AREA ═════════════════════════
+//  RENDER REQUEST AREA 
 function renderRequestArea(dept){
   const areaId=dept==='assembly'?'asm-request-area':dept==='wpa'?'wpa-request-area':'twist-request-area';
   const el=document.getElementById(areaId);if(!el)return;
@@ -2081,18 +1722,7 @@ function renderProjectsLevel(dept){
     const count=isVolvo?p.subs.reduce((s,sub)=>s+(deptStore[p.id+'__'+sub.replace(/ /g,'_')]||{refs:[]}).refs.length,0)+getCount(p.id):getCount(p.id);
     const hasData=count>0;
     const initials=p.name.split(' ').map(w=>w[0]).join('').slice(0,3);
-    html+=`<div class="project-card ${hasData?'has-data':''} ${isVolvo?'volvo-main':''}" onclick="selectProject('${dept}','${p.id}')">
-      <div class="pc-bar" style="background:${hasData?p.color:'rgba(255,255,255,.05)'}"></div>
-      <div class="pc-body">
-        <div class="pc-logo" style="background:${p.color};box-shadow:0 4px 14px ${p.color}33">${initials}</div>
-        <div class="pc-name">${p.name}</div>
-        <div class="pc-sub">${isVolvo?'9 sub-projects':'Project'}</div>
-        <div class="pc-foot">
-          <span class="pc-count ${hasData?'has':''}">${hasData?count+' ref'+(count>1?'s':''):isVolvo?'Expand':'No refs'}</span>
-          <div class="pc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
-        </div>
-      </div>
-    </div>`;
+    html+=`<div class="project-card ${hasData?'has-data':''} ${isVolvo?'volvo-main':''}" onclick="selectProject('${dept}','${p.id}')"> <div class="pc-bar" style="background:${hasData?p.color:'rgba(255,255,255,.05)'}"></div> <div class="pc-body"> <div class="pc-logo" style="background:${p.color};box-shadow:0 4px 14px ${p.color}33">${initials}</div> <div class="pc-name">${p.name}</div> <div class="pc-sub">${isVolvo?'9 sub-projects':'Project'}</div> <div class="pc-foot"> <span class="pc-count ${hasData?'has':''}">${hasData?count+' ref'+(count>1?'s':''):isVolvo?'Expand':'No refs'}</span> <div class="pc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div> </div> </div> </div>`;
   });
   return html+`</div>`;
 }
@@ -2128,8 +1758,7 @@ function renderRefsLevel(dept){
   if(pStore.refs.length>0){
     html+=`<input type="text" class="search-input" placeholder="Search references…" value="${searchTerm}" oninput="searchRefs(event,'${dept}')">`;
     if(isAdmin()){
-      html+=`<label class="upload-btn upload-btn-outline"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Replace</label>
-      <button onclick="clearProjectRefs('${dept}','${key}')" class="upload-btn upload-btn-outline" style="border-color:rgba(255,71,87,.3);color:var(--crimson)">Clear</button>`;
+      html+=`<label class="upload-btn upload-btn-outline"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Replace</label> <button onclick="clearProjectRefs('${dept}','${key}')" class="upload-btn upload-btn-outline" style="border-color:rgba(255,71,87,.3);color:var(--crimson)">Clear</button>`;
     }
   }
   html+=`</div></div>`;
@@ -2138,11 +1767,7 @@ function renderRefsLevel(dept){
     if(isAdmin()){
       html+=`<div class="drop-zone" id="${dept}-${key}-dropzone"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')"><div class="dz-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div class="dz-title">Upload Reference List for ${label}</div><div class="dz-sub">Drop an Excel file (.xlsx / .xls / .csv) with your reference list<br>Columns: Reference ID, Description (optional)</div><div class="dz-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Columns named "Reference", "Ref", "ID", or "Code" are auto-detected</div></div>`;
     } else {
-      html+=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);border-radius:var(--r-md);text-align:center;gap:10px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" style="width:32px;height:32px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <div style="font-size:13px;font-weight:600;color:var(--tx-3)">No data uploaded yet</div>
-        <div style="font-size:11px;color:var(--tx-4)">Reference data for <b>${label}</b> has not been uploaded.<br>Contact your <span style="color:var(--copper);font-weight:600">Admin</span> to upload the Excel file.</div>
-      </div>`;
+      html+=`<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);border-radius:var(--r-md);text-align:center;gap:10px"> <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.5" style="width:32px;height:32px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <div style="font-size:13px;font-weight:600;color:var(--tx-3)">No data uploaded yet</div> <div style="font-size:11px;color:var(--tx-4)">Reference data for <b>${label}</b> has not been uploaded.<br>Contact your <span style="color:var(--copper);font-weight:600">Admin</span> to upload the Excel file.</div> </div>`;
     }
   } else {
     html+=`<div class="data-table-wrap"><div class="dt-header"><div class="dt-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${filteredRefs.length} of ${pStore.refs.length} references</div><div style="font-size:10px;color:var(--tx-3);font-family:'IBM Plex Mono',monospace">Page ${page} of ${totalPages||1}</div></div><div class="dt-scroll"><table class="dt"><thead><tr><th>Reference ID<span class="sort-icon"></span></th><th>Description<span class="sort-icon"></span></th><th>Wire List</th><th>Action</th></tr></thead><tbody>`;
@@ -2331,7 +1956,7 @@ function submitRequest(dept){
   toast(`Request ${req.id} submitted — ${items.length} wire${items.length>1?'s':''} from ${refId}`,'success');
   broadcastNotif({
     type: urgency==='critical'?'critical':'new_request',
-    title: urgency==='critical'?`🚨 CRITICAL Request ${req.id}`:`New Request: ${req.id}`,
+    title: urgency==='critical'?`CRITICAL: ${req.id}`:`New Request: ${req.id}`,
     sub: `${dept.toUpperCase()} → PAGODA · ${items.length} wire${items.length>1?'s':''} · ${pl}`,
     reqId: req.id,
     fromDept: dept
@@ -2341,7 +1966,7 @@ function submitRequest(dept){
   if(currentPage==='history')renderHistoryPage();
 }
 
-// ═══════════════ REQUEST LIST ═════════════════════════════════
+//  REQUEST LIST 
 function timeAgo(d){const m=Math.floor((Date.now()-new Date(d))/60000);if(m<1)return'just now';if(m<60)return`${m}m ago`;if(m<1440)return`${Math.floor(m/60)}h ago`;return`${Math.floor(m/1440)}d ago`;}
 function urgBadge(u){const m={normal:'badge-emerald',urgent:'badge-amber',critical:'badge-crimson'};return`<span class="badge ${m[u]||'badge-grey'}">${u.toUpperCase()}</span>`;}
 function emptyState(msg){return`<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h8M7 16h5"/></svg><p>${msg}</p></div>`;}
@@ -2370,24 +1995,16 @@ function renderStatusTracker(r){
       const deptColor=ds.assignedTo==='cutting'?'var(--emerald)':ds.assignedTo==='wpa'?'var(--teal)':'var(--violet)';
       const doneItems=ds.items.filter(i=>i.deptStatus==='done').length;const totalItems=ds.items.length;const pct=totalItems>0?Math.round(doneItems/totalItems*100):0;
       const isDone=ds.status==='completed';const isIP=ds.status==='in_progress';
-      html+=`<div class="tracker-step ${isDone?'ts-done':isIP?'ts-active':'ts-wait'}"><div class="ts-dot ${isDone?'ts-dot-done':isIP?'ts-dot-pulse':'ts-dot-wait'}" style="${isIP?`border-color:${deptColor}`:''}${isDone?`background:${deptColor};border-color:${deptColor}`:''}">
-        ${isDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
-      </div><div class="ts-info"><div class="ts-label" style="${isIP||isDone?`color:${deptColor}`:''}">
-        ${ds.assignedTo.toUpperCase()} — ${isDone?'Completed':isIP?'In Progress':'Pending'}</div>
-        <div class="ts-sub">${totalItems} wire${totalItems>1?'s':''} · ${isDone?`All done`:`${doneItems}/${totalItems} processed`}</div>
-        ${(isIP||isDone)&&totalItems>1?`<div class="ts-bar"><div class="ts-bar-fill" style="width:${pct}%;background:${deptColor}"></div></div>`:''}
+      html+=`<div class="tracker-step ${isDone?'ts-done':isIP?'ts-active':'ts-wait'}"><div class="ts-dot ${isDone?'ts-dot-done':isIP?'ts-dot-pulse':'ts-dot-wait'}" style="${isIP?`border-color:${deptColor}`:''}${isDone?`background:${deptColor};border-color:${deptColor}`:''}"> ${isDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+      </div><div class="ts-info"><div class="ts-label" style="${isIP||isDone?`color:${deptColor}`:''}"> ${ds.assignedTo.toUpperCase()} — ${isDone?'Completed':isIP?'In Progress':'Pending'}</div> <div class="ts-sub">${totalItems} wire${totalItems>1?'s':''} · ${isDone?`All done`:`${doneItems}/${totalItems} processed`}</div> ${(isIP||isDone)&&totalItems>1?`<div class="ts-bar"><div class="ts-bar-fill" style="width:${pct}%;background:${deptColor}"></div></div>`:''}
       </div></div>`;
     });
   } else if(pst==='out_of_stock'&&r.assignedTo!=='pagoda'){
     const deptColor=r.assignedTo==='cutting'?'var(--emerald)':r.assignedTo==='wpa'?'var(--teal)':'var(--violet)';
     const isDone=sub==='completed';const isIP=sub==='in_progress';
     const doneItems=r.items.filter(i=>i.deptStatus==='done').length;const totalItems=r.items.length;const pct=totalItems>0?Math.round(doneItems/totalItems*100):0;
-    html+=`<div class="tracker-step ${isDone?'ts-done':isIP?'ts-active':'ts-wait'}"><div class="ts-dot ${isDone?'ts-dot-done':isIP?'ts-dot-pulse':'ts-dot-wait'}" style="${isIP?`border-color:${deptColor}`:''}${isDone?`background:${deptColor};border-color:${deptColor}`:''}">
-      ${isDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
-    </div><div class="ts-info"><div class="ts-label" style="${isIP||isDone?`color:${deptColor}`:''}">
-      ${r.assignedTo.toUpperCase()} — ${isDone?'Completed':isIP?'In Progress':'Pending'}</div>
-      <div class="ts-sub">${totalItems} wire${totalItems>1?'s':''} · ${isDone?'All done':`${doneItems}/${totalItems} processed`}</div>
-      ${(isIP||isDone)&&totalItems>1?`<div class="ts-bar"><div class="ts-bar-fill" style="width:${pct}%;background:${deptColor}"></div></div>`:''}
+    html+=`<div class="tracker-step ${isDone?'ts-done':isIP?'ts-active':'ts-wait'}"><div class="ts-dot ${isDone?'ts-dot-done':isIP?'ts-dot-pulse':'ts-dot-wait'}" style="${isIP?`border-color:${deptColor}`:''}${isDone?`background:${deptColor};border-color:${deptColor}`:''}"> ${isDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+    </div><div class="ts-info"><div class="ts-label" style="${isIP||isDone?`color:${deptColor}`:''}"> ${r.assignedTo.toUpperCase()} — ${isDone?'Completed':isIP?'In Progress':'Pending'}</div> <div class="ts-sub">${totalItems} wire${totalItems>1?'s':''} · ${isDone?'All done':`${doneItems}/${totalItems} processed`}</div> ${(isIP||isDone)&&totalItems>1?`<div class="ts-bar"><div class="ts-bar-fill" style="width:${pct}%;background:${deptColor}"></div></div>`:''}
     </div></div>`;
   }
   return html+`</div>`;
@@ -2437,7 +2054,7 @@ function renderCard(r){
 
 // Resolved badge: shows real live status including child request progress
 function wireStatusBadgeResolved(it, parentReq){
-  if(it.deptStatus==='done') return'<span class="wst wst-in">Done ✓</span>';
+  if(it.deptStatus==='done') return'<span class="wst wst-in">Done </span>';
   if(it.deptStatus==='in_progress') return'<span class="wst" style="background:rgba(74,158,255,.12);color:var(--steel-lt);border:1px solid rgba(74,158,255,.25);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">In Progress</span>';
   if(it.pagodaStatus==='in_stock') return'<span class="wst wst-in">In Stock</span>';
   if(it.pagodaStatus==='out_of_stock'){
@@ -2479,7 +2096,7 @@ function renderReqList(dept){
 }
 setInterval(()=>{if(!isModalOpen()){renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}},2000);
 
-// ═══════════════ PAGODA ══════════════════════════════════════
+//  PAGODA 
 function renderPagodaRequests(){
   const reqs=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending');
   const el=document.getElementById('pagoda-req-list');
@@ -2509,8 +2126,7 @@ function openPagodaModal(reqId){
     // Always use fresh r to reflect latest state after each button click
     const r=requests.find(x=>x.id===reqId)||{items:[]};
     const done=doneCount();const pct=r.items.length?Math.round(done/r.items.length*100):0;
-    return`<div class="mbar"><span>${done} of ${r.items.length} actioned</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div>
-    ${r.items.map((it,idx)=>{
+    return`<div class="mbar"><span>${done} of ${r.items.length} actioned</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div> ${r.items.map((it,idx)=>{
       const st=it.pagodaStatus;
       const tag=st==='in_stock'?'<span class="wst wst-in">In Stock</span>':st==='out_of_stock'?'<span class="wst wst-oos">Out of Stock</span>':'';
       const btns=!st?`<button class="wbtn wbtn-ok" onclick="setPagodaItem('${reqId}',${idx},'in_stock')">In Stock</button><button class="wbtn wbtn-oos" onclick="setPagodaItem('${reqId}',${idx},'out_of_stock')">OOS</button>`:`<button class="wbtn wbtn-undo" onclick="setPagodaItem('${reqId}',${idx},null)">Undo</button>`;
@@ -2546,21 +2162,21 @@ function finalizePagoda(rid){
   if(oos.length===0){
     r.status='completed';r.pagodaStatus='in_stock';r.completedAt=new Date().toISOString();
     toast('All wires in stock — request completed','success');
-    broadcastNotif({type:'completed',title:`✅ ${rid} — All In Stock`,sub:`All ${inStock.length} wire${inStock.length>1?'s':''} available · ${r.project}`,reqId:rid,fromDept:'pagoda'});
+    broadcastNotif({type:'completed',title:`${rid} — All In Stock`,sub:`All ${inStock.length} wire${inStock.length>1?'s':''} available · ${r.project}`,reqId:rid,fromDept:'pagoda'});
   } else if(inStock.length===0){
     r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;
     r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';
     toast(`All OOS — routed to ${r.assignedTo.toUpperCase()}`,'info');
-    broadcastNotif({type:'routed',title:`🔀 New Job: ${rid}`,sub:`PAGODA → ${r.assignedTo.toUpperCase()} · ${oos.length} wire${oos.length>1?'s':''} · ${r.project}`,reqId:rid,fromDept:'pagoda'});
+    broadcastNotif({type:'routed',title:`New Job: ${rid}`,sub:`PAGODA → ${r.assignedTo.toUpperCase()} · ${oos.length} wire${oos.length>1?'s':''} · ${r.project}`,reqId:rid,fromDept:'pagoda'});
   } else{
     const groups={};oos.forEach(it=>{const d=it.wireType==='simple'?'cutting':it.wireType==='twist'?'twist':'wpa';if(!groups[d])groups[d]=[];groups[d].push(it);});
     Object.entries(groups).forEach(([d,items])=>{requests.push({id:`${rid}-${d.toUpperCase()}`,items,urgency:r.urgency,status:'pending',assignedTo:d,project:r.project,time:new Date().toISOString(),requestedBy:r.requestedBy,pagodaStatus:'out_of_stock',completedAt:null,parentId:rid});});
     r.status='completed';r.pagodaStatus='partial';r.completedAt=new Date().toISOString();
     toast(`${inStock.length} in stock · ${oos.length} routed`,'success');
     Object.keys(groups).forEach(d=>{
-      broadcastNotif({type:'routed',title:`🔀 New Job: ${rid}`,sub:`PAGODA → ${d.toUpperCase()} · ${groups[d].length} wire${groups[d].length>1?'s':''} · ${r.project}`,reqId:rid,fromDept:'pagoda'});
+      broadcastNotif({type:'routed',title:`New Job: ${rid}`,sub:`PAGODA → ${d.toUpperCase()} · ${groups[d].length} wire${groups[d].length>1?'s':''} · ${r.project}`,reqId:rid,fromDept:'pagoda'});
     });
-    broadcastNotif({type:'completed',title:`📦 ${rid} — Partial Ready`,sub:`${inStock.length} in stock · ${oos.length} routed to production · ${r.project}`,reqId:rid,fromDept:'pagoda'});
+    broadcastNotif({type:'completed',title:`${rid} — Partial Ready`,sub:`${inStock.length} in stock · ${oos.length} routed to production · ${r.project}`,reqId:rid,fromDept:'pagoda'});
   }
   // Save parent and any new child requests to DB
   dbSave(r);
@@ -2572,7 +2188,7 @@ function markInStock(id){
   r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();
   dbSave(r);
   toast(`${id} marked In Stock`,'success');
-  broadcastNotif({type:'completed',title:`✅ ${id} — In Stock`,sub:`Your request is ready for pickup · ${r.project}`,reqId:id,fromDept:'pagoda'});
+  broadcastNotif({type:'completed',title:`${id} — In Stock`,sub:`Your request is ready for pickup · ${r.project}`,reqId:id,fromDept:'pagoda'});
   loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');refreshDeptHistories();
 }
 function markOOS(id){
@@ -2581,13 +2197,13 @@ function markOOS(id){
   r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';
   r.status='pending';dbSave(r);
   toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');
-  broadcastNotif({type:'routed',title:`🔀 New Job: ${id}`,sub:`PAGODA → ${r.assignedTo.toUpperCase()} · ${r.items.length} wire${r.items.length>1?'s':''} · ${r.project}`,reqId:id,fromDept:'pagoda'});
+  broadcastNotif({type:'routed',title:`New Job: ${id}`,sub:`PAGODA → ${r.assignedTo.toUpperCase()} · ${r.items.length} wire${r.items.length>1?'s':''} · ${r.project}`,reqId:id,fromDept:'pagoda'});
   loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
 }
 function loadLowStock(){let h='',low=0;Object.values(wireStock).forEach(w=>{if(w.stock<w.min){low++;h+=`<div class="alert-item"><div><div class="alert-name">${w.name}</div><div style="font-size:10px;color:var(--amber);margin-top:1px">${w.loc}</div></div><div class="alert-stock">${w.stock}/${w.min}</div></div>`;}});document.getElementById('low-stock-list').innerHTML=h||`<div class="alert-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>All stock levels OK</div>`;document.getElementById('p-low').textContent=low;}
 function updatePagodaMetrics(){document.getElementById('p-pending').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;document.getElementById('p-stock').textContent=Object.values(wireStock).reduce((s,w)=>s+w.stock,0);const today=new Date().toDateString();document.getElementById('p-today').textContent=requests.filter(r=>new Date(r.time).toDateString()===today).length;const comp=requests.filter(r=>r.status==='completed').length;const rate=requests.length?Math.round(comp/requests.length*100):0;document.getElementById('p-rate').textContent=rate+'%';document.getElementById('p-rate-bar').style.width=rate+'%';}
 
-// ═══════════════ CUTTING ═════════════════════════════════════
+//  CUTTING 
 function renderCuttingRequests(){
   const reqs=requests.filter(r=>r.assignedTo==='cutting'&&r.status!=='completed');
   const el=document.getElementById('cutting-req-list');
@@ -2627,14 +2243,13 @@ function openDeptModal(reqId,dept){
     const r=requests.find(x=>x.id===reqId)||{items:[]};
     const done=r.items.filter(it=>it.deptStatus==='done').length;
     const pct=r.items.length?Math.round(done/r.items.length*100):0;
-    return`<div class="mbar"><span style="font-size:11px;color:var(--tx-3)">${done} of ${r.items.length} processed</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%;background:${deptColor}"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div>
-    ${r.items.map((it,idx)=>{
+    return`<div class="mbar"><span style="font-size:11px;color:var(--tx-3)">${done} of ${r.items.length} processed</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%;background:${deptColor}"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div> ${r.items.map((it,idx)=>{
       const st=it.deptStatus;const isDone=st==='done';const isIP=st==='in_progress';
       const rowStyle=isDone?`border-color:rgba(0,214,143,.25);background:rgba(0,214,143,.03)`:isIP?'border-color:rgba(74,158,255,.25);background:rgba(74,158,255,.03)':'';
       const tag=isDone?`<span class="wst wst-in">${actionLabel}</span>`:isIP?'<span class="wst" style="background:rgba(74,158,255,.1);color:var(--steel-lt);border:1px solid rgba(74,158,255,.2);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">In Progress</span>':'';
       let btns='';
       if(!st){btns=`<button class="wbtn" style="background:${deptColor};color:var(--bg-base);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:none;transition:all .2s" onclick="setDeptItem('${reqId}',${idx},'in_progress','${dept}')">Start</button>`;}
-      else if(isIP){btns=`<button class="wbtn wbtn-ok" onclick="setDeptItem('${reqId}',${idx},'done','${dept}')">${actionLabel} ✓</button><button class="wbtn wbtn-undo" onclick="setDeptItem('${reqId}',${idx},null,'${dept}')">Undo</button>`;}
+      else if(isIP){btns=`<button class="wbtn wbtn-ok" onclick="setDeptItem('${reqId}',${idx},'done','${dept}')">${actionLabel} </button><button class="wbtn wbtn-undo" onclick="setDeptItem('${reqId}',${idx},null,'${dept}')">Undo</button>`;}
       else{btns=`<button class="wbtn wbtn-undo" onclick="setDeptItem('${reqId}',${idx},null,'${dept}')">Undo</button>`;}
       return`<div class="wire-action-row" style="${rowStyle}"><div class="war-info"><div class="war-name">${it.wireName}</div><div class="war-det">×${it.quantity} · Ref: ${it.reference} · ${it.wireType.toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div>${it._rawRow?`<div class="war-det" style="margin-top:2px;opacity:.55">${Object.entries(it._rawRow).map(([k,v])=>`${k}: ${v}`).join(' · ')}</div>`:''}</div><div style="display:flex;align-items:center;gap:7px">${tag}<div class="war-btns">${btns}</div></div></div>`;
     }).join('')}`;
@@ -2672,7 +2287,7 @@ function finalizeDeptModal(rid,dept){
   r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);
   toast(`${rid} — all items processed & completed!`,'success');
   const deptLabel=dept==='cutting'?'Cutting':dept==='wpa'?'Wire Prep':'Twist';
-  broadcastNotif({type:'completed',title:`✅ ${rid} — Ready`,sub:`${deptLabel} completed your request · ${r.project}`,reqId:rid,fromDept:dept});
+  broadcastNotif({type:'completed',title:`${rid} — Ready`,sub:`${deptLabel} completed your request · ${r.project}`,reqId:rid,fromDept:dept});
   closeDeptModal();
   updateBadges();renderAnalytics();
   renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
@@ -2715,7 +2330,7 @@ function refreshDeptHistories(){
   }
 }
 
-// ═══════════════ WPA / TWIST TABS ════════════════════════════
+//  WPA / TWIST TABS 
 function switchTab(dept,tab){
   const rp=document.getElementById(`${dept}-req-panel`);
   const fp=document.getElementById(`${dept}-fulfill-panel`);
@@ -2762,7 +2377,7 @@ function startReq(id){
   const r=requests.find(x=>x.id===id);if(!r)return;
   r.status='in_progress';dbSave(r);
   toast(`Started ${id}`,'info');
-  broadcastNotif({type:'in_progress',title:`⚙️ ${id} — In Progress`,sub:`${r.assignedTo.toUpperCase()} started working on your request · ${r.project}`,reqId:id,fromDept:r.assignedTo});
+  broadcastNotif({type:'in_progress',title:`${id} — In Progress`,sub:`${r.assignedTo.toUpperCase()} started working on your request · ${r.project}`,reqId:id,fromDept:r.assignedTo});
   loadPage(currentPage);updateBadges();
 }
 function completeReq(id){
@@ -2770,7 +2385,7 @@ function completeReq(id){
   r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);
   toast(`${id} completed!`,'success');
   const dl=r.assignedTo==='cutting'?'Cutting':r.assignedTo==='wpa'?'Wire Prep':'Twist';
-  broadcastNotif({type:'completed',title:`✅ ${id} — Ready`,sub:`${dl} completed your request · ${r.project}`,reqId:id,fromDept:r.assignedTo});
+  broadcastNotif({type:'completed',title:`${id} — Ready`,sub:`${dl} completed your request · ${r.project}`,reqId:id,fromDept:r.assignedTo});
   updateBadges();renderAnalytics();
   if(!isModalOpen())loadPage(currentPage);
   else{
@@ -2796,7 +2411,7 @@ function fmtDuration(ms){
   return`${Math.floor(m/60)}h ${m%60}m`;
 }
 
-// ═══════════════ HISTORY PAGE ════════════════════════════════
+//  HISTORY PAGE 
 function renderHistoryPage(){
   const search=(document.getElementById('hist-search')?.value||'').toLowerCase();
   const deptFilter=document.getElementById('hist-filter-dept')?.value||'';
@@ -2823,19 +2438,7 @@ function buildHistEntry(r){
   const wirePreview=wireNames.slice(0,2).join(', ')+(wireNames.length>2?` +${wireNames.length-2} more`:'');
   const urgColors={normal:'badge-emerald',urgent:'badge-amber',critical:'badge-crimson'};
   const entryId=`hist-${r.id.replace(/[^a-z0-9]/gi,'_')}`;
-  return`<div class="hist-entry" id="${entryId}" onclick="toggleHistEntry('${entryId}')">
-    <div class="hist-row">
-      <svg class="hist-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      <span class="hist-id">${r.id}</span>
-      <div style="display:flex;align-items:center;gap:5px;flex:1;min-width:0"><div class="hist-wires" title="${wireNames.join(', ')}">${wirePreview}</div></div>
-      <span class="hist-project">${r.project}</span>
-      <span class="hist-dept-badge" style="background:${deptColors[dept]||'var(--bg-03)'};color:${deptTextColors[dept]||'var(--tx-2)'};border:1px solid ${deptTextColors[dept]||'var(--bd-1)'}33">${(dept||'').toUpperCase()}</span>
-      <span class="badge ${urgColors[r.urgency]||'badge-grey'}" style="font-size:9px">${(r.urgency||'').toUpperCase()}</span>
-      <div style="display:flex;align-items:center;gap:6px"><div class="hist-status-dot" style="background:${dotColor};box-shadow:0 0 6px ${dotColor}"></div><span style="font-size:11px;color:var(--tx-2)">${statusLabel}</span></div>
-      <div class="hist-datetime"><div>${submitted.date}</div><div style="color:var(--tx-2)">${submitted.time}</div></div>
-    </div>
-    <div class="hist-details">${buildHistDetails(r)}</div>
-  </div>`;
+  return`<div class="hist-entry" id="${entryId}" onclick="toggleHistEntry('${entryId}')"> <div class="hist-row"> <svg class="hist-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg> <span class="hist-id">${r.id}</span> <div style="display:flex;align-items:center;gap:5px;flex:1;min-width:0"><div class="hist-wires" title="${wireNames.join(', ')}">${wirePreview}</div></div> <span class="hist-project">${r.project}</span> <span class="hist-dept-badge" style="background:${deptColors[dept]||'var(--bg-03)'};color:${deptTextColors[dept]||'var(--tx-2)'};border:1px solid ${deptTextColors[dept]||'var(--bd-1)'}33">${(dept||'').toUpperCase()}</span> <span class="badge ${urgColors[r.urgency]||'badge-grey'}" style="font-size:9px">${(r.urgency||'').toUpperCase()}</span> <div style="display:flex;align-items:center;gap:6px"><div class="hist-status-dot" style="background:${dotColor};box-shadow:0 0 6px ${dotColor}"></div><span style="font-size:11px;color:var(--tx-2)">${statusLabel}</span></div> <div class="hist-datetime"><div>${submitted.date}</div><div style="color:var(--tx-2)">${submitted.time}</div></div> </div> <div class="hist-details">${buildHistDetails(r)}</div> </div>`;
 }
 
 function buildHistDetails(r){
@@ -2863,12 +2466,8 @@ function buildHistDetails(r){
       const deptCl=deptColors2[ds.assignedTo]||'var(--tx-2)';
       const stepCls=dsDone?'done':dsIP?'active':'waiting';
       const doneItems=ds.items.filter(i=>i.deptStatus==='done').length;
-      html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}">
-        ${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:ds.assignedTo.charAt(0).toUpperCase()}
-      </div></div><div class="ht-body"><div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}">
-        ${(ds.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}</div>
-        <div class="ht-sub">${doneItems}/${ds.items.length} wire${ds.items.length>1?'s':''} processed</div>
-        ${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:waitDur?`<div class="ht-duration" style="background:rgba(255,255,255,.04);color:var(--tx-3);border-color:var(--bd-1)">⏳ Waiting since ${waitDur}</div>`:''}
+      html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}"> ${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:ds.assignedTo.charAt(0).toUpperCase()}
+      </div></div><div class="ht-body"><div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}"> ${(ds.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}</div> <div class="ht-sub">${doneItems}/${ds.items.length} wire${ds.items.length>1?'s':''} processed</div> ${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:waitDur?`<div class="ht-duration" style="background:rgba(255,255,255,.04);color:var(--tx-3);border-color:var(--bd-1)">⏳ Waiting since ${waitDur}</div>`:''}
         ${ds.completedAt?`<div class="ht-time" style="margin-top:3px">Completed: ${fmtDateTime(ds.completedAt).full}</div>`:''}
       </div></div>`;
     });
@@ -2879,17 +2478,13 @@ function buildHistDetails(r){
     const doneItems=r.items.filter(i=>i.deptStatus==='done').length;
     const dsExitTs=r.completedAt?new Date(r.completedAt):null;
     const dsDurMs=dsDone&&dsExitTs?(dsExitTs-new Date(r.time)):null;const dsDur=dsDurMs!==null?fmtDuration(dsDurMs):null;
-    html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}">
-      ${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:(r.assignedTo||'?').charAt(0).toUpperCase()}
-    </div></div><div class="ht-body"><div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}">
-      ${(r.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}</div>
-      <div class="ht-sub">${doneItems}/${r.items.length} wire${r.items.length>1?'s':''} processed</div>
-      ${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:''}
+    html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}"> ${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:(r.assignedTo||'?').charAt(0).toUpperCase()}
+    </div></div><div class="ht-body"><div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}"> ${(r.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}</div> <div class="ht-sub">${doneItems}/${r.items.length} wire${r.items.length>1?'s':''} processed</div> ${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:''}
     </div></div>`;
   }
   if(r.status==='completed'&&r.completedAt){
     const comp=fmtDateTime(r.completedAt);const totalMs=new Date(r.completedAt)-submittedTs;const totalDur=fmtDuration(totalMs);
-    html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot done" style="background:var(--emerald);border-color:var(--emerald)"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="ht-body"><div class="ht-label" style="color:var(--emerald)">Order Completed</div><div class="ht-time">${comp.date} · ${comp.time}</div>${totalDur?`<div class="ht-duration" style="background:rgba(0,214,143,.09);color:var(--emerald);border-color:rgba(0,214,143,.2)">✓ Total time: ${totalDur}</div>`:''}</div></div>`;
+    html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot done" style="background:var(--emerald);border-color:var(--emerald)"><svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div class="ht-body"><div class="ht-label" style="color:var(--emerald)">Order Completed</div><div class="ht-time">${comp.date} · ${comp.time}</div>${totalDur?`<div class="ht-duration" style="background:rgba(0,214,143,.09);color:var(--emerald);border-color:rgba(0,214,143,.2)"> Total time: ${totalDur}</div>`:''}</div></div>`;
   }
   html+=`</div>`;
   html+=`<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:8px;margin-top:4px">Wire Details</div>`;
@@ -2921,47 +2516,23 @@ function loadHistory(containerId,dept,field){
     const wireRows=r.items.map((it,i)=>{
       const st=it.pagodaStatus==='in_stock'?'<span class="wst wst-in">In Stock</span>':
                it.pagodaStatus==='out_of_stock'?'<span class="wst wst-oos">OOS→Routed</span>':
-               it.deptStatus==='done'?'<span class="wst wst-in">Done ✓</span>':
+               it.deptStatus==='done'?'<span class="wst wst-in">Done </span>':
                it.deptStatus==='in_progress'?'<span class="wst" style="background:rgba(74,158,255,.1);color:var(--steel-lt);border:1px solid rgba(74,158,255,.2);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">In Progress</span>':
                '<span class="wst" style="background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid var(--bd-1);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">—</span>';
       const rawTxt=it._rawRow?'<div style="font-size:9px;color:var(--tx-4);margin-top:2px">'+Object.entries(it._rawRow).map(([k,v])=>k+': '+v).join(' · ')+'</div>':'';
-      return`<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd-1);gap:12px">
-        <div style="min-width:0;flex:1">
-          <div style="font-size:12px;font-weight:700;color:var(--tx-1)">${it.wireName}</div>
-          <div style="font-size:10px;color:var(--tx-3);margin-top:2px">×${it.quantity} · Ref: ${it.reference||'—'} · ${(it.wireType||'').toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div>
-          ${rawTxt}
-        </div>
-        <div style="flex-shrink:0">${st}</div>
-      </div>`;
+      return`<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd-1);gap:12px"> <div style="min-width:0;flex:1"> <div style="font-size:12px;font-weight:700;color:var(--tx-1)">${it.wireName}</div> <div style="font-size:10px;color:var(--tx-3);margin-top:2px">×${it.quantity} · Ref: ${it.reference||'—'} · ${(it.wireType||'').toUpperCase()}${it.tinning?' · Tinning':''}${it.layLength?' · Lay: '+it.layLength:''}</div> ${rawTxt}
+        </div> <div style="flex-shrink:0">${st}</div> </div>`;
     }).join('');
     // Timeline mini
     const timelineHtml=buildHistDetails(r);
-    return`<div class="hist-entry dept-hist-entry" id="${entryId}" onclick="toggleHistEntry('${entryId}')" style="margin-bottom:8px;border-radius:12px;border:1px solid var(--bd-1);background:var(--bg-01);overflow:hidden;cursor:pointer;transition:border-color .2s" onmouseenter="this.style.borderColor='var(--bd-2)'" onmouseleave="this.style.borderColor='var(--bd-1)'">
-      <div class="hist-row" style="padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <svg class="hist-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;color:var(--tx-4);flex-shrink:0;transition:transform .2s"><polyline points="9 18 15 12 9 6"/></svg>
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--tx-1);flex-shrink:0">${r.id}</span>
-        <div style="flex:1;min-width:0;font-size:11px;color:var(--tx-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${wirePreview}</div>
-        <span class="badge badge-grey" style="flex-shrink:0">${r.project}</span>
-        <span class="badge ${urgColors[r.urgency]||'badge-grey'}" style="font-size:9px;flex-shrink:0">${(r.urgency||'').toUpperCase()}</span>
-        ${dur?`<span style="font-size:10px;color:var(--tx-3);flex-shrink:0;font-family:'IBM Plex Mono',monospace">⏱ ${dur}</span>`:''}
-        <div style="display:flex;align-items:center;gap:5px;flex-shrink:0"><div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 5px var(--emerald)"></div><span style="font-size:11px;color:var(--tx-2)">Completed</span></div>
-        <div style="font-size:10px;color:var(--tx-4);flex-shrink:0;font-family:'IBM Plex Mono',monospace;text-align:right"><div>${dt.date}</div><div>${dt.time}</div></div>
-      </div>
-      <div class="hist-details" style="padding:0 16px">
-        <div style="padding-bottom:16px">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:10px;margin-top:4px">Wire Details (${r.items.length} wire${r.items.length!==1?'s':''})</div>
-          ${wireRows}
-          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bd-1)">
-            <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:10px">Order Timeline</div>
-            ${timelineHtml}
-          </div>
-        </div>
-      </div>
-    </div>`;
+    return`<div class="hist-entry dept-hist-entry" id="${entryId}" onclick="toggleHistEntry('${entryId}')" style="margin-bottom:8px;border-radius:12px;border:1px solid var(--bd-1);background:var(--bg-01);overflow:hidden;cursor:pointer;transition:border-color .2s" onmouseenter="this.style.borderColor='var(--bd-2)'" onmouseleave="this.style.borderColor='var(--bd-1)'"> <div class="hist-row" style="padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"> <svg class="hist-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;color:var(--tx-4);flex-shrink:0;transition:transform .2s"><polyline points="9 18 15 12 9 6"/></svg> <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--tx-1);flex-shrink:0">${r.id}</span> <div style="flex:1;min-width:0;font-size:11px;color:var(--tx-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${wirePreview}</div> <span class="badge badge-grey" style="flex-shrink:0">${r.project}</span> <span class="badge ${urgColors[r.urgency]||'badge-grey'}" style="font-size:9px;flex-shrink:0">${(r.urgency||'').toUpperCase()}</span> ${dur?`<span style="font-size:10px;color:var(--tx-3);flex-shrink:0;font-family:'IBM Plex Mono',monospace">⏱ ${dur}</span>`:''}
+        <div style="display:flex;align-items:center;gap:5px;flex-shrink:0"><div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 5px var(--emerald)"></div><span style="font-size:11px;color:var(--tx-2)">Completed</span></div> <div style="font-size:10px;color:var(--tx-4);flex-shrink:0;font-family:'IBM Plex Mono',monospace;text-align:right"><div>${dt.date}</div><div>${dt.time}</div></div> </div> <div class="hist-details" style="padding:0 16px"> <div style="padding-bottom:16px"> <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:10px;margin-top:4px">Wire Details (${r.items.length} wire${r.items.length!==1?'s':''})</div> ${wireRows}
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bd-1)"> <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tx-4);margin-bottom:10px">Order Timeline</div> ${timelineHtml}
+          </div> </div> </div> </div>`;
   }).join('');
 }
 
-// ═══════════════ ANALYTICS ════════════════════════════════════
+//  ANALYTICS 
 function renderAnalytics(){
   document.getElementById('a-total').textContent=requests.length;
   document.getElementById('a-done').textContent=requests.filter(r=>r.status==='completed').length;
@@ -2985,7 +2556,7 @@ function renderAnalytics(){
   document.getElementById('proj-chart').innerHTML=tp.map(([n,c])=>`<div class="wbar-item"><span class="wbar-name">${n}</span><div class="wbar-track"><div class="wbar-fill" style="width:${(c/mp*100).toFixed(0)}%;background:var(--emerald)"></div></div><span class="wbar-count">${c}</span></div>`).join('')||'<div class="empty-state"><p>No data yet</p></div>';
 }
 
-// ═══════════════ CLOCK ════════════════════════════════════════
+//  CLOCK 
 function updateClock(){
   const n=new Date();
   document.getElementById('clk-time').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
@@ -2993,24 +2564,24 @@ function updateClock(){
   const h=n.getHours();document.getElementById('clk-shift').textContent=h>=6&&h<14?'Morning 06–14':h>=14&&h<22?'Afternoon 14–22':'Night 22–06';
 }
 
-// ═══════════════ SIDEBAR MOBILE ═══════════════════════════════
+//  SIDEBAR MOBILE 
 function toggleSB(){const s=document.querySelector('.sidebar');const o=document.getElementById('sb-overlay');s.classList.contains('open')?closeSB():(s.classList.add('open'),o.classList.add('show'),document.body.style.overflow='hidden');}
 function closeSB(){document.querySelector('.sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('show');document.body.style.overflow='';}
 
-// ═══════════════════════════════════════════════════════════════
-// ██████  NOTIFICATION SYSTEM
-// ══════════════════════════════════════════════════════════════════
+// 
+//   NOTIFICATION SYSTEM
+// 
 // Notifications are stored per-user in localStorage.
 // Each notification has: { id, type, title, sub, icon, bg, time, read, dept }
 // Types: new_request | routed | in_progress | completed | critical
 
 const NOTIF_KEY = () => `me_v7_notifs_${currentUser.username||'guest'}`;
 const NOTIF_ICONS = {
-  new_request : { icon:'📋', bg:'rgba(74,158,255,.15)'  },
-  routed      : { icon:'🔀', bg:'rgba(245,158,11,.15)'  },
-  in_progress : { icon:'⚙️', bg:'rgba(59,130,246,.15)'  },
-  completed   : { icon:'✅', bg:'rgba(0,214,143,.15)'   },
-  critical    : { icon:'🚨', bg:'rgba(224,92,106,.15)'  },
+  new_request : { icon:'NEW',  bg:'rgba(74,158,255,.15)',  color:'var(--steel-lt)' },
+  routed      : { icon:'RTE',  bg:'rgba(245,158,11,.15)',  color:'var(--amber)'    },
+  in_progress : { icon:'WIP',  bg:'rgba(59,130,246,.15)',  color:'var(--steel-lt)' },
+  completed   : { icon:'DONE', bg:'rgba(0,214,143,.15)',   color:'var(--emerald)'  },
+  critical    : { icon:'CRIT', bg:'rgba(224,92,106,.15)',  color:'var(--crimson)'  },
 };
 // Which departments receive which notification types
 // key = target dept, value = array of {type, condition}
@@ -3097,7 +2668,7 @@ function deliverInbox(){
   renderNotifBell();
 }
 
-// ── SOUND ENGINE ─────────────────────────────────────────────
+//  SOUND ENGINE 
 let _audioCtx = null;
 function getAudioCtx(){
   if(!_audioCtx) _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
@@ -3132,57 +2703,75 @@ function playNotifSound(type){
   }catch(e){ console.warn('Sound error:',e); }
 }
 
-// ── DESKTOP NOTIFICATIONS ────────────────────────────────────
-let _notifPermission = Notification?.permission || 'default';
-function requestNotifPermission(){
-  if(!('Notification' in window)) return;
-  if(_notifPermission==='default'){
-    Notification.requestPermission().then(p=>{ _notifPermission=p; });
-  }
-}
-function showDesktopNotif(n){
-  if(!('Notification' in window)) return;
-  if(_notifPermission!=='granted') return;
-  // Don't show desktop notif if tab is currently visible
-  if(!document.hidden) return;
-  const meta = NOTIF_ICONS[n.type]||NOTIF_ICONS.new_request;
-  try{
-    const dn = new Notification(n.title, {
-      body   : n.sub,
-      icon   : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="%23c49a2a"/><text y="22" x="6" font-size="18">🔔</text></svg>',
-      tag    : n.id,
-      silent : false,
-    });
-    dn.onclick = ()=>{ window.focus(); openNotifPanel(); dn.close(); };
-    setTimeout(()=>dn.close(), 6000);
-  }catch(e){}
-}
-
-// ── SETTINGS for sound / desktop notifications ────────────────
+//  DESKTOP NOTIFICATIONS 
+// ── NOTIFICATION SETTINGS ────────────────────────────────────
 function getNotifSettings(){
   try{ return JSON.parse(localStorage.getItem('me_v7_notif_settings')||'{}'); }
   catch(e){ return {}; }
 }
-function saveNotifSettings(s){ localStorage.setItem('me_v7_notif_settings', JSON.stringify(s)); }
-function isNotifSoundOn()  { const s=getNotifSettings(); return s.sound  !==false; }
-function isDesktopNotifOn(){ const s=getNotifSettings(); return s.desktop!==false; }
+function saveNotifSettings(s){ localStorage.setItem('me_v7_notif_settings',JSON.stringify(s)); }
+function isNotifSoundOn()  { return getNotifSettings().sound  !==false; }
+function isDesktopNotifOn(){ return getNotifSettings().desktop!==false; }
+
+// ── DESKTOP PERMISSION ───────────────────────────────────────
+// Call this once on login — browser shows the Allow/Block prompt
+function requestNotifPermission(){
+  if(!('Notification' in window)) return Promise.resolve('denied');
+  if(Notification.permission==='granted') return Promise.resolve('granted');
+  if(Notification.permission==='denied')  return Promise.resolve('denied');
+  // 'default' — ask the user
+  return Notification.requestPermission();
+}
+
+// ── DESKTOP NOTIFICATION ─────────────────────────────────────
+// Fires for EVERY notification regardless of tab visibility
+function showDesktopNotif(n){
+  if(!('Notification' in window))              return;
+  if(Notification.permission!=='granted')      return;
+  if(!isDesktopNotifOn())                      return;
+  try{
+    const typeLabel = {new_request:'New Request',routed:'Routed',in_progress:'In Progress',completed:'Completed',critical:'CRITICAL'}[n.type]||n.type;
+    const dn = new Notification('MEI — '+typeLabel, {
+      body : n.title+'\n'+n.sub,
+      tag  : 'mei-notif',   // same tag = replaces previous so no spam
+      requireInteraction: false,
+    });
+    dn.onclick = ()=>{ window.focus(); openNotifPanel(); dn.close(); };
+  }catch(e){ console.warn('Desktop notif:',e); }
+}
+
+// ── TOGGLE BUTTONS ───────────────────────────────────────────
 function toggleNotifSound(el){
   const s=getNotifSettings(); s.sound=!isNotifSoundOn(); saveNotifSettings(s);
-  el.textContent = s.sound!==false ? '🔊 Sound On' : '🔇 Sound Off';
+  el.textContent = s.sound!==false ? 'Sound  ON' : 'Sound  OFF';
+  el.style.color = s.sound!==false ? 'var(--emerald)' : 'var(--tx-3)';
   if(s.sound!==false) playNotifSound('completed');
 }
-function toggleDesktopNotif(el){
-  const s=getNotifSettings(); const was=isDesktopNotifOn();
-  s.desktop=!was; saveNotifSettings(s);
-  el.textContent = s.desktop!==false ? '🖥 Desktop On' : '🖥 Desktop Off';
-  if(s.desktop!==false) requestNotifPermission();
+async function toggleDesktopNotif(el){
+  const s=getNotifSettings(); const wasOn=isDesktopNotifOn();
+  if(!wasOn){
+    const perm = await requestNotifPermission();
+    if(perm!=='granted'){
+      el.textContent='Desktop BLOCKED';
+      el.style.color='var(--crimson)';
+      toast('Allow notifications in your browser address bar, then try again.','error');
+      return;
+    }
+    s.desktop=true; saveNotifSettings(s);
+    el.textContent='Desktop  ON'; el.style.color='var(--emerald)';
+    // Send a test notification so the user sees it working immediately
+    try{ new Notification('MEI Notifications Active',{body:'You will now receive desktop alerts.',tag:'mei-test'}); }catch(e){}
+    toast('Desktop notifications ON','success');
+  } else {
+    s.desktop=false; saveNotifSettings(s);
+    el.textContent='Desktop  OFF'; el.style.color='var(--tx-3)';
+    toast('Desktop notifications OFF','info');
+  }
 }
 
 function showNotifToast(n){
-  // Play sound
   if(isNotifSoundOn()) playNotifSound(n.type);
-  // Desktop notification
-  if(isDesktopNotifOn()) showDesktopNotif(n);
+  showDesktopNotif(n);
   // In-app toast popup
   const meta = NOTIF_ICONS[n.type]||NOTIF_ICONS.new_request;
   const c = document.getElementById('toast');
@@ -3190,7 +2779,7 @@ function showNotifToast(n){
   const el = document.createElement('div');
   el.className = 'toast-item info';
   el.style.cssText = 'border-left-color:var(--copper);cursor:pointer;animation:toastSlide .25s var(--ease)';
-  el.innerHTML = `<span style="font-size:15px">${meta.icon}</span><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:11px;color:var(--tx-1)">${n.title}</div><div style="font-size:10px;color:var(--tx-3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.sub}</div></div>`;
+  el.innerHTML = `<span style="background:${meta.bg};color:${meta.color||'var(--copper)'};font-size:9px;font-weight:800;letter-spacing:.5px;padding:2px 6px;border-radius:5px;flex-shrink:0">${meta.icon}</span><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:11px;color:var(--tx-1)">${n.title}</div><div style="font-size:10px;color:var(--tx-3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.sub}</div></div>`;
   el.onclick = ()=>{ openNotifPanel(); el.remove(); };
   c.appendChild(el);
   setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(18px)'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),300); }, 4500);
@@ -3211,21 +2800,14 @@ function renderNotifList(){
   if(!list) return;
   const notifs = getNotifs();
   if(!notifs.length){
-    list.innerHTML = '<div class="notif-empty">📭 No notifications yet</div>';
+    list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
     return;
   }
   list.innerHTML = notifs.map(n=>{
     const meta = NOTIF_ICONS[n.type]||NOTIF_ICONS.new_request;
     const t = new Date(n.time);
     const timeStr = t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' · '+t.toLocaleDateString([],{day:'2-digit',month:'short'});
-    return `<div class="notif-item${n.read?'':' unread'}" onclick="readNotif('${n.id}')">
-      <div class="notif-icon" style="background:${meta.bg}">${meta.icon}</div>
-      <div class="notif-body">
-        <div class="notif-title">${n.title}</div>
-        <div class="notif-sub">${n.sub}</div>
-        <div class="notif-time">${timeStr}</div>
-      </div>
-      ${!n.read?'<div style="width:7px;height:7px;background:var(--copper);border-radius:50%;flex-shrink:0;margin-top:4px"></div>':''}
+    return `<div class="notif-item${n.read?'':' unread'}" onclick="readNotif('${n.id}')"> <div class="notif-icon" style="background:${meta.bg};color:${meta.color||'var(--tx-2)'};font-size:8px;font-weight:800;letter-spacing:.5px">${meta.icon}</div> <div class="notif-body"> <div class="notif-title">${n.title}</div> <div class="notif-sub">${n.sub}</div> <div class="notif-time">${timeStr}</div> </div> ${!n.read?'<div style="width:7px;height:7px;background:var(--copper);border-radius:50%;flex-shrink:0;margin-top:4px"></div>':''}
     </div>`;
   }).join('');
 }
@@ -3270,19 +2852,19 @@ document.addEventListener('click', e=>{
 setInterval(()=>{ if(currentUser.username) renderNotifBell(); }, 5000);
 
 
-// ██████  SUPABASE INTEGRATION
-// ═══════════════════════════════════════════════════════════════
+//   SUPABASE INTEGRATION
+// 
 
-// ── 1. CONFIG  ──────────────────────────────────────────────────
-// 🔑 PUT YOUR SUPABASE CREDENTIALS HERE:
+//  1. CONFIG  
+//  PUT YOUR SUPABASE CREDENTIALS HERE:
 const SUPABASE_URL  = 'https://ylnrtgzcdmglwunnsxjl.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsbnJ0Z3pjZG1nbHd1bm5zeGpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMjQ2NTcsImV4cCI6MjA4ODYwMDY1N30.aWwzA76g5_-5oXUPZmt9V85XetwPhJ8l0hqlGSqM7ew';
-// ────────────────────────────────────────────────────────────────
+// 
 
 let sb = null;         // supabase client
 let sbReady = false;   // becomes true after successful init
 
-// ── 2. INIT ─────────────────────────────────────────────────────
+//  2. INIT 
 async function initSupabase(){
   try {
     const { createClient } = supabase;
@@ -3294,7 +2876,7 @@ async function initSupabase(){
     await loadRequestsFromDb();
     await loadStoreFromDb();
     subscribeRealtime();
-    console.log('[Supabase] Connected ✓');
+    console.log('[Supabase] Connected ');
   } catch(e){
     sbReady = false;
     showDbIndicator(false);
@@ -3302,7 +2884,7 @@ async function initSupabase(){
   }
 }
 
-// ── 3. DB INDICATOR IN SIDEBAR ──────────────────────────────────
+//  3. DB INDICATOR IN SIDEBAR 
 function showDbIndicator(connected){
   let el = document.getElementById('db-indicator');
   if(!el){
@@ -3324,7 +2906,7 @@ function showDbIndicator(connected){
   el.style.border = connected ? '1px solid rgba(0,214,143,.15)' : '1px solid rgba(255,71,87,.12)';
 }
 
-// ── 4. LOAD FROM DB ─────────────────────────────────────────────
+//  4. LOAD FROM DB 
 async function loadRequestsFromDb(){
   if(!sbReady) return;
   // Load wire requests
@@ -3343,7 +2925,7 @@ async function loadRequestsFromDb(){
   refreshAll();
 }
 
-// ── 5. REALTIME SUBSCRIPTION ────────────────────────────────────
+//  5. REALTIME SUBSCRIPTION 
 function subscribeRealtime(){
   sb.channel('wire_requests_changes')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'wire_requests' }, payload => {
@@ -3361,7 +2943,7 @@ function subscribeRealtime(){
     .subscribe();
 }
 
-// ── 6. ROW ↔ OBJECT MAPPERS ─────────────────────────────────────
+//  6. ROW ↔ OBJECT MAPPERS 
 function dbRowToReq(row){
   return {
     id:          row.id,
@@ -3397,18 +2979,18 @@ function reqToDbRow(r){
   };
 }
 
-// ── 7. UPSERT HELPER ────────────────────────────────────────────
+//  7. UPSERT HELPER 
 async function dbSave(req){
   if(!sbReady) return;
   const { error } = await sb.from('wire_requests').upsert(reqToDbRow(req));
   if(error) console.error('[Supabase] Save error:', error);
 }
 
-// ── 8. EXPOSE ALL ACTION FUNCTIONS ON window SO onclick= WORKS ──
+//  8. EXPOSE ALL ACTION FUNCTIONS ON window SO onclick= WORKS 
 // DB save is called inside each function via dbSave() directly.
 // Do NOT use wrapper pattern — reassigning non-window vars breaks onclick.
 
-// ── 9. CONFIG MODAL ─────────────────────────────────────────────
+//  9. CONFIG MODAL 
 function openDbConfig(){
   let modal = document.getElementById('db-cfg-overlay');
   if(!modal){
@@ -3416,39 +2998,11 @@ function openDbConfig(){
     modal.id = 'db-cfg-overlay';
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px';
     modal.innerHTML = `
-      <div style="background:var(--bg-01);border:1px solid var(--bd-1);border-radius:16px;width:100%;max-width:500px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.6)">
-        <div style="background:linear-gradient(135deg,#0a1525,#0f2a50);padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font-size:15px;font-weight:700;color:var(--tx-1);display:flex;align-items:center;gap:9px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2" style="width:18px;height:18px"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-              Supabase Configuration
-            </div>
-            <div style="font-size:11px;color:var(--tx-3);margin-top:3px">Connect to your database for persistent real-time data</div>
-          </div>
-          <button onclick="document.getElementById('db-cfg-overlay').remove()" style="background:none;border:none;cursor:pointer;color:var(--tx-3);padding:4px">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-        <div style="padding:24px">
-          <div id="db-cfg-status" style="display:flex;align-items:center;gap:9px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--bd-1);border-radius:8px;margin-bottom:20px;font-size:12px;color:var(--tx-3)">
-            ${sbReady
+      <div style="background:var(--bg-01);border:1px solid var(--bd-1);border-radius:16px;width:100%;max-width:500px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.6)"> <div style="background:linear-gradient(135deg,#0a1525,#0f2a50);padding:20px 24px;display:flex;align-items:center;justify-content:space-between"> <div> <div style="font-size:15px;font-weight:700;color:var(--tx-1);display:flex;align-items:center;gap:9px"> <svg viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2" style="width:18px;height:18px"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Supabase Configuration
+            </div> <div style="font-size:11px;color:var(--tx-3);margin-top:3px">Connect to your database for persistent real-time data</div> </div> <button onclick="document.getElementById('db-cfg-overlay').remove()" style="background:none;border:none;cursor:pointer;color:var(--tx-3);padding:4px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> </button> </div> <div style="padding:24px"> <div id="db-cfg-status" style="display:flex;align-items:center;gap:9px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--bd-1);border-radius:8px;margin-bottom:20px;font-size:12px;color:var(--tx-3)"> ${sbReady
               ? `<span style="width:8px;height:8px;border-radius:50%;background:#00d68f;flex-shrink:0"></span> Connected to Supabase`
               : `<span style="width:8px;height:8px;border-radius:50%;background:#ff4757;flex-shrink:0"></span> Not connected — edit credentials below and reload`}
-          </div>
-          <div style="margin-bottom:16px">
-            <label style="display:block;font-size:11px;font-weight:600;color:var(--tx-2);margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase">Supabase Project URL</label>
-            <input id="cfg-url" type="text" value="${SUPABASE_URL}" style="width:100%;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:8px;padding:10px 13px;font-size:13px;color:var(--tx-1);font-family:'IBM Plex Mono',monospace;outline:none;box-sizing:border-box" placeholder="https://xxxx.supabase.co">
-            <div style="font-size:10px;color:var(--tx-3);margin-top:5px">Supabase Dashboard → Project Settings → API</div>
-          </div>
-          <div style="margin-bottom:20px">
-            <label style="display:block;font-size:11px;font-weight:600;color:var(--tx-2);margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase">Anon / Public Key</label>
-            <input id="cfg-key" type="password" value="${SUPABASE_ANON}" style="width:100%;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--tx-1);font-family:'IBM Plex Mono',monospace;outline:none;box-sizing:border-box" placeholder="eyJhbGciOiJI...">
-            <div style="font-size:10px;color:var(--tx-3);margin-top:5px">The <code style="background:rgba(255,255,255,.07);padding:1px 5px;border-radius:3px">anon</code> public key — safe to use in browser</div>
-          </div>
-
-          <div style="background:rgba(74,158,255,.05);border:1px solid rgba(74,158,255,.15);border-radius:8px;padding:14px;margin-bottom:4px">
-            <div style="font-size:11px;font-weight:700;color:var(--steel-lt);margin-bottom:8px">Required SQL (run once in Supabase SQL Editor)</div>
-            <pre id="db-sql" style="background:var(--bg-base);border:1px solid var(--bd-1);border-radius:6px;padding:11px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--tx-2);overflow-x:auto;margin:0;line-height:1.7;white-space:pre-wrap">-- TABLE 1: app_users (employee accounts)
+          </div> <div style="margin-bottom:16px"> <label style="display:block;font-size:11px;font-weight:600;color:var(--tx-2);margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase">Supabase Project URL</label> <input id="cfg-url" type="text" value="${SUPABASE_URL}" style="width:100%;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:8px;padding:10px 13px;font-size:13px;color:var(--tx-1);font-family:'IBM Plex Mono',monospace;outline:none;box-sizing:border-box" placeholder="https://xxxx.supabase.co"> <div style="font-size:10px;color:var(--tx-3);margin-top:5px">Supabase Dashboard → Project Settings → API</div> </div> <div style="margin-bottom:20px"> <label style="display:block;font-size:11px;font-weight:600;color:var(--tx-2);margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase">Anon / Public Key</label> <input id="cfg-key" type="password" value="${SUPABASE_ANON}" style="width:100%;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--tx-1);font-family:'IBM Plex Mono',monospace;outline:none;box-sizing:border-box" placeholder="eyJhbGciOiJI..."> <div style="font-size:10px;color:var(--tx-3);margin-top:5px">The <code style="background:rgba(255,255,255,.07);padding:1px 5px;border-radius:3px">anon</code> public key — safe to use in browser</div> </div> <div style="background:rgba(74,158,255,.05);border:1px solid rgba(74,158,255,.15);border-radius:8px;padding:14px;margin-bottom:4px"> <div style="font-size:11px;font-weight:700;color:var(--steel-lt);margin-bottom:8px">Required SQL (run once in Supabase SQL Editor)</div> <pre id="db-sql" style="background:var(--bg-base);border:1px solid var(--bd-1);border-radius:6px;padding:11px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--tx-2);overflow-x:auto;margin:0;line-height:1.7;white-space:pre-wrap">-- TABLE 1: app_users (employee accounts)
 CREATE TABLE IF NOT EXISTS app_users (
   uid TEXT PRIMARY KEY,
   full_name TEXT NOT NULL,
@@ -3506,15 +3060,7 @@ CREATE TABLE IF NOT EXISTS wire_data (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 ALTER TABLE wire_data ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "wd_allow_all" ON wire_data FOR ALL USING (true) WITH CHECK (true);</pre>
-            <button onclick="navigator.clipboard.writeText(document.getElementById('db-sql').textContent).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy SQL',1800)})" style="margin-top:9px;padding:5px 14px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:6px;font-size:11px;font-weight:600;color:var(--tx-2);cursor:pointer;font-family:'Outfit',sans-serif">Copy SQL</button>
-          </div>
-        </div>
-        <div style="padding:16px 24px;border-top:1px solid var(--bd-1);display:flex;gap:10px;justify-content:flex-end">
-          <button onclick="document.getElementById('db-cfg-overlay').remove()" style="padding:9px 20px;background:transparent;border:1px solid var(--bd-1);border-radius:8px;font-size:13px;font-weight:600;color:var(--tx-2);cursor:pointer">Close</button>
-          <button onclick="applyDbConfig()" style="padding:9px 22px;background:var(--copper);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:.3px">Save & Reconnect</button>
-        </div>
-      </div>`;
+CREATE POLICY "wd_allow_all" ON wire_data FOR ALL USING (true) WITH CHECK (true);</pre> <button onclick="navigator.clipboard.writeText(document.getElementById('db-sql').textContent).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy SQL',1800)})" style="margin-top:9px;padding:5px 14px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:6px;font-size:11px;font-weight:600;color:var(--tx-2);cursor:pointer;font-family:'Outfit',sans-serif">Copy SQL</button> </div> </div> <div style="padding:16px 24px;border-top:1px solid var(--bd-1);display:flex;gap:10px;justify-content:flex-end"> <button onclick="document.getElementById('db-cfg-overlay').remove()" style="padding:9px 20px;background:transparent;border:1px solid var(--bd-1);border-radius:8px;font-size:13px;font-weight:600;color:var(--tx-2);cursor:pointer">Close</button> <button onclick="applyDbConfig()" style="padding:9px 22px;background:var(--copper);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:.3px">Save & Reconnect</button> </div> </div>`;
     document.body.appendChild(modal);
   }
 }
@@ -3545,7 +3091,7 @@ async function applyDbConfig(){
   }
 }
 
-// ── 10. AUTO-INIT ON LOAD ───────────────────────────────────────
+//  10. AUTO-INIT ON LOAD 
 window.addEventListener('load', ()=>{
   updateClock();
   setInterval(updateClock, 1000);
@@ -3595,7 +3141,7 @@ document.addEventListener('click', ()=>{
 }, {once:false});
 
 
-// ── STORE PERSISTENCE ───────────────────────────────────────────
+//  STORE PERSISTENCE 
 
 // Save reference list for a dept+projectKey to DB
 async function dbSaveRefs(dept, key, refs){
@@ -3672,13 +3218,13 @@ async function loadStoreFromDb(){
       });
     }
 
-    console.log('[Supabase] Store data restored from DB ✓');
+    console.log('[Supabase] Store data restored from DB ');
   } catch(err) {
     console.error('[Supabase] loadStoreFromDb error:', err);
   }
 }
 
-// ── 11. refreshAll helper (re-renders everything) ───────────────
+//  11. refreshAll helper (re-renders everything) 
 function refreshAll(){
   updateBadges();
   renderAnalytics();
