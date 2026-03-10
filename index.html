@@ -1250,6 +1250,34 @@ body::before{
 .auth-ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#10b981}
 .pw-strength-bar{height:4px;background:var(--bg-04);border-radius:2px;margin-top:6px;overflow:hidden}
 #pw-strength-fill{height:100%;width:0;border-radius:2px;transition:all .3s}
+/* ── Notification Bell ── */
+.notif-bell{position:relative;background:none;border:none;cursor:pointer;color:var(--tx-2);padding:6px;border-radius:8px;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.notif-bell:hover{background:rgba(255,255,255,.06);color:var(--tx-1)}
+.notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--crimson);border-radius:50%;border:2px solid var(--bg-01);display:none;animation:pulseDot 1.8s infinite}
+.notif-dot.has{display:block}
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(224,92,106,.5)}50%{box-shadow:0 0 0 5px rgba(224,92,106,0)}}
+.notif-badge{position:absolute;top:2px;right:2px;min-width:16px;height:16px;background:var(--crimson);border-radius:8px;font-size:9px;font-weight:800;color:#fff;display:none;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--bg-01)}
+.notif-badge.has{display:flex}
+/* Notification Panel */
+#notif-panel{position:fixed;top:56px;right:14px;width:340px;max-height:520px;background:var(--bg-01);border:1px solid var(--bd-1);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);z-index:8000;display:none;flex-direction:column;overflow:hidden;animation:notifSlide .2s var(--ease)}
+#notif-panel.open{display:flex}
+@keyframes notifSlide{from{opacity:0;transform:translateY(-10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.notif-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--bd-1);flex-shrink:0}
+.notif-hd-title{font-size:13px;font-weight:700;color:var(--tx-1)}
+.notif-hd-actions{display:flex;gap:6px;align-items:center}
+.notif-clear-btn{background:none;border:none;font-size:10px;color:var(--copper);cursor:pointer;font-weight:600;padding:3px 8px;border-radius:5px;transition:background .15s}
+.notif-clear-btn:hover{background:rgba(196,154,42,.1)}
+.notif-list{overflow-y:auto;flex:1;padding:6px}
+.notif-item{display:flex;gap:10px;padding:10px 12px;border-radius:9px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(255,255,255,.03);margin-bottom:2px}
+.notif-item:hover{background:rgba(255,255,255,.04)}
+.notif-item.unread{background:rgba(196,154,42,.05);border-left:3px solid var(--copper)}
+.notif-item.unread:hover{background:rgba(196,154,42,.09)}
+.notif-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.notif-body{flex:1;min-width:0}
+.notif-title{font-size:12px;font-weight:600;color:var(--tx-1);line-height:1.3}
+.notif-sub{font-size:11px;color:var(--tx-3);margin-top:2px;line-height:1.4}
+.notif-time{font-size:10px;color:var(--tx-4);margin-top:4px;font-family:'IBM Plex Mono',monospace}
+.notif-empty{text-align:center;padding:32px 16px;color:var(--tx-4);font-size:12px}
 </style>
 </head>
 <body>
@@ -1441,6 +1469,11 @@ body::before{
       </button>
       <div class="topbar-title" id="topbar-title">Analytics Dashboard</div>
       <div id="topbar-user-chip" style="display:none;align-items:center;gap:4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;margin-right:6px"></div>
+      <button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifPanel()" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot" id="notif-dot"></span>
+        <span class="notif-badge" id="notif-badge">0</span>
+      </button>
       <button class="topbar-btn" onclick="refreshAll()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg>
         Refresh
@@ -1602,6 +1635,21 @@ body::before{
 </div>
 
 <div id="toast"></div>
+
+<!-- ═══ NOTIFICATION PANEL ═══════════════════════════════════ -->
+<div id="notif-panel">
+  <div class="notif-hd">
+    <div class="notif-hd-title">🔔 Notifications</div>
+    <div class="notif-hd-actions">
+      <button class="notif-clear-btn" onclick="markAllRead()">Mark all read</button>
+      <button class="notif-clear-btn" onclick="clearAllNotifs()" style="color:var(--crimson)">Clear all</button>
+      <button onclick="toggleNotifPanel()" style="background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px;display:flex">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="notif-list" id="notif-list"></div>
+</div>
 
 <script>
 'use strict';
@@ -1887,7 +1935,7 @@ function enterApp(dept){
   const landing=dept==='admin'?'analytics':dept;
   const defaultBtn=document.querySelector(`.nav-btn[data-page="${landing}"]`);
   if(defaultBtn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
-  loadPage(landing);updateBadges();
+  loadPage(landing);updateBadges();renderNotifBell();
   toast(`Welcome, ${currentUser.name}! Loading saved data…`,'info');
   loadStoreFromDb().then(()=>{
     toast(`Welcome, ${currentUser.name}! Data ready.`,'success');
@@ -2271,6 +2319,13 @@ function submitRequest(dept){
   requests.push(req);
   dbSave(req);
   toast(`Request ${req.id} submitted — ${items.length} wire${items.length>1?'s':''} from ${refId}`,'success');
+  broadcastNotif({
+    type: urgency==='critical'?'critical':'new_request',
+    title: urgency==='critical'?`🚨 CRITICAL Request ${req.id}`:`New Request: ${req.id}`,
+    sub: `${dept.toUpperCase()} → PAGODA · ${items.length} wire${items.length>1?'s':''} · ${pl}`,
+    reqId: req.id,
+    fromDept: dept
+  });
   navState[dept].level='refs';navState[dept].refId=null;
   renderRequestArea(dept);renderReqList(dept);updateBadges();renderAnalytics();
   if(currentPage==='history')renderHistoryPage();
@@ -2478,20 +2533,47 @@ function setPagodaItem(rid,idx,st){
 function finalizePagoda(rid){
   const r=requests.find(x=>x.id===rid);if(!r)return;
   const inStock=r.items.filter(it=>it.pagodaStatus==='in_stock');const oos=r.items.filter(it=>it.pagodaStatus==='out_of_stock');
-  if(oos.length===0){r.status='completed';r.pagodaStatus='in_stock';r.completedAt=new Date().toISOString();toast('All wires in stock — request completed','success');}
-  else if(inStock.length===0){r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';toast(`All OOS — routed to ${r.assignedTo.toUpperCase()}`,'info');}
-  else{
+  if(oos.length===0){
+    r.status='completed';r.pagodaStatus='in_stock';r.completedAt=new Date().toISOString();
+    toast('All wires in stock — request completed','success');
+    broadcastNotif({type:'completed',title:`✅ ${rid} — All In Stock`,sub:`All ${inStock.length} wire${inStock.length>1?'s':''} available · ${r.project}`,reqId:rid,fromDept:'pagoda'});
+  } else if(inStock.length===0){
+    r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;
+    r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';
+    toast(`All OOS — routed to ${r.assignedTo.toUpperCase()}`,'info');
+    broadcastNotif({type:'routed',title:`🔀 New Job: ${rid}`,sub:`PAGODA → ${r.assignedTo.toUpperCase()} · ${oos.length} wire${oos.length>1?'s':''} · ${r.project}`,reqId:rid,fromDept:'pagoda'});
+  } else{
     const groups={};oos.forEach(it=>{const d=it.wireType==='simple'?'cutting':it.wireType==='twist'?'twist':'wpa';if(!groups[d])groups[d]=[];groups[d].push(it);});
     Object.entries(groups).forEach(([d,items])=>{requests.push({id:`${rid}-${d.toUpperCase()}`,items,urgency:r.urgency,status:'pending',assignedTo:d,project:r.project,time:new Date().toISOString(),requestedBy:r.requestedBy,pagodaStatus:'out_of_stock',completedAt:null,parentId:rid});});
-    r.status='completed';r.pagodaStatus='partial';r.completedAt=new Date().toISOString();toast(`${inStock.length} in stock · ${oos.length} routed`,'success');
+    r.status='completed';r.pagodaStatus='partial';r.completedAt=new Date().toISOString();
+    toast(`${inStock.length} in stock · ${oos.length} routed`,'success');
+    Object.keys(groups).forEach(d=>{
+      broadcastNotif({type:'routed',title:`🔀 New Job: ${rid}`,sub:`PAGODA → ${d.toUpperCase()} · ${groups[d].length} wire${groups[d].length>1?'s':''} · ${r.project}`,reqId:rid,fromDept:'pagoda'});
+    });
+    broadcastNotif({type:'completed',title:`📦 ${rid} — Partial Ready`,sub:`${inStock.length} in stock · ${oos.length} routed to production · ${r.project}`,reqId:rid,fromDept:'pagoda'});
   }
   // Save parent and any new child requests to DB
   dbSave(r);
   requests.filter(x=>x.parentId===rid).forEach(child=>dbSave(child));
   closePM();loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
 }
-function markInStock(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');refreshDeptHistories();}
-function markOOS(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';dbSave(r);toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
+function markInStock(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;
+  r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();
+  dbSave(r);
+  toast(`${id} marked In Stock`,'success');
+  broadcastNotif({type:'completed',title:`✅ ${id} — In Stock`,sub:`Your request is ready for pickup · ${r.project}`,reqId:id,fromDept:'pagoda'});
+  loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');refreshDeptHistories();
+}
+function markOOS(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;
+  r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;
+  r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';
+  r.status='pending';dbSave(r);
+  toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');
+  broadcastNotif({type:'routed',title:`🔀 New Job: ${id}`,sub:`PAGODA → ${r.assignedTo.toUpperCase()} · ${r.items.length} wire${r.items.length>1?'s':''} · ${r.project}`,reqId:id,fromDept:'pagoda'});
+  loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
+}
 function loadLowStock(){let h='',low=0;Object.values(wireStock).forEach(w=>{if(w.stock<w.min){low++;h+=`<div class="alert-item"><div><div class="alert-name">${w.name}</div><div style="font-size:10px;color:var(--amber);margin-top:1px">${w.loc}</div></div><div class="alert-stock">${w.stock}/${w.min}</div></div>`;}});document.getElementById('low-stock-list').innerHTML=h||`<div class="alert-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>All stock levels OK</div>`;document.getElementById('p-low').textContent=low;}
 function updatePagodaMetrics(){document.getElementById('p-pending').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;document.getElementById('p-stock').textContent=Object.values(wireStock).reduce((s,w)=>s+w.stock,0);const today=new Date().toDateString();document.getElementById('p-today').textContent=requests.filter(r=>new Date(r.time).toDateString()===today).length;const comp=requests.filter(r=>r.status==='completed').length;const rate=requests.length?Math.round(comp/requests.length*100):0;document.getElementById('p-rate').textContent=rate+'%';document.getElementById('p-rate-bar').style.width=rate+'%';}
 
@@ -2579,6 +2661,8 @@ function finalizeDeptModal(rid,dept){
   const r=requests.find(x=>x.id===rid);if(!r)return;
   r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);
   toast(`${rid} — all items processed & completed!`,'success');
+  const deptLabel=dept==='cutting'?'Cutting':dept==='wpa'?'Wire Prep':'Twist';
+  broadcastNotif({type:'completed',title:`✅ ${rid} — Ready`,sub:`${deptLabel} completed your request · ${r.project}`,reqId:rid,fromDept:dept});
   closeDeptModal();
   updateBadges();renderAnalytics();
   renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
@@ -2664,11 +2748,19 @@ function loadTwistFulfill(){
   document.getElementById('twist-prog-cnt').textContent=requests.filter(r=>r.assignedTo==='twist'&&r.status==='in_progress').length;
   document.getElementById('twist-pairs-cnt').textContent=requests.filter(r=>r.assignedTo==='twist').reduce((s,r)=>s+r.items.reduce((ss,i)=>ss+i.quantity,0),0);
 }
-function startReq(id){const r=requests.find(x=>x.id===id);if(!r)return;r.status='in_progress';dbSave(r);toast(`Started ${id}`,'info');loadPage(currentPage);updateBadges();}
+function startReq(id){
+  const r=requests.find(x=>x.id===id);if(!r)return;
+  r.status='in_progress';dbSave(r);
+  toast(`Started ${id}`,'info');
+  broadcastNotif({type:'in_progress',title:`⚙️ ${id} — In Progress`,sub:`${r.assignedTo.toUpperCase()} started working on your request · ${r.project}`,reqId:id,fromDept:r.assignedTo});
+  loadPage(currentPage);updateBadges();
+}
 function completeReq(id){
   const r=requests.find(x=>x.id===id);if(!r)return;
   r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);
   toast(`${id} completed!`,'success');
+  const dl=r.assignedTo==='cutting'?'Cutting':r.assignedTo==='wpa'?'Wire Prep':'Twist';
+  broadcastNotif({type:'completed',title:`✅ ${id} — Ready`,sub:`${dl} completed your request · ${r.project}`,reqId:id,fromDept:r.assignedTo});
   updateBadges();renderAnalytics();
   if(!isModalOpen())loadPage(currentPage);
   else{
@@ -2896,6 +2988,192 @@ function toggleSB(){const s=document.querySelector('.sidebar');const o=document.
 function closeSB(){document.querySelector('.sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('show');document.body.style.overflow='';}
 
 // ═══════════════════════════════════════════════════════════════
+// ██████  NOTIFICATION SYSTEM
+// ══════════════════════════════════════════════════════════════════
+// Notifications are stored per-user in localStorage.
+// Each notification has: { id, type, title, sub, icon, bg, time, read, dept }
+// Types: new_request | routed | in_progress | completed | critical
+
+const NOTIF_KEY = () => `me_v7_notifs_${currentUser.username||'guest'}`;
+const NOTIF_ICONS = {
+  new_request : { icon:'📋', bg:'rgba(74,158,255,.15)'  },
+  routed      : { icon:'🔀', bg:'rgba(245,158,11,.15)'  },
+  in_progress : { icon:'⚙️', bg:'rgba(59,130,246,.15)'  },
+  completed   : { icon:'✅', bg:'rgba(0,214,143,.15)'   },
+  critical    : { icon:'🚨', bg:'rgba(224,92,106,.15)'  },
+};
+// Which departments receive which notification types
+// key = target dept, value = array of {type, condition}
+const NOTIF_ROUTES = {
+  // Pagoda gets notified when any dept submits a request
+  pagoda:   ['new_request'],
+  // Cutting/WPA/Twist get notified when Pagoda routes to them
+  cutting:  ['routed','critical'],
+  wpa:      ['routed','critical'],
+  twist:    ['routed','critical'],
+  // Assembly/WPA/Twist get notified when their request is completed
+  assembly: ['completed','routed'],
+  admin:    ['new_request','routed','in_progress','completed','critical'],
+};
+
+function getNotifs(){
+  try{ return JSON.parse(localStorage.getItem(NOTIF_KEY())||'[]'); }
+  catch(e){ return []; }
+}
+function saveNotifs(n){ localStorage.setItem(NOTIF_KEY(), JSON.stringify(n.slice(0,100))); }
+
+// Push a new notification for a specific department
+function pushNotif({type, title, sub, targetDept, reqId}){
+  const allowed = NOTIF_ROUTES[currentUser.department]||[];
+  // Only save notifications targeted at current user's dept
+  if(targetDept !== currentUser.department && currentUser.department !== 'admin') return;
+  if(!allowed.includes(type) && currentUser.department !== 'admin') return;
+  const notifs = getNotifs();
+  const n = {
+    id: Date.now()+'-'+Math.random().toString(36).slice(2,6),
+    type, title, sub, reqId,
+    time: new Date().toISOString(),
+    read: false,
+  };
+  notifs.unshift(n);
+  saveNotifs(notifs);
+  renderNotifBell();
+  // Show a brief in-app popup toast for new unread
+  showNotifToast(n);
+}
+
+// Broadcast — saves notification for ALL relevant departments in localStorage
+// Uses a shared key so other sessions on same browser can pick it up
+function broadcastNotif({type, title, sub, reqId, fromDept}){
+  const targets = new Set();
+  // Determine all target depts for this type
+  Object.entries(NOTIF_ROUTES).forEach(([dept, types])=>{
+    if(types.includes(type) && dept !== fromDept) targets.add(dept);
+  });
+  // Always include admin
+  targets.add('admin');
+  targets.forEach(dept=>{
+    try{
+      const key = `me_v7_notifs_${dept}_inbox`;
+      const inbox = JSON.parse(localStorage.getItem(key)||'[]');
+      inbox.unshift({
+        id: Date.now()+'-'+Math.random().toString(36).slice(2,6),
+        type, title, sub, reqId,
+        time: new Date().toISOString(),
+        read: false,
+      });
+      localStorage.setItem(key, JSON.stringify(inbox.slice(0,100)));
+    }catch(e){}
+  });
+  // Deliver to current user's own inbox from the shared inbox
+  deliverInbox();
+}
+
+// Pull from shared inbox into current user's personal notif store
+function deliverInbox(){
+  const key = `me_v7_notifs_${currentUser.username}_inbox`;
+  const deptKey = `me_v7_notifs_${currentUser.department}_inbox`;
+  [key, deptKey].forEach(k=>{
+    try{
+      const inbox = JSON.parse(localStorage.getItem(k)||'[]');
+      if(!inbox.length) return;
+      const notifs = getNotifs();
+      const existingIds = new Set(notifs.map(n=>n.id));
+      inbox.forEach(n=>{ if(!existingIds.has(n.id)) notifs.unshift(n); });
+      saveNotifs(notifs);
+      localStorage.removeItem(k);
+    }catch(e){}
+  });
+  renderNotifBell();
+}
+
+function showNotifToast(n){
+  const meta = NOTIF_ICONS[n.type]||NOTIF_ICONS.new_request;
+  const c = document.getElementById('toast');
+  if(!c) return;
+  const el = document.createElement('div');
+  el.className = 'toast-item info';
+  el.style.cssText = 'border-left-color:var(--copper);cursor:pointer';
+  el.innerHTML = `<span style="font-size:14px">${meta.icon}</span><div><div style="font-weight:700;font-size:11px">${n.title}</div><div style="font-size:10px;opacity:.8;margin-top:1px">${n.sub}</div></div>`;
+  el.onclick = ()=>{ openNotifPanel(); el.remove(); };
+  c.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(18px)'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),300); }, 4000);
+}
+
+function renderNotifBell(){
+  deliverInbox();
+  const notifs = getNotifs();
+  const unread = notifs.filter(n=>!n.read).length;
+  const dot = document.getElementById('notif-dot');
+  const badge = document.getElementById('notif-badge');
+  if(dot){ dot.className = 'notif-dot'+(unread>0?' has':''); }
+  if(badge){ badge.className='notif-badge'+(unread>0?' has':''); badge.textContent = unread>9?'9+':unread; }
+}
+
+function renderNotifList(){
+  const list = document.getElementById('notif-list');
+  if(!list) return;
+  const notifs = getNotifs();
+  if(!notifs.length){
+    list.innerHTML = '<div class="notif-empty">📭 No notifications yet</div>';
+    return;
+  }
+  list.innerHTML = notifs.map(n=>{
+    const meta = NOTIF_ICONS[n.type]||NOTIF_ICONS.new_request;
+    const t = new Date(n.time);
+    const timeStr = t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+' · '+t.toLocaleDateString([],{day:'2-digit',month:'short'});
+    return `<div class="notif-item${n.read?'':' unread'}" onclick="readNotif('${n.id}')">
+      <div class="notif-icon" style="background:${meta.bg}">${meta.icon}</div>
+      <div class="notif-body">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-sub">${n.sub}</div>
+        <div class="notif-time">${timeStr}</div>
+      </div>
+      ${!n.read?'<div style="width:7px;height:7px;background:var(--copper);border-radius:50%;flex-shrink:0;margin-top:4px"></div>':''}
+    </div>`;
+  }).join('');
+}
+
+function toggleNotifPanel(){
+  const panel = document.getElementById('notif-panel');
+  if(!panel) return;
+  const isOpen = panel.classList.contains('open');
+  if(isOpen){ panel.classList.remove('open'); }
+  else{ openNotifPanel(); }
+}
+function openNotifPanel(){
+  const panel = document.getElementById('notif-panel');
+  if(!panel) return;
+  panel.classList.add('open');
+  renderNotifList();
+}
+
+function readNotif(id){
+  const notifs = getNotifs();
+  const n = notifs.find(x=>x.id===id);
+  if(n){ n.read=true; saveNotifs(notifs); renderNotifBell(); renderNotifList(); }
+}
+function markAllRead(){
+  const notifs = getNotifs().map(n=>({...n,read:true}));
+  saveNotifs(notifs); renderNotifBell(); renderNotifList();
+}
+function clearAllNotifs(){
+  saveNotifs([]); renderNotifBell(); renderNotifList();
+}
+
+// Close panel when clicking outside
+document.addEventListener('click', e=>{
+  const panel = document.getElementById('notif-panel');
+  const bell = document.getElementById('notif-bell-btn');
+  if(panel&&bell&&!panel.contains(e.target)&&!bell.contains(e.target)){
+    panel.classList.remove('open');
+  }
+});
+
+// Poll inbox every 5s (catches notifications from other departments on same browser)
+setInterval(()=>{ if(currentUser.username) renderNotifBell(); }, 5000);
+
+
 // ██████  SUPABASE INTEGRATION
 // ═══════════════════════════════════════════════════════════════
 
