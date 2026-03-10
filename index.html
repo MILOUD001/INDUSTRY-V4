@@ -1865,7 +1865,14 @@ async function doForgotStep(){
 }
 
 // ── ENTER APP ─────────────────────────────────────────────
+function saveSession(){
+  try{sessionStorage.setItem('me_v7_session',JSON.stringify({uid:currentUser.username,dept:currentUser.department,name:currentUser.name}));}catch(e){}
+}
+function clearSession(){
+  try{sessionStorage.removeItem('me_v7_session');}catch(e){}
+}
 function enterApp(dept){
+  saveSession();
   const ls=document.getElementById('login-screen');
   ls.style.opacity='0';ls.style.transition='opacity .4s';
   setTimeout(()=>{ls.style.display='none';document.getElementById('app').style.display='flex';},400);
@@ -1901,6 +1908,7 @@ function applyDeptNav(dept){
 }
 function doLogout(){
   if(!confirm('Logout and return to login screen?'))return;
+  clearSession();
   location.reload();
 }
 function onDeptChange(){}// kept for compat
@@ -2431,9 +2439,11 @@ function openPagodaModal(reqId){
   document.getElementById('pagoda-modal')?.remove();
   const modal=document.createElement('div');modal.className='modal-overlay';modal.id='pagoda-modal';
   modal.onclick=e=>{if(e.target===modal)closePM();};
-  const doneCount=()=>r.items.filter(it=>it.pagodaStatus).length;
+  const doneCount=()=>{const fr=requests.find(x=>x.id===reqId)||{items:[]};return fr.items.filter(it=>it.pagodaStatus).length;};
   function body(){
-    const done=doneCount();const pct=Math.round(done/r.items.length*100);
+    // Always use fresh r to reflect latest state after each button click
+    const r=requests.find(x=>x.id===reqId)||{items:[]};
+    const done=doneCount();const pct=r.items.length?Math.round(done/r.items.length*100):0;
     return`<div class="mbar"><span>${done} of ${r.items.length} actioned</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div>
     ${r.items.map((it,idx)=>{
       const st=it.pagodaStatus;
@@ -2447,14 +2457,24 @@ function openPagodaModal(reqId){
     const pmBody=document.getElementById('pm-body');
     if(!pmBody)return;
     pmBody.innerHTML=body();
+    const fr=requests.find(x=>x.id===reqId)||{items:[]};
     const done=doneCount();const fb=document.getElementById('pm-finalize');
-    if(fb){fb.disabled=done<r.items.length;fb.style.opacity=done<r.items.length?'0.4':'1';fb.textContent=done<r.items.length?`Finalize (${done}/${r.items.length})`:'Finalize & Route';}
+    if(fb){fb.disabled=done<fr.items.length;fb.style.opacity=done<fr.items.length?'0.4':'1';fb.textContent=done<fr.items.length?`Finalize (${done}/${fr.items.length})`:'Finalize & Route';}
   }
   modal.innerHTML=`<div class="modal" style="max-width:620px"><div class="modal-hd" style="background:linear-gradient(135deg,#070e28,#0e2060)"><div><div class="modal-title">${r.id} · Wire Review</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · from ${r.requestedBy.toUpperCase()}</div></div><button class="modal-close" onclick="closePM()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="pm-body">${body()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closePM()" style="flex:0;padding:8px 18px">Cancel</button><button class="btn btn-success" id="pm-finalize" onclick="finalizePagoda('${r.id}')" style="flex:1;opacity:0.4" disabled>Finalize</button></div></div>`;
   modal._refresh=refresh;document.body.appendChild(modal);refresh();
 }
 function closePM(){const m=document.getElementById('pagoda-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>{m.remove();renderPagodaRequests();updateBadges();},160);}}
-function setPagodaItem(rid,idx,st){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].pagodaStatus=st;const m=document.getElementById('pagoda-modal');if(m&&m._refresh)m._refresh();dbSave(r);}
+function setPagodaItem(rid,idx,st){
+  const r=requests.find(x=>x.id===rid);if(!r)return;
+  r.items[idx].pagodaStatus=st;
+  dbSave(r);
+  const m=document.getElementById('pagoda-modal');
+  if(m){
+    if(m._refresh)m._refresh();
+    else openPagodaModal(rid);
+  }
+}
 function finalizePagoda(rid){
   const r=requests.find(x=>x.id===rid);if(!r)return;
   const inStock=r.items.filter(it=>it.pagodaStatus==='in_stock');const oos=r.items.filter(it=>it.pagodaStatus==='out_of_stock');
@@ -2470,7 +2490,7 @@ function finalizePagoda(rid){
   requests.filter(x=>x.parentId===rid).forEach(child=>dbSave(child));
   closePM();loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
 }
-function markInStock(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
+function markInStock(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='in_stock';r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);toast(`${id} marked In Stock`,'success');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');refreshDeptHistories();}
 function markOOS(id){const r=requests.find(x=>x.id===id);if(!r)return;r.pagodaStatus='out_of_stock';const t=r.items[0]?.wireType;r.assignedTo=t==='simple'?'cutting':t==='twist'?'twist':'wpa';r.status='pending';dbSave(r);toast(`${id} routed to ${r.assignedTo.toUpperCase()}`,'info');loadPage('pagoda');updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}
 function loadLowStock(){let h='',low=0;Object.values(wireStock).forEach(w=>{if(w.stock<w.min){low++;h+=`<div class="alert-item"><div><div class="alert-name">${w.name}</div><div style="font-size:10px;color:var(--amber);margin-top:1px">${w.loc}</div></div><div class="alert-stock">${w.stock}/${w.min}</div></div>`;}});document.getElementById('low-stock-list').innerHTML=h||`<div class="alert-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>All stock levels OK</div>`;document.getElementById('p-low').textContent=low;}
 function updatePagodaMetrics(){document.getElementById('p-pending').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;document.getElementById('p-stock').textContent=Object.values(wireStock).reduce((s,w)=>s+w.stock,0);const today=new Date().toDateString();document.getElementById('p-today').textContent=requests.filter(r=>new Date(r.time).toDateString()===today).length;const comp=requests.filter(r=>r.status==='completed').length;const rate=requests.length?Math.round(comp/requests.length*100):0;document.getElementById('p-rate').textContent=rate+'%';document.getElementById('p-rate-bar').style.width=rate+'%';}
@@ -2511,7 +2531,10 @@ function openDeptModal(reqId,dept){
   const actionLabel=dept==='cutting'?'Cut':dept==='wpa'?'Prepared':'Twisted';
   const doneCount=()=>r.items.filter(it=>it.deptStatus==='done').length;
   function body(){
-    const done=doneCount();const pct=Math.round(done/r.items.length*100);
+    // Always fetch fresh request to avoid stale closure after realtime updates
+    const r=requests.find(x=>x.id===reqId)||{items:[]};
+    const done=r.items.filter(it=>it.deptStatus==='done').length;
+    const pct=r.items.length?Math.round(done/r.items.length*100):0;
     return`<div class="mbar"><span style="font-size:11px;color:var(--tx-3)">${done} of ${r.items.length} processed</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%;background:${deptColor}"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div>
     ${r.items.map((it,idx)=>{
       const st=it.deptStatus;const isDone=st==='done';const isIP=st==='in_progress';
@@ -2528,15 +2551,75 @@ function openDeptModal(reqId,dept){
     const dmBody=document.getElementById('dm-body');
     if(!dmBody)return;
     dmBody.innerHTML=body();
-    const done=doneCount();const fb=document.getElementById('dm-finalize');
-    if(fb){const allDone=done===r.items.length;fb.disabled=!allDone;fb.style.opacity=allDone?'1':'0.4';fb.textContent=allDone?'Complete All & Close':`Complete (${done}/${r.items.length} done)`;}
+    const fr=requests.find(x=>x.id===reqId)||{items:[]};
+    const done=fr.items.filter(it=>it.deptStatus==='done').length;
+    const fb=document.getElementById('dm-finalize');
+    if(fb){const allDone=done===fr.items.length&&fr.items.length>0;fb.disabled=!allDone;fb.style.opacity=allDone?'1':'0.4';fb.textContent=allDone?'Complete All & Close':`Complete (${done}/${fr.items.length} done)`;}
   }
   modal.innerHTML=`<div class="modal" style="max-width:620px"><div class="modal-hd" style="background:${deptHdrBg}"><div><div class="modal-title">${r.id} · ${deptLabel} Processing</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · ${r.items.length} wire${r.items.length>1?'s':''}</div></div><button class="modal-close" onclick="closeDeptModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="dm-body">${body()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closeDeptModal()" style="flex:0;padding:8px 18px">Close</button><button class="btn btn-success" id="dm-finalize" onclick="finalizeDeptModal('${r.id}','${dept}')" style="flex:1;opacity:0.4" disabled>Complete</button></div></div>`;
   modal._refresh=refresh;document.body.appendChild(modal);
 }
 function closeDeptModal(){const m=document.getElementById('dept-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>{m.remove();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');updateBadges();},160);}}
-function setDeptItem(rid,idx,st,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.items[idx].deptStatus=st;const m=document.getElementById('dept-modal');if(m&&m._refresh)m._refresh();dbSave(r);}
-function finalizeDeptModal(rid,dept){const r=requests.find(x=>x.id===rid);if(!r)return;r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);toast(`${rid} — all items processed & completed!`,'success');closeDeptModal();loadPage(currentPage);updateBadges();renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');if(currentPage==='history')renderHistoryPage();}
+function setDeptItem(rid,idx,st,dept){
+  const r=requests.find(x=>x.id===rid);if(!r)return;
+  r.items[idx].deptStatus=st;
+  dbSave(r);
+  // Robustly refresh the open modal
+  const m=document.getElementById('dept-modal');
+  if(m){
+    if(m._refresh)m._refresh();
+    else{
+      // fallback: re-open the modal
+      const d=dept||r.assignedTo||'cutting';
+      openDeptModal(rid,d);
+    }
+  }
+}
+function finalizeDeptModal(rid,dept){
+  const r=requests.find(x=>x.id===rid);if(!r)return;
+  r.status='completed';r.completedAt=new Date().toISOString();dbSave(r);
+  toast(`${rid} — all items processed & completed!`,'success');
+  closeDeptModal();
+  updateBadges();renderAnalytics();
+  renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
+  refreshDeptHistories();
+  if(currentPage==='history')renderHistoryPage();
+  loadPage(currentPage);
+}
+
+// Refresh history panels for all departments
+function refreshDeptHistories(){
+  // Assembly
+  if(document.getElementById('asm-hist')){
+    loadHistory('asm-hist','assembly','requestedBy');
+    const b=document.getElementById('asm-hist-count');
+    if(b)b.textContent=requests.filter(r=>r.requestedBy==='assembly'&&r.status==='completed').length;
+  }
+  // WPA
+  if(document.getElementById('wpa-req-hist')){
+    loadHistory('wpa-req-hist','wpa','requestedBy');
+    const b=document.getElementById('wpa-req-hist-count');
+    if(b)b.textContent=requests.filter(r=>r.requestedBy==='wpa'&&r.status==='completed').length;
+  }
+  // Twist
+  if(document.getElementById('twist-req-hist')){
+    loadHistory('twist-req-hist','twist','requestedBy');
+    const b=document.getElementById('twist-req-hist-count');
+    if(b)b.textContent=requests.filter(r=>r.requestedBy==='twist'&&r.status==='completed').length;
+  }
+  // Cutting
+  if(document.getElementById('cutting-hist')){
+    loadHistory('cutting-hist','cutting','assignedTo');
+    const b=document.getElementById('cutting-hist-count');
+    if(b)b.textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='completed').length;
+  }
+  // Pagoda
+  if(document.getElementById('pagoda-hist')){
+    loadHistory('pagoda-hist','pagoda','assignedTo');
+    const b=document.getElementById('pagoda-hist-count');
+    if(b)b.textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='completed').length;
+  }
+}
 
 // ═══════════════ WPA / TWIST TABS ════════════════════════════
 function switchTab(dept,tab){
@@ -3090,10 +3173,42 @@ async function applyDbConfig(){
 
 // ── 10. AUTO-INIT ON LOAD ───────────────────────────────────────
 window.addEventListener('load', ()=>{
-  // Start clock immediately on load (fixes --:--:-- bug)
   updateClock();
   setInterval(updateClock, 1000);
-  // Only auto-connect if real credentials are set
+  // Restore session if user refreshed the page
+  try{
+    const sess=sessionStorage.getItem('me_v7_session');
+    if(sess){
+      const s=JSON.parse(sess);
+      const users=getUsers();
+      const user=users[s.uid];
+      if(user){
+        currentUser={username:s.uid,department:s.dept,name:s.name||s.uid};
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('app').style.display='flex';
+        applyDeptNav(s.dept);
+        ['assembly','wpa','twist'].forEach(d=>{
+          PROJECTS.forEach(p=>{
+            if(p.isMain){p.subs.forEach(sub=>{store[d][p.id+'__'+sub.replace(/ /g,'_')]={refs:[],refData:{}};});store[d][p.id]={refs:[],refData:{}};}
+            else{store[d][p.id]={refs:[],refData:{}};}
+          });
+        });
+        setInterval(refreshAll,12000);
+        const landing=s.dept==='admin'?'analytics':s.dept;
+        const defaultBtn=document.querySelector(`.nav-btn[data-page="${landing}"]`);
+        if(defaultBtn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
+        loadPage(landing);updateBadges();
+        if(SUPABASE_URL!=='https://YOUR_PROJECT.supabase.co'&&SUPABASE_ANON!=='YOUR_ANON_KEY_HERE'){
+          initSupabase().then(()=>{if(['assembly','wpa','twist'].includes(s.dept))renderRequestArea(s.dept);});
+        } else {
+          showDbIndicator(false);
+          if(['assembly','wpa','twist'].includes(s.dept))renderRequestArea(s.dept);
+        }
+        return;
+      }
+    }
+  }catch(e){}
+  // No session — show login
   if(SUPABASE_URL !== 'https://YOUR_PROJECT.supabase.co' && SUPABASE_ANON !== 'YOUR_ANON_KEY_HERE'){
     initSupabase();
   } else {
