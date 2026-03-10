@@ -2651,20 +2651,31 @@ function broadcastNotif({type, title, sub, reqId, fromDept}){
 }
 
 // Pull from shared inbox into current user's personal notif store
+// Also fires sound + desktop for each new notification delivered
 function deliverInbox(){
-  const key = `me_v7_notifs_${currentUser.username}_inbox`;
+  if(!currentUser.username) return;
+  const key     = `me_v7_notifs_${currentUser.username}_inbox`;
   const deptKey = `me_v7_notifs_${currentUser.department}_inbox`;
+  const newOnes = [];
   [key, deptKey].forEach(k=>{
     try{
       const inbox = JSON.parse(localStorage.getItem(k)||'[]');
       if(!inbox.length) return;
       const notifs = getNotifs();
       const existingIds = new Set(notifs.map(n=>n.id));
-      inbox.forEach(n=>{ if(!existingIds.has(n.id)) notifs.unshift(n); });
+      inbox.forEach(n=>{
+        if(!existingIds.has(n.id)){
+          notifs.unshift(n);
+          newOnes.push(n);
+          existingIds.add(n.id);
+        }
+      });
       saveNotifs(notifs);
       localStorage.removeItem(k);
     }catch(e){}
   });
+  // Fire sound + desktop for each new notification
+  newOnes.forEach(n=>showNotifToast(n));
   renderNotifBell();
 }
 
@@ -2726,18 +2737,18 @@ function requestNotifPermission(){
 // ── DESKTOP NOTIFICATION ─────────────────────────────────────
 // Fires for EVERY notification regardless of tab visibility
 function showDesktopNotif(n){
-  if(!('Notification' in window))              return;
-  if(Notification.permission!=='granted')      return;
-  if(!isDesktopNotifOn())                      return;
+  if(!('Notification' in window)){ console.log('[MEI] Notification API not available'); return; }
+  if(Notification.permission!=='granted'){ console.log('[MEI] Notif permission:',Notification.permission); return; }
+  if(!isDesktopNotifOn()){ console.log('[MEI] Desktop notifs OFF in settings'); return; }
   try{
     const typeLabel = {new_request:'New Request',routed:'Routed',in_progress:'In Progress',completed:'Completed',critical:'CRITICAL'}[n.type]||n.type;
     const dn = new Notification('MEI — '+typeLabel, {
-      body : n.title+'\n'+n.sub,
-      tag  : 'mei-notif',   // same tag = replaces previous so no spam
-      requireInteraction: false,
+      body: n.title+'\n'+n.sub,
+      tag : 'mei-notif',
     });
     dn.onclick = ()=>{ window.focus(); openNotifPanel(); dn.close(); };
-  }catch(e){ console.warn('Desktop notif:',e); }
+    console.log('[MEI] Desktop notif fired:',typeLabel);
+  }catch(e){ console.warn('[MEI] Desktop notif error:',e); }
 }
 
 // ── TOGGLE BUTTONS ───────────────────────────────────────────
@@ -2750,18 +2761,28 @@ function toggleNotifSound(el){
 async function toggleDesktopNotif(el){
   const s=getNotifSettings(); const wasOn=isDesktopNotifOn();
   if(!wasOn){
-    const perm = await requestNotifPermission();
+    // Request permission — this shows the browser Allow/Block prompt
+    let perm;
+    try{ perm = await Notification.requestPermission(); }
+    catch(e){ perm='denied'; }
     if(perm!=='granted'){
+      s.desktop=false; saveNotifSettings(s);
       el.textContent='Desktop BLOCKED';
       el.style.color='var(--crimson)';
-      toast('Allow notifications in your browser address bar, then try again.','error');
+      toast('Notifications blocked. Go to browser Settings → Site Settings → Notifications and allow this site.','error');
       return;
     }
     s.desktop=true; saveNotifSettings(s);
     el.textContent='Desktop  ON'; el.style.color='var(--emerald)';
-    // Send a test notification so the user sees it working immediately
-    try{ new Notification('MEI Notifications Active',{body:'You will now receive desktop alerts.',tag:'mei-test'}); }catch(e){}
-    toast('Desktop notifications ON','success');
+    // Fire a real test notification immediately so user confirms it works
+    try{
+      const t = new Notification('MEI — Notifications Active', {
+        body: 'Desktop alerts are now enabled for this app.',
+        tag : 'mei-test',
+      });
+      setTimeout(()=>t.close(), 5000);
+    }catch(e){ console.warn('Test notif failed:',e); }
+    toast('Desktop notifications ON — you should see a test popup now','success');
   } else {
     s.desktop=false; saveNotifSettings(s);
     el.textContent='Desktop  OFF'; el.style.color='var(--tx-3)';
@@ -2848,8 +2869,8 @@ document.addEventListener('click', e=>{
   }
 });
 
-// Poll inbox every 5s (catches notifications from other departments on same browser)
-setInterval(()=>{ if(currentUser.username) renderNotifBell(); }, 5000);
+// Poll inbox every 3s — delivers cross-department notifications (same browser)
+setInterval(()=>{ if(currentUser && currentUser.username) deliverInbox(); }, 3000);
 
 
 //   SUPABASE INTEGRATION
