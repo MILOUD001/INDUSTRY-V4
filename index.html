@@ -2094,7 +2094,14 @@ function renderReqList(dept){
     const hb=document.getElementById('twist-req-hist-count');if(hb)hb.textContent=completed.length;
   }
 }
-setInterval(()=>{if(!isModalOpen()){renderReqList('assembly');renderReqList('wpa');renderReqList('twist');}},2000);
+setInterval(()=>{
+  if(!isModalOpen()){
+    renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
+    if(currentPage==='pagoda'){renderPagodaRequests();updatePagodaMetrics();}
+    if(currentPage==='cutting'){renderCuttingRequests();updateCuttingMetrics();}
+    updateBadges();
+  }
+},2000);;
 
 //  PAGODA 
 function renderPagodaRequests(){
