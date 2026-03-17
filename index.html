@@ -1546,20 +1546,261 @@ body::before{
 .notif-sub{font-size:11px;color:var(--tx-3);margin-top:2px;line-height:1.4}
 .notif-time{font-size:10px;color:var(--tx-4);margin-top:4px;font-family:'IBM Plex Mono',monospace}
 .notif-empty{text-align:center;padding:32px 16px;color:var(--tx-4);font-size:12px}
+
+/* ============================================================
+   PRODUCTION UPGRADES — Refresh, Search, Loading, Transitions
+   ============================================================ */
+
+/* -- Refresh button spin animation -- */
+@keyframes btnSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.topbar-btn.refreshing {
+  border-color: var(--copper) !important;
+  color: var(--copper) !important;
+  background: var(--copper-subtle) !important;
+  pointer-events: none;
+}
+.topbar-btn.refreshing svg {
+  animation: btnSpin 0.7s linear infinite;
+}
+.topbar-btn:active {
+  transform: scale(0.95);
+}
+
+/* -- Global loading overlay -- */
+#global-loader {
+  position: fixed; inset: 0; z-index: 99998;
+  background: rgba(8,11,18,.72);
+  backdrop-filter: blur(6px) saturate(140%);
+  display: none;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 14px;
+}
+#global-loader.show { display: flex; }
+html[data-theme="light"] #global-loader {
+  background: rgba(240,242,247,.75);
+}
+.loader-ring {
+  width: 42px; height: 42px;
+  border: 3px solid var(--bd-2);
+  border-top-color: var(--copper);
+  border-radius: 50%;
+  animation: btnSpin 0.7s linear infinite;
+}
+.loader-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px; font-weight: 600;
+  color: var(--tx-2); letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* -- Search input improvements -- */
+.search-input:focus,
+.form-input:focus {
+  border-color: var(--copper);
+  box-shadow: 0 0 0 3px var(--copper-subtle);
+  outline: none;
+}
+.search-input-wrap {
+  position: relative; display: inline-flex; align-items: center;
+}
+.search-input-wrap .search-icon {
+  position: absolute; left: 9px; top: 50%;
+  transform: translateY(-50%);
+  width: 12px; height: 12px;
+  color: var(--tx-3); pointer-events: none;
+  transition: color .2s;
+}
+.search-input-wrap:focus-within .search-icon {
+  color: var(--copper);
+}
+.search-input-wrap .search-input {
+  padding-left: 28px;
+}
+.search-clear-btn {
+  position: absolute; right: 8px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--tx-3); padding: 2px;
+  display: none; transition: color .15s;
+}
+.search-clear-btn:hover { color: var(--crimson); }
+.search-input-wrap.has-value .search-clear-btn { display: flex; }
+
+/* -- No results row / empty state for tables -- */
+.no-results-row td {
+  text-align: center;
+  padding: 28px 16px !important;
+  color: var(--tx-4) !important;
+  font-size: 12px !important;
+}
+.no-results-row td .nr-icon {
+  margin: 0 auto 8px;
+  width: 32px; height: 32px;
+  opacity: .15; display: block;
+}
+
+/* -- Table row entry animation -- */
+.dt tbody tr {
+  animation: rowFadeIn .2s ease both;
+}
+@keyframes rowFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dt tbody tr:nth-child(n+6) { animation-delay: calc(var(--i, 0) * 20ms); }
+
+/* -- Improved button hover effects -- */
+.btn, .wbtn, .upload-btn, .topbar-btn, .back-btn, .select-btn {
+  transition: all .2s var(--ease) !important;
+}
+.btn:hover, .upload-btn-primary:hover, .select-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sh-md);
+}
+.upload-btn-outline:hover {
+  transform: translateY(-1px);
+}
+.back-btn:hover {
+  box-shadow: var(--sh-sm);
+}
+
+/* -- Smooth page transition on search filter -- */
+.dt tbody, #hist-list {
+  transition: opacity .15s ease;
+}
+.dt tbody.filtering, #hist-list.filtering {
+  opacity: 0.5;
+}
+
+/* -- Improved pagination -- */
+.pg-btn:hover:not(:disabled):not(.active) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(224,123,57,.25);
+}
+
+/* -- Enhanced toast -- */
+.toast-item {
+  transition: all .25s var(--ease);
+}
+.toast-item:hover {
+  transform: translateX(-3px);
+  box-shadow: var(--sh-xl);
+}
+
+/* -- Loading shimmer for KPI values -- */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.kpi-val.loading {
+  background: linear-gradient(90deg, var(--bg-04) 25%, var(--bg-05) 50%, var(--bg-04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+  color: transparent !important;
+  border-radius: 4px;
+  min-width: 40px;
+}
+
+/* -- Improve card headers -- */
+.card-head {
+  transition: background .2s;
+}
+.card:hover .card-head {
+  background: var(--bg-03);
+}
+
+/* -- Wire table search highlight -- */
+.excel-tbl td.search-match {
+  background: rgba(224,123,57,.07) !important;
+}
+
+/* -- Improved sort icon in dt headers -- */
+.sort-icon::after {
+  content: '⇅';
+  font-size: 8px;
+  margin-left: 4px;
+  color: var(--tx-4);
+  opacity: 0;
+  transition: opacity .15s;
+}
+.dt th:hover .sort-icon::after { opacity: 1; }
+.dt th.sort-asc .sort-icon::after  { content: '↑'; opacity: 1; color: var(--copper); }
+.dt th.sort-desc .sort-icon::after { content: '↓'; opacity: 1; color: var(--copper); }
+
+/* -- Topbar DB status indicator position fix -- */
+#db-indicator {
+  margin: 4px 8px !important;
+}
+
+/* -- Sidebar brand improved spacing -- */
+.sb-brand {
+  border-bottom: 1px solid var(--bd-1);
+}
+
+/* -- Notification panel smooth scrolling -- */
+.notif-list {
+  scroll-behavior: smooth;
+}
+
+/* -- Excel table fixed column widths for better readability -- */
+.excel-tbl th, .excel-tbl td {
+  min-width: 80px;
+  white-space: nowrap;
+}
+.excel-tbl .excel-row-num {
+  min-width: 36px !important;
+  width: 36px;
+}
+.excel-tbl .excel-checkbox-col {
+  min-width: 32px !important;
+  width: 32px;
+}
+
+/* -- Improved drop zone drag feedback -- */
+.drop-zone.drag-over {
+  border-color: var(--steel);
+  background: var(--steel-subtle);
+  transform: scale(1.01);
+  box-shadow: 0 0 0 4px rgba(74,158,255,.1);
+}
+.drop-zone {
+  transition: all .25s var(--ease);
+}
+
+
+/* -- Light mode table improvements -- */
+html[data-theme="light"] .no-results-row td {
+  color: var(--tx-3) !important;
+}
 </style>
 </head>
 <body> <!--  LOGIN  -->
 <div id="login-screen"> <div class="login-wire-line" style="top:15%;width:60%;left:20%;animation-duration:9s;animation-delay:0s"></div> <div class="login-wire-line" style="top:35%;width:40%;left:5%;animation-duration:12s;animation-delay:2s"></div> <div class="login-wire-line" style="top:55%;width:70%;left:15%;animation-duration:8s;animation-delay:3.5s"></div> <div class="login-wire-line" style="top:75%;width:50%;left:30%;animation-duration:11s;animation-delay:1s"></div> <div class="login-wrap"> <div class="login-header"> <div class="login-logo"> <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#080b12"/><circle cx="10" cy="16" r="4" fill="#080b12"/><circle cx="22" cy="16" r="4" fill="#080b12"/><path d="M6 10L16 6l10 4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/><path d="M6 22l10 4 10-4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/></svg> </div> <div class="login-brand">MILOUD <em>EZZAKY</em></div> <div class="login-version">Industry V.7 &nbsp;·&nbsp; Wire Harness Manufacturing</div> </div> <!--  TAB SWITCHER  --> <div class="auth-tabs"> <button class="auth-tab active" id="tab-signin" onclick="showAuthPanel('signin')">Sign In</button> <button class="auth-tab" id="tab-signup" onclick="showAuthPanel('signup')">Sign Up</button> </div> <!--  SIGN IN PANEL  --> <div class="login-card" id="panel-signin"> <div class="login-card-title">Welcome Back</div> <div class="login-card-sub">Sign in with your Employee ID and password</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="si-uid" placeholder="e.g. ME-001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="si-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px"> <button type="button" onclick="togglePw('si-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> </div> <div id="si-error" class="auth-msg auth-err" style="display:none"></div> <button class="login-submit" onclick="doLogin()">Sign In →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('forgot')">Forgot password?</button> </div> </div> <!--  SIGN UP PANEL  --> <div class="login-card" id="panel-signup" style="display:none"> <div class="login-card-title">Create Account</div> <div class="login-card-sub">Register with your Gmail — login is always with Employee ID &amp; password</div> <div class="form-group"><label class="form-label">Full Name</label> <input type="text" class="form-input" id="su-name" placeholder="e.g. Ahmed Benali" autocomplete="name"> </div> <div class="form-group"><label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(used for account recovery)</span></label> <div style="position:relative"> <input type="email" class="form-input" id="su-gmail" placeholder="yourname@gmail.com" autocomplete="email" oninput="validateGmail(this)" style="padding-right:36px"> <span id="su-gmail-icon" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none"></span> </div> <div id="su-gmail-hint" style="font-size:10px;color:var(--tx-3);margin-top:4px">Must be a @gmail.com address</div> </div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="su-uid" placeholder="e.g. ME-042" autocomplete="username"> </div> <div class="form-group"><label class="form-label">Department</label> <select id="su-dept" class="form-input"> <option value="assembly">ASSEMBLY — Request Only</option> <option value="pagoda">PAGODA — Central Hub</option> <option value="cutting">CUTTING AREA</option> <option value="wpa">WIRE PREP AREA</option> <option value="twist">TWIST DEPARTMENT</option> </select> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="su-pw" placeholder="Min 6 characters" style="padding-right:40px" oninput="checkPwStrength(this.value)"> <button type="button" onclick="togglePw('su-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="pw-strength-bar"><div id="pw-strength-fill"></div></div> <div id="pw-strength-label" style="font-size:10px;color:var(--tx-3);margin-top:3px"></div> </div> <div class="form-group"><label class="form-label">Confirm Password</label> <input type="password" class="form-input" id="su-pw2" placeholder="Repeat password"> </div> <div id="su-error" class="auth-msg auth-err" style="display:none"></div> <div id="su-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" onclick="doSignUp()">Create Account →</button> <div style="text-align:center;margin-top:14px"> <span style="font-size:11px;color:var(--tx-3)">Already have an account?</span> <button class="auth-link" onclick="showAuthPanel('signin')">Sign In</button> </div> </div> <!--  FORGOT PASSWORD PANEL  --> <div class="login-card" id="panel-forgot" style="display:none"> <div class="login-card-title">Reset Password</div> <div class="login-card-sub">Verify your identity using your Employee ID and Gmail</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="fp-uid" placeholder="e.g. ME-001"> </div> <div class="form-group" id="fp-secret-group"> <label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(registered at sign up)</span></label> <input type="email" class="form-input" id="fp-secret" placeholder="yourname@gmail.com"> </div> <div class="form-group" id="fp-newpw-group" style="display:none"> <label class="form-label">New Password</label> <div style="position:relative"> <input type="password" class="form-input" id="fp-newpw" placeholder="Min 6 characters" style="padding-right:40px"> <button type="button" onclick="togglePw('fp-newpw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="form-group" style="margin-top:10px"><label class="form-label">Confirm New Password</label> <input type="password" class="form-input" id="fp-newpw2" placeholder="Repeat new password"> </div> </div> <div id="fp-error" class="auth-msg auth-err" style="display:none"></div> <div id="fp-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" id="fp-btn" onclick="doForgotStep()">Verify Identity →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('signin')">← Back to Sign In</button> </div> </div> <div class="login-footer">© 2026 Miloud Ezzaky Industry V.7 &nbsp;·&nbsp; Project → Reference → Wire</div> </div>
 </div> <!--  APP  -->
 <div id="app"> <div class="sb-overlay" id="sb-overlay" onclick="closeSB()"></div> <aside class="sidebar"> <div class="sb-brand"> <div class="sb-icon"> <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#fff"/><circle cx="10" cy="16" r="4" fill="#fff"/><circle cx="22" cy="16" r="4" fill="#fff"/></svg> </div> <div><div class="sb-brand-name">Miloud Ezzaky</div><div class="sb-brand-ver">Industry V.7</div></div> </div> <nav class="sb-nav"> <div class="nav-section"> <span class="nav-section-label">Overview</span> <button class="nav-btn active" onclick="switchPage('analytics',this)" data-page="analytics"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Analytics
-        </button> <button class="nav-btn" onclick="switchPage('history',this)" data-page="history"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History<span class="nav-badge nb-copper" id="b-history">0</span> </button> </div> <div class="nav-section"> <span class="nav-section-label">Departments</span> <button class="nav-btn" onclick="switchPage('assembly',this)" data-page="assembly"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Assembly<span class="nav-badge nb-copper" id="b-assembly">0</span> </button> <button class="nav-btn" onclick="switchPage('pagoda',this)" data-page="pagoda"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> Pagoda Hub<span class="nav-badge nb-crimson" id="b-pagoda">0</span> </button> <button class="nav-btn" onclick="switchPage('cutting',this)" data-page="cutting"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg> Cutting<span class="nav-badge nb-steel" id="b-cutting">0</span> </button> <button class="nav-btn" onclick="switchPage('wpa',this)" data-page="wpa"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Wire Prep Area<span class="nav-badge nb-teal" id="b-wpa">0</span> </button> <button class="nav-btn" onclick="switchPage('twist',this)" data-page="twist"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg> Twist<span class="nav-badge nb-violet" id="b-twist">0</span> </button> </div> </nav> <div class="sb-clock"> <div class="clk-time" id="clk-time">--:--:--</div> <div class="clk-date" id="clk-date">…</div> <div class="shift-tag"><span class="shift-dot"></span><span id="clk-shift">—</span></div> </div> </aside> <div class="main"> <header class="topbar"> <button class="menu-toggle" onclick="toggleSB()"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> </button> <div class="topbar-title" id="topbar-title">Analytics Dashboard</div> <div id="topbar-user-chip" style="display:none;align-items:center;gap:4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;margin-right:6px"></div> <button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifPanel()" title="Notifications"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> <span class="notif-dot" id="notif-dot"></span> <span class="notif-badge" id="notif-badge">0</span> </button> <button id="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
+        </button> <button class="nav-btn" onclick="switchPage('history',this)" data-page="history"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History<span class="nav-badge nb-copper" id="b-history">0</span> </button> </div> <div class="nav-section"> <span class="nav-section-label">Departments</span> <button class="nav-btn" onclick="switchPage('assembly',this)" data-page="assembly"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Assembly<span class="nav-badge nb-copper" id="b-assembly">0</span> </button> <button class="nav-btn" onclick="switchPage('pagoda',this)" data-page="pagoda"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> Pagoda Hub<span class="nav-badge nb-crimson" id="b-pagoda">0</span> </button> <button class="nav-btn" onclick="switchPage('cutting',this)" data-page="cutting"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg> Cutting<span class="nav-badge nb-steel" id="b-cutting">0</span> </button> <button class="nav-btn" onclick="switchPage('wpa',this)" data-page="wpa"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Wire Prep Area<span class="nav-badge nb-teal" id="b-wpa">0</span> </button> <button class="nav-btn" onclick="switchPage('twist',this)" data-page="twist"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg> Twist<span class="nav-badge nb-violet" id="b-twist">0</span> </button> </nav> <div class="sb-clock"> <div class="clk-time" id="clk-time">--:--:--</div> <div class="clk-date" id="clk-date">…</div> <div class="shift-tag"><span class="shift-dot"></span><span id="clk-shift">—</span></div> </div> </aside> <div class="main"> <header class="topbar"> <button class="menu-toggle" onclick="toggleSB()"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> </button> <div class="topbar-title" id="topbar-title">Analytics Dashboard</div> <div id="topbar-user-chip" style="display:none;align-items:center;gap:4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;margin-right:6px"></div> <button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifPanel()" title="Notifications"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> <span class="notif-dot" id="notif-dot"></span> <span class="notif-badge" id="notif-badge">0</span> </button> <button id="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
   <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
   <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
   <span id="theme-toggle-label">Light</span>
-</button> <button class="topbar-btn" onclick="refreshAll()"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg> Refresh
+</button> <button class="topbar-btn" data-action="refresh" id="refresh-btn" title="Refresh all data"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg> Refresh
       </button> </header> <!--  ANALYTICS  --> <div id="page-analytics" class="page active"> <div class="kpi-grid"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="kpi-val" id="a-total">0</div><div class="kpi-label">Total Requests</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="a-done">0</div><div class="kpi-label">Completed</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="a-pending">0</div><div class="kpi-label">Pending</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="a-prog">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="two-col" style="margin-bottom:16px"> <div class="card"><div class="card-head"><div class="card-title">Daily Requests — Last 7 Days</div><span class="badge badge-steel">Live</span></div><div style="padding:18px"><div class="bar-track" id="daily-chart"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">Department Workload</div></div><div class="donut-wrap"><svg width="100" height="100" viewBox="0 0 100 100" id="donut-svg"><circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="12"/></svg><div id="donut-legend"></div></div></div> </div> <div class="two-col"> <div class="card"><div class="card-head"><div class="card-title">Top Requested Wires</div></div><div class="card-body" id="top-wires"></div></div> <div class="card"><div class="card-head"><div class="card-title">Requests by Project</div></div><div class="card-body" id="proj-chart"></div></div> </div> </div> <!--  HISTORY  --> <div id="page-history" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#090e1c,#0e1d38)"> <div> <div class="db-title" style="display:flex;align-items:center;gap:9px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--copper)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History
-          </div> <div class="db-sub">All submitted orders — click any row to expand full details</div> </div> <span class="badge badge-copper" id="hist-total-badge">0 orders</span> </div> <div class="card" style="margin-bottom:14px"> <div style="padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px"> <input id="hist-search" type="text" class="form-input" placeholder="Search order ID, wire name, project…" style="flex:1;min-width:150px;max-width:320px;padding:8px 12px;font-size:12px" oninput="renderHistoryPage()"> <select id="hist-filter-dept" class="form-input" style="width:155px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Departments</option> <option value="assembly">Assembly</option> <option value="wpa">Wire Prep Area</option> <option value="twist">Twist</option> </select> <select id="hist-filter-status" class="form-input" style="width:145px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Statuses</option> <option value="completed">Completed</option> <option value="in_progress">In Progress</option> <option value="pending">Pending</option> </select> <div style="font-size:10px;color:var(--tx-3);margin-left:auto;font-family:'IBM Plex Mono',monospace" id="hist-count-label">— orders</div> </div> </div> <div id="hist-list"></div> </div> <!--  ASSEMBLY  --> <div id="page-assembly" class="page"> <div class="dept-banner db-asm"> <div><div class="db-title">Assembly Department</div><div class="db-sub">Project → Reference → Wire → Submit Request</div></div> <span class="badge badge-emerald">Request Only</span> </div> <div id="asm-request-area"></div> <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Active Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-copper" id="asm-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="asm-hist-count">0</span></div><div class="card-body" id="asm-hist"></div></div> </div> <!--  PAGODA  --> <div id="page-pagoda" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#070e28,#0e2060)"> <div><div class="db-title">Pagoda · Central Hub</div><div class="db-sub">Review all incoming requests · Mark In Stock or Out of Stock</div></div> <span class="badge badge-steel">Hub</span> </div> <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="kpi-val" id="p-pending">0</div><div class="kpi-label">Pending</div></div> </div> <div class="two-col"> <div> <div class="card"><div class="card-head"><div class="card-title">Pending Requests</div><span class="badge badge-copper" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="pagoda-hist-count">0</span></div><div class="card-body" id="pagoda-hist"></div></div> </div> <div style="display:flex;flex-direction:column;gap:14px"> <div class="card"><div class="card-head"><div class="card-title">Metrics</div></div><div class="card-body"><div class="perf-row"><span class="perf-k">Requests Today</span><span class="perf-v" id="p-today">0</span></div><div class="perf-row"><span class="perf-k">Fulfillment Rate</span><span class="perf-v" id="p-rate">0%</span></div><div class="prog-bar"><div class="prog-fill" id="p-rate-bar" style="width:0%"></div></div></div></div> </div> </div> </div> <!--  CUTTING  --> <div id="page-cutting" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#031f14,#054a30)"> <div><div class="db-title">Cutting Area</div><div class="db-sub">Simple wires routed from Pagoda when Out of Stock</div></div> </div> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="c-pending">0</div><div class="kpi-label">To Cut</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="c-prog">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="c-done">0</div><div class="kpi-label">Done Today</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="cutting-hist-count">0</span></div><div class="card-body" id="cutting-hist"></div></div> </div> <!--  WPA  --> <div id="page-wpa" class="page"> <div class="dept-banner db-wpa"><div><div class="db-title">Wire Prep Area</div><div class="db-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-teal">Request & Fulfill</span></div> <div class="tab-row"> <button id="wpa-tab-req" class="topbar-btn" style="background:var(--teal);color:var(--bg-base);border-color:var(--teal)" onclick="switchTab('wpa','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchTab('wpa','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-teal" id="wpa-fc" style="margin-left:4px">0</span></button> <button id="wpa-tab-hist" class="topbar-btn" onclick="switchTab('wpa','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="wpa-req-panel"> <div id="wpa-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active WPA Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-teal" id="wpa-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="wpa-req-hist-count">0</span></div><div class="card-body" id="wpa-req-hist"></div></div> </div> <div id="wpa-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> WPA Completed History</div><span class="badge badge-emerald" id="wpa-hist-count">0</span></div><div class="card-body" id="wpa-hist"></div></div> </div> <div id="wpa-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="wpa-xe-cnt">0</div><div class="kpi-label">XE Wires</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0"/></svg></div><div class="kpi-val" id="wpa-sp-cnt">0</div><div class="kpi-label">SP Wires</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="wpa-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="card" style="margin-bottom:14px"><div class="card-head"><div class="card-title">XE Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-list"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">SP Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-list"></div></div></div> </div> </div> <!--  TWIST  --> <div id="page-twist" class="page"> <div class="dept-banner db-twist"><div><div class="db-title">Twist Department</div><div class="db-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-violet">Request & Fulfill</span></div> <div class="tab-row"> <button id="twist-tab-req" class="topbar-btn" style="background:var(--violet);color:#fff;border-color:var(--violet)" onclick="switchTab('twist','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTab('twist','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-violet" id="twist-fc" style="margin-left:4px">0</span></button> <button id="twist-tab-hist" class="topbar-btn" onclick="switchTab('twist','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="twist-req-panel"> <div id="twist-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active Twist Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-violet" id="twist-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="twist-req-hist-count">0</span></div><div class="card-body" id="twist-req-hist"></div></div> </div> <div id="twist-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> Twist Completed History</div><span class="badge badge-emerald" id="twist-hist-count">0</span></div><div class="card-body" id="twist-hist"></div></div> </div> <div id="twist-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="twist-pend-cnt">0</div><div class="kpi-label">To Twist</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="twist-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0M3 12h18"/></svg></div><div class="kpi-val" id="twist-pairs-cnt">0</div><div class="kpi-label">Wire Pairs</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-fulfill-list"></div></div></div> </div> </div> </div>
-</div> <div id="toast"></div> <!--  NOTIFICATION PANEL  -->
+          </div> <div class="db-sub">All submitted orders — click any row to expand full details</div> </div> <span class="badge badge-copper" id="hist-total-badge">0 orders</span> </div> <div class="card" style="margin-bottom:14px"> <div style="padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px"> <div class="search-input-wrap" id="hist-search-wrap" style="flex:1;min-width:150px;max-width:340px;display:flex">
+  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <input id="hist-search" type="text" class="search-input" placeholder="Search ID, wire, project, dept, status…" style="width:100%;font-size:12px;padding:8px 12px 8px 28px" oninput="(function(e){var w=document.getElementById('hist-search-wrap');if(w)w.classList.toggle('has-value',e.target.value.length>0);var t=window._histSearchTimer;clearTimeout(t);window._histSearchTimer=setTimeout(function(){renderHistoryPage();},120);})(event)">
+  <button type="button" class="search-clear-btn" onclick="(function(){var i=document.getElementById('hist-search');if(i){i.value='';document.getElementById('hist-search-wrap').classList.remove('has-value');renderHistoryPage();i.focus();}})()" title="Clear search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+</div> <select id="hist-filter-dept" class="form-input" style="width:155px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Departments</option> <option value="assembly">Assembly</option> <option value="wpa">Wire Prep Area</option> <option value="twist">Twist</option> </select> <select id="hist-filter-status" class="form-input" style="width:145px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Statuses</option> <option value="completed">Completed</option> <option value="in_progress">In Progress</option> <option value="pending">Pending</option> </select> <div style="font-size:10px;color:var(--tx-3);margin-left:auto;font-family:'IBM Plex Mono',monospace" id="hist-count-label">— orders</div> </div> </div> <div id="hist-list"></div> </div> <!--  ASSEMBLY  --> <div id="page-assembly" class="page"> <div class="dept-banner db-asm"> <div><div class="db-title">Assembly Department</div><div class="db-sub">Project → Reference → Wire → Submit Request</div></div> <span class="badge badge-emerald">Request Only</span> </div> <div id="asm-request-area"></div> <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Active Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-copper" id="asm-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="asm-hist-count">0</span></div><div class="card-body" id="asm-hist"></div></div> </div> <!--  PAGODA  --> <div id="page-pagoda" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#070e28,#0e2060)"> <div><div class="db-title">Pagoda · Central Hub</div><div class="db-sub">Review all incoming requests · Mark In Stock or Out of Stock</div></div> <span class="badge badge-steel">Hub</span> </div> <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="kpi-val" id="p-pending">0</div><div class="kpi-label">Pending</div></div> </div> <div class="two-col"> <div> <div class="card"><div class="card-head"><div class="card-title">Pending Requests</div><span class="badge badge-copper" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="pagoda-hist-count">0</span></div><div class="card-body" id="pagoda-hist"></div></div> </div> <div style="display:flex;flex-direction:column;gap:14px"> <div class="card"><div class="card-head"><div class="card-title">Metrics</div></div><div class="card-body"><div class="perf-row"><span class="perf-k">Requests Today</span><span class="perf-v" id="p-today">0</span></div><div class="perf-row"><span class="perf-k">Fulfillment Rate</span><span class="perf-v" id="p-rate">0%</span></div><div class="prog-bar"><div class="prog-fill" id="p-rate-bar" style="width:0%"></div></div></div></div> </div> </div> </div> <!--  CUTTING  --> <div id="page-cutting" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#031f14,#054a30)"> <div><div class="db-title">Cutting Area</div><div class="db-sub">Simple wires routed from Pagoda when Out of Stock</div></div> </div> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="c-pending">0</div><div class="kpi-label">To Cut</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="c-prog">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="c-done">0</div><div class="kpi-label">Done Today</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="cutting-hist-count">0</span></div><div class="card-body" id="cutting-hist"></div></div> </div> <!--  WPA  --> <div id="page-wpa" class="page"> <div class="dept-banner db-wpa"><div><div class="db-title">Wire Prep Area</div><div class="db-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-teal">Request & Fulfill</span></div> <div class="tab-row"> <button id="wpa-tab-req" class="topbar-btn" style="background:var(--teal);color:var(--bg-base);border-color:var(--teal)" onclick="switchTab('wpa','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchTab('wpa','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-teal" id="wpa-fc" style="margin-left:4px">0</span></button> <button id="wpa-tab-hist" class="topbar-btn" onclick="switchTab('wpa','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="wpa-req-panel"> <div id="wpa-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active WPA Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-teal" id="wpa-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="wpa-req-hist-count">0</span></div><div class="card-body" id="wpa-req-hist"></div></div> </div> <div id="wpa-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> WPA Completed History</div><span class="badge badge-emerald" id="wpa-hist-count">0</span></div><div class="card-body" id="wpa-hist"></div></div> </div> <div id="wpa-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="wpa-xe-cnt">0</div><div class="kpi-label">XE Wires</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0"/></svg></div><div class="kpi-val" id="wpa-sp-cnt">0</div><div class="kpi-label">SP Wires</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="wpa-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="card" style="margin-bottom:14px"><div class="card-head"><div class="card-title">XE Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-list"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">SP Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-list"></div></div></div> </div> </div> <!--  TWIST  --> <div id="page-twist" class="page"> <div class="dept-banner db-twist"><div><div class="db-title">Twist Department</div><div class="db-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-violet">Request & Fulfill</span></div> <div class="tab-row"> <button id="twist-tab-req" class="topbar-btn" style="background:var(--violet);color:#fff;border-color:var(--violet)" onclick="switchTab('twist','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTab('twist','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-violet" id="twist-fc" style="margin-left:4px">0</span></button> <button id="twist-tab-hist" class="topbar-btn" onclick="switchTab('twist','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="twist-req-panel"> <div id="twist-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active Twist Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-violet" id="twist-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="twist-req-hist-count">0</span></div><div class="card-body" id="twist-req-hist"></div></div> </div> <div id="twist-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> Twist Completed History</div><span class="badge badge-emerald" id="twist-hist-count">0</span></div><div class="card-body" id="twist-hist"></div></div> </div> <div id="twist-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="twist-pend-cnt">0</div><div class="kpi-label">To Twist</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="twist-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0M3 12h18"/></svg></div><div class="kpi-val" id="twist-pairs-cnt">0</div><div class="kpi-label">Wire Pairs</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-fulfill-list"></div></div></div> </div> </div>
+
+</div><!-- closes .main -->
+<div id="toast"></div>
+
+<!-- GLOBAL LOADING OVERLAY -->
+<div id="global-loader" role="status" aria-live="polite">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Refreshing…</div>
+</div> <!--  NOTIFICATION PANEL  -->
 <div id="notif-panel"> <div class="notif-hd"> <div class="notif-hd-title">Notifications</div> <div class="notif-hd-actions"> <button class="notif-clear-btn" id="notif-sound-btn" onclick="toggleNotifSound(this)"> Sound On</button> <button class="notif-clear-btn" id="notif-desktop-btn" onclick="toggleDesktopNotif(this)"> Desktop On</button> <button class="notif-clear-btn" onclick="markAllRead()">Mark all read</button> <button class="notif-clear-btn" onclick="clearAllNotifs()" style="color:var(--crimson)">Clear all</button> <button onclick="toggleNotifPanel()" style="background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px;display:flex"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> </button> </div> </div> <div class="notif-list" id="notif-list"></div>
 </div> <script>
 'use strict';
@@ -1589,25 +1830,143 @@ const navState={
 };
 const formState={assembly:{},wpa:{},twist:{}};
 let requests=[];
-let currentUser={username:'ME-001',department:'assembly',name:'Miloud Ezzaky'};
-function isAdmin(){return currentUser.department==='admin';}
+let currentUser = { username:'ME-001', department:'assembly', name:'Miloud Ezzaky' };
+
+// Safe accessor — never throws even if currentUser is partially set
+function isAdmin(){
+  return currentUser && currentUser.department === 'admin';
+}
+function currentDept(){
+  return (currentUser && currentUser.department) || 'assembly';
+}
 let currentPage='analytics';
 
 
 // Pagination state
 const pagination={refs:{},history:{page:1,perPage:20}};
 
-// Sort state for dt tables
+// ============================================================
+//  renderTable — centralised table renderer
+//  Ensures consistent headers, scroll wrapper, and no-results
+// ============================================================
+function renderTable(opts){
+  const { id, headers, rows, noResultsMsg='No data found', maxHeight='340px', containerClass='' } = opts;
+  let html = `<div class="data-table-wrap ${containerClass}">`;
+  html += `<div class="dt-scroll" style="max-height:${maxHeight}">`;
+  html += `<table class="dt"${id?` id="${id}"`:''}><thead><tr>`;
+  headers.forEach(h => { html += `<th>${h}<span class="sort-icon"></span></th>`; });
+  html += `</tr></thead><tbody>`;
+  if(!rows.length){
+    html += `<tr class="no-results-row"><td colspan="${headers.length}">
+      <svg class="nr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h8M7 16h5"/>
+      </svg>${noResultsMsg}</td></tr>`;
+  } else {
+    rows.forEach((rowCells, ri) => {
+      html += `<tr style="--i:${ri}">`;
+      rowCells.forEach(cell => { html += `<td>${cell}</td>`; });
+      html += '</tr>';
+    });
+  }
+  html += `</tbody></table></div></div>`;
+  return html;
+}
+
+// ============================================================
+//  Excel import display improvements
+//  - Preserves ALL columns from uploaded sheet
+//  - Adds sticky header, frozen row numbers, responsive scroll
+// ============================================================
+function buildExcelDisplayHtml(wires, dept, cols){
+  if(!wires.length) return '';
+  const wireSearch = formState[dept]?.wireSearch || '';
+  return `
+    <div class="excel-scroll" style="max-height:420px;border-radius:0 0 var(--r-lg) var(--r-lg)">
+      <table class="excel-tbl" id="${dept}-wit">
+        <thead>
+          <tr>
+            <th class="excel-row-num">#</th>
+            <th class="excel-checkbox-col" style="min-width:32px">
+              <input type="checkbox" class="excel-cb wire-all-cb"
+                id="${dept}-all-cb"
+                onchange="toggleAll('${dept}',this.checked)"
+                title="Select all / none">
+            </th>
+            ${cols.map(col=>`<th title="${col}">${col}</th>`).join('')}
+            <th style="min-width:80px">Qty Override</th>
+          </tr>
+        </thead>
+        <tbody id="${dept}-wit-body">
+          ${wires.map((w,i)=>{
+            const rowCells = cols.map(col=>{
+              const val = w._raw[col] !== undefined ? String(w._raw[col]) : '';
+              const isEmpty = val === '' || val === null;
+              const isNum = !isEmpty && !isNaN(Number(val)) && val.trim() !== '';
+              return `<td class="${isEmpty?'cell-empty':isNum?'cell-num':''}" title="${val.replace(/"/g,'&quot;')}">${isEmpty?'—':val}</td>`;
+            }).join('');
+            return `<tr id="${dept}-wrow-${i}" onclick="toggleRow('${dept}',${i})" style="cursor:pointer;--i:${i}">
+              <td class="excel-row-num">${i+1}</td>
+              <td class="excel-checkbox-col" onclick="event.stopPropagation()">
+                <input type="checkbox" class="excel-cb wire-cb ${dept}-wcb"
+                  data-idx="${i}"
+                  onchange="updateSelCount('${dept}')">
+              </td>
+              ${rowCells}
+              <td onclick="event.stopPropagation()">
+                <input type="number" class="qty-input"
+                  id="${dept}-qty-${i}"
+                  value="${w.quantity}" min="1">
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
 const sortState={};
 
 //  TOAST 
-function toast(msg,type='info'){
-  const c=document.getElementById('toast');
-  const el=document.createElement('div');
-  el.className=`toast-item ${type}`;
-  el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;flex-shrink:0">${type==='success'?'<polyline points="20 6 9 17 4 12"/>':'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg>${msg}`;
+function toast(msg, type='info'){
+  // Guard: container must exist
+  const c = document.getElementById('toast');
+  if(!c){ console.warn('[toast]', type.toUpperCase()+':', msg); return; }
+
+  // Deduplicate: if same message already showing, skip
+  const existing = Array.from(c.querySelectorAll('.toast-item'));
+  if(existing.some(e => e.dataset.msg === msg)) return;
+
+  const icons = {
+    success: '<polyline points="20 6 9 17 4 12"/>',
+    error:   '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+    info:    '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+    warning: '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
+  };
+
+  const el = document.createElement('div');
+  el.className = `toast-item ${type}`;
+  el.dataset.msg = msg;
+  el.title = 'Click to dismiss';
+  el.style.cursor = 'pointer';
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;flex-shrink:0">${icons[type]||icons.info}</svg><span style="flex:1">${msg}</span>`;
+  el.addEventListener('click', () => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(18px)';
+    el.style.transition = 'all .25s';
+    setTimeout(() => el.remove(), 250);
+  });
+
   c.appendChild(el);
-  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(18px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},3500);
+
+  // Auto-dismiss
+  const duration = type === 'error' ? 5000 : 3500;
+  setTimeout(() => {
+    if(el.parentNode){
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(18px)';
+      el.style.transition = 'all .3s';
+      setTimeout(() => el.remove(), 300);
+    }
+  }, duration);
 }
 
 //  AUTH SYSTEM 
@@ -1841,7 +2200,7 @@ function enterApp(dept){
       else{store[d][p.id]={refs:[],refData:{}};}
     });
   });
-  setInterval(refreshAll,12000);
+  startAutoRefresh();
   const landing=dept==='admin'?'analytics':dept;
   const defaultBtn=document.querySelector(`.nav-btn[data-page="${landing}"]`);
   if(defaultBtn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
@@ -1914,20 +2273,46 @@ function loadPage(page){
 }
 function isModalOpen(){return !!(document.getElementById('pagoda-modal')||document.getElementById('dept-modal'));}
 // refreshAll — used by the 12s session-restore interval; delegates to debounced version
+// FIXED: added visual feedback (spin animation), debounce guard, no duplicate binding
+let _refreshBtnCooldown = false;
 function refreshAll(){
+  // Visual feedback on refresh button
+  const btn = document.getElementById('refresh-btn');
+  if(btn && !_refreshBtnCooldown){
+    _refreshBtnCooldown = true;
+    btn.classList.add('refreshing');
+    btn.setAttribute('disabled', 'true');
+    // Show brief loading overlay for manual refresh
+    const loader = document.getElementById('global-loader');
+    if(loader) loader.classList.add('show');
+    setTimeout(() => {
+      btn.classList.remove('refreshing');
+      btn.removeAttribute('disabled');
+      _refreshBtnCooldown = false;
+      if(loader) loader.classList.remove('show');
+    }, 1000);
+  }
   debouncedRefreshAll();
 }
 
+// Guard: prevent duplicate auto-refresh intervals (setInterval called from both enterApp and session restore)
+let _autoRefreshStarted = false;
+function startAutoRefresh(){
+  if(_autoRefreshStarted) return;
+  _autoRefreshStarted = true;
+  startAutoRefresh();
+}
+
 function updateBadges(){
-  document.getElementById('b-assembly').textContent=requests.filter(r=>r.requestedBy==='assembly').length;
-  document.getElementById('b-pagoda').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;
-  document.getElementById('b-cutting').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status!=='completed').length;
+  const setTxt = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  setTxt('b-assembly', requests.filter(r=>r.requestedBy==='assembly').length);
+  setTxt('b-pagoda',   requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length);
+  setTxt('b-cutting',  requests.filter(r=>r.assignedTo==='cutting'&&r.status!=='completed').length);
   const wa=requests.filter(r=>r.assignedTo==='wpa'&&r.status!=='completed').length;
   const ta=requests.filter(r=>r.assignedTo==='twist'&&r.status!=='completed').length;
-  document.getElementById('b-wpa').textContent=wa;document.getElementById('b-twist').textContent=ta;
-  const wfc=document.getElementById('wpa-fc');const tfc=document.getElementById('twist-fc');
-  if(wfc)wfc.textContent=wa;if(tfc)tfc.textContent=ta;
-  const hb=document.getElementById('b-history');if(hb)hb.textContent=requests.length;
+  setTxt('b-wpa',wa); setTxt('b-twist',ta);
+  setTxt('wpa-fc',wa); setTxt('twist-fc',ta);
+  setTxt('b-history', requests.length);
 }
 
 //  EXCEL PARSER 
@@ -2024,7 +2409,7 @@ function renderRefsLevel(dept){
 
   let html=`${backBtn(dept,isVolvoSub?'volvo_subs':'projects',isVolvoSub?'← Back to VOLVO Projects':'← Back to Projects')}${renderBreadcrumb(dept)}<div class="ref-section"><div class="level-header"><div class="level-title"><div style="width:28px;height:28px;background:${color};border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:'Syne',sans-serif;font-size:10px;font-weight:800;box-shadow:0 2px 8px ${color}44">${label.split(' ')[0].slice(0,2).toUpperCase()}</div><span>${label}</span>${pStore.refs.length>0?`<span class="badge badge-emerald">${pStore.refs.length} loaded</span>`:''}</div><div class="level-actions">`;
   if(pStore.refs.length>0){
-    html+=`<input type="text" class="search-input" placeholder="Search references…" value="${searchTerm}" oninput="searchRefs(event,'${dept}')">`;
+    html+=`<div class="search-input-wrap ${searchTerm?'has-value':''}"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" class="search-input" id="${dept}-ref-search" placeholder="Search references…" value="${searchTerm}" oninput="handleSearch(event,'refs','${dept}')"><button type="button" class="search-clear-btn" onclick="clearSearch('${dept}-ref-search','refs','${dept}')" title="Clear search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`;
     if(isAdmin()){
       html+=`<label class="upload-btn upload-btn-outline"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Replace</label> <button onclick="clearProjectRefs('${dept}','${key}')" class="upload-btn upload-btn-outline" style="border-color:rgba(255,71,87,.3);color:var(--crimson)">Clear</button>`;
     }
@@ -2054,7 +2439,7 @@ function renderRefsLevel(dept){
       }).join('');
       html+=`<tr>${rawCells}<td><div class="action-cell"><span class="row-pill ${hasWires?'has':''}">${hasWires?wires.length+' wires':'No data'}</span>${hasWires?`<button class="icon-btn" onclick="viewWireList('${dept}','${key}','${ref.id}')" title="Preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`:''}${isAdmin()?`<label class="icon-btn ${hasWires?'has-data':''}" title="Upload wire Excel"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleWireUpload(event,'${dept}','${key}','${ref.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></label>`:''}</div></td><td><button class="select-btn" style="background:${color};color:#fff;box-shadow:0 2px 10px ${color}44" onclick="selectRef('${dept}','${ref.id}')">Select →</button></td></tr>`;
     });
-    if(pageRefs.length===0)html+=`<tr><td colspan="${allCols.length+2}" style="text-align:center;padding:24px;color:var(--tx-4)">No references match your search</td></tr>`;
+    if(pageRefs.length===0)html+=`<tr class="no-results-row"><td colspan="${allCols.length+2}"><svg class="nr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>${searchTerm?`No references match <strong>"${searchTerm}"</strong>`:'No references found'}</td></tr>`;
     html+=`</tbody></table></div>`;
     if(totalPages>1){
       html+=`<div class="pagination"><div class="pagination-info">Showing ${(page-1)*perPage+1}–${Math.min(page*perPage,filteredRefs.length)} of ${filteredRefs.length}</div><div class="pagination-btns">`;
@@ -2093,16 +2478,56 @@ function renderWiresLevel(dept){
   if(wires.length===0){
     html+=`<div style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.18);border-radius:var(--r-md);padding:14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:16px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" style="width:14px;height:14px;flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div><div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:3px">No wire data for ${refId}</div><div style="font-size:11px;color:var(--tx-2)">Go back and upload an Excel file for this reference first.</div></div></div><button onclick="navTo('${dept}','refs')" class="btn btn-primary" style="flex:unset;padding:9px 20px">← Back to References</button>`;
   } else {
-    html+=`<div class="excel-table-container"><div class="excel-toolbar"><div class="excel-toolbar-left"><div class="excel-title-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;color:var(--emerald)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Wire List — ${refId}</div><span class="excel-rowcount">${wires.length} rows × ${cols.length} cols</span></div><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><div style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:11px;height:11px;color:var(--tx-3);pointer-events:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="${dept}-wire-search" placeholder="Filter rows…" value="${formState[dept].wireSearch||''}" oninput="searchWires(event,'${dept}')" style="width:160px;padding:5px 8px 5px 26px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:6px;font-size:10px;font-family:'Outfit',sans-serif;color:var(--tx-1);outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--copper)'" onblur="this.style.borderColor='var(--bd-1)'"></div><span class="sel-count" id="${dept}-sel-count">0 selected</span><button class="small-btn" onclick="selectAll('${dept}')">All</button><button class="small-btn" onclick="deselectAll('${dept}')">None</button></div></div><div class="excel-scroll"><table class="excel-tbl" id="${dept}-wit"><thead><tr><th class="excel-row-num">#</th><th class="excel-checkbox-col"><input type="checkbox" class="excel-cb wire-all-cb" id="${dept}-all-cb" onchange="toggleAll('${dept}',this.checked)" title="Select all"></th>`;
-    cols.forEach(col=>{html+=`<th>${col}</th>`;});
-    html+=`<th>Qty Override</th></tr></thead><tbody id="${dept}-wit-body">`;
-    wires.forEach((w,i)=>{
-      html+=`<tr id="${dept}-wrow-${i}" onclick="toggleRow('${dept}',${i})" style="cursor:pointer"><td class="excel-row-num">${i+1}</td><td class="excel-checkbox-col" onclick="event.stopPropagation()"><input type="checkbox" class="excel-cb wire-cb ${dept}-wcb" data-idx="${i}" onchange="updateSelCount('${dept}')"></td>`;
-      cols.forEach(col=>{const val=w._raw[col]!==undefined?String(w._raw[col]):'';const isEmpty=val===''||val===null;const isNum=!isEmpty&&!isNaN(Number(val))&&val.trim()!=='';html+=`<td class="${isEmpty?'cell-empty':isNum?'cell-num':''}" title="${val.replace(/"/g,'&quot;')}">${isEmpty?'—':val}</td>`;});
-      html+=`<td onclick="event.stopPropagation()"><input type="number" class="qty-input" id="${dept}-qty-${i}" value="${w.quantity}" min="1"></td></tr>`;
-    });
-    html+=`</tbody></table></div></div>`;
-    html+=`<div class="req-form-row" style="margin-top:14px"><div class="field"><label>Urgency <span style="color:var(--crimson)">*</span></label><select id="${dept}-urgency"><option value="normal">Normal</option><option value="urgent">Urgent</option><option value="critical">Critical</option></select></div><div class="field"><label>Confirm Project</label><input type="text" id="${dept}-proj-display" value="${label}" readonly style="color:var(--tx-3);cursor:default"></div></div><button class="submit-btn ${submitClass}" onclick="submitRequest('${dept}')">Submit Request to Pagoda →</button>`;
+    // ── Excel toolbar ──────────────────────────────────────────
+    const wireSearchVal = formState[dept].wireSearch || '';
+    html += `<div class="excel-table-container">
+      <div class="excel-toolbar">
+        <div class="excel-toolbar-left">
+          <div class="excel-title-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;color:var(--emerald)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Wire List — ${refId}
+          </div>
+          <span class="excel-rowcount">${wires.length} rows × ${cols.length} cols</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+          <div class="search-input-wrap ${wireSearchVal?'has-value':''}">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="${dept}-wire-search"
+              placeholder="Filter rows…"
+              value="${wireSearchVal}"
+              class="search-input"
+              style="width:165px;font-size:10px"
+              oninput="handleSearch(event,'wires','${dept}')">
+            <button type="button" class="search-clear-btn"
+              onclick="clearSearch('${dept}-wire-search','wires','${dept}')"
+              title="Clear filter">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <span class="sel-count" id="${dept}-sel-count">0 selected</span>
+          <button class="small-btn" onclick="selectAll('${dept}')">All</button>
+          <button class="small-btn" onclick="deselectAll('${dept}')">None</button>
+        </div>
+      </div>`;
+    // ── Excel table body via helper ──────────────────────────
+    html += buildExcelDisplayHtml(wires, dept, cols);
+    html += `</div>`;
+    // ── Submit form ─────────────────────────────────────────
+    html += `<div class="req-form-row" style="margin-top:14px">
+      <div class="field">
+        <label>Urgency <span style="color:var(--crimson)">*</span></label>
+        <select id="${dept}-urgency">
+          <option value="normal">Normal</option>
+          <option value="urgent">Urgent</option>
+          <option value="critical">Critical</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Confirm Project</label>
+        <input type="text" id="${dept}-proj-display" value="${label}" readonly style="color:var(--tx-3);cursor:default">
+      </div>
+    </div>
+    <button class="submit-btn ${submitClass}" onclick="submitRequest('${dept}')">Submit Request to Pagoda →</button>`;
   }
   return html+`</div></div>`;
 }
@@ -2133,19 +2558,104 @@ function navTo(dept,level){
   else if(level==='refs'){navState[dept].level='refs';navState[dept].refId=null;}
   renderRequestArea(dept);
 }
-function searchRefs(e,dept){formState[dept].refSearch=e.target.value;pagination.refs[dept+navState[dept].projectKey]=1;renderRequestArea(dept);}
-function searchWires(e,dept){formState[dept].wireSearch=e.target.value;filterWireTable(dept);}
+function searchRefs(e,dept){
+  const term = e.target.value;
+  formState[dept].refSearch = term;
+  // Update the clear-button state on the wrapper
+  const wrap = e.target.closest('.search-input-wrap');
+  if(wrap){ wrap.classList.toggle('has-value', term.length > 0); }
+  pagination.refs[dept+navState[dept].projectKey]=1;
+  renderRequestArea(dept);
+}
+
+// ============================================================
+//  handleSearch — global dispatcher called by any search input
+//  Supports: refs table, wires table, history page
+// ============================================================
+function handleSearch(e, context, dept){
+  switch(context){
+    case 'refs':  searchRefs(e, dept);  break;
+    case 'wires': searchWires(e, dept); break;
+    case 'history':
+      // Debounced already handled in initApp; direct call as fallback
+      renderHistoryPage();
+      break;
+    default:
+      console.warn('[handleSearch] Unknown context:', context);
+  }
+}
+
+// Clear search helper — called by ✕ button
+function clearSearch(inputId, context, dept){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  input.value = '';
+  input.dispatchEvent(new Event('input', {bubbles:true}));
+  handleSearch({target:input}, context, dept);
+  input.focus();
+}
+function searchWires(e,dept){
+  const term = e.target.value;
+  formState[dept].wireSearch = term;
+  // Update clear-button state
+  const wrap = e.target.closest('.search-input-wrap');
+  if(wrap){ wrap.classList.toggle('has-value', term.length > 0); }
+  filterWireTable(dept);
+}
+
 function filterWireTable(dept){
-  const term=(formState[dept].wireSearch||'').toLowerCase();
+  const term=(formState[dept].wireSearch||'').toLowerCase().trim();
   const ns=navState[dept];const key=ns.projectKey;const refId=ns.refId;
   const pStore=store[dept][key]||{refs:[],refData:{}};
   const wires=pStore.refData[refId]||[];
   const cols=wires.length>0?wires[0]._cols:[];
+  let visibleCount = 0;
+
   wires.forEach((w,i)=>{
     const row=document.getElementById(`${dept}-wrow-${i}`);if(!row)return;
-    const match=!term||cols.some(c=>String(w._raw[c]||'').toLowerCase().includes(term))||w.wireType.toLowerCase().includes(term);
-    row.style.display=match?'':'none';
+    const match = !term
+      || cols.some(c=>String(w._raw[c]||'').toLowerCase().includes(term))
+      || w.wireType.toLowerCase().includes(term)
+      || w.wireName.toLowerCase().includes(term);
+    row.style.display = match ? '' : 'none';
+    if(match) visibleCount++;
+
+    // Highlight matching cells
+    if(term){
+      row.querySelectorAll('td').forEach(td => {
+        td.classList.toggle('search-match', td.textContent.toLowerCase().includes(term));
+      });
+    } else {
+      row.querySelectorAll('td.search-match').forEach(td => td.classList.remove('search-match'));
+    }
   });
+
+  // Show / hide "no results" row
+  const tbody = document.getElementById(`${dept}-wit-body`);
+  if(tbody){
+    let noRow = tbody.querySelector('.no-results-row');
+    if(visibleCount === 0 && term){
+      if(!noRow){
+        noRow = document.createElement('tr');
+        noRow.className = 'no-results-row';
+        noRow.innerHTML = `<td colspan="${cols.length+3}">
+          <svg class="nr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          No rows match <strong>"${term}"</strong> — try a different keyword
+        </td>`;
+        tbody.appendChild(noRow);
+      } else {
+        noRow.querySelector('td').innerHTML = `
+          <svg class="nr-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          No rows match <strong>"${term}"</strong> — try a different keyword`;
+      }
+    } else if(noRow){
+      noRow.remove();
+    }
+  }
 }
 
 async function handleRefsUpload(e,dept,key){
@@ -2410,8 +2920,8 @@ setInterval(()=>{
 //  PAGODA 
 function renderPagodaRequests(){
   const reqs=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending');
-  const el=document.getElementById('pagoda-req-list');
-  document.getElementById('p-req-count').textContent=reqs.length;
+  const el=document.getElementById('pagoda-req-list');if(!el)return;
+  const countEl=document.getElementById('p-req-count');if(countEl)countEl.textContent=reqs.length;
   if(!reqs.length){el.innerHTML=emptyState('No pending requests');return;}
   el.innerHTML=reqs.map(r=>{
     const multi=r.items.length>1;const doneCount=r.items.filter(it=>it.pagodaStatus).length;
@@ -2570,7 +3080,16 @@ async function markOOS(id){
   broadcastNotif({type:'routed',title:`New Job: ${id}`,sub:`PAGODA → ${r.assignedTo.toUpperCase()} · ${r.items.length} wire${r.items.length>1?'s':''} · ${r.project}`,reqId:id,fromDept:'pagoda'});
   renderAnalytics();renderReqList('assembly');renderReqList('wpa');renderReqList('twist');
 }
-function updatePagodaMetrics(){document.getElementById('p-pending').textContent=requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length;const today=new Date().toDateString();document.getElementById('p-today').textContent=requests.filter(r=>new Date(r.time).toDateString()===today).length;const comp=requests.filter(r=>r.status==='completed').length;const rate=requests.length?Math.round(comp/requests.length*100):0;document.getElementById('p-rate').textContent=rate+'%';document.getElementById('p-rate-bar').style.width=rate+'%';}
+function updatePagodaMetrics(){
+  const setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  const setStyle=(id,prop,v)=>{const el=document.getElementById(id);if(el)el.style[prop]=v;};
+  setTxt('p-pending',requests.filter(r=>r.assignedTo==='pagoda'&&r.status==='pending').length);
+  const today=new Date().toDateString();
+  setTxt('p-today',requests.filter(r=>new Date(r.time).toDateString()===today).length);
+  const comp=requests.filter(r=>r.status==='completed').length;
+  const rate=requests.length?Math.round(comp/requests.length*100):0;
+  setTxt('p-rate',rate+'%');setStyle('p-rate-bar','width',rate+'%');
+}
 
 //  CUTTING 
 function renderCuttingRequests(){
@@ -2579,7 +3098,12 @@ function renderCuttingRequests(){
   el.innerHTML=reqs.length?reqs.map(r=>makeDeptCard(r,'cutting')).join(''):emptyState('No cutting requests');
   if(!isModalOpen()){loadHistory('cutting-hist','cutting','assignedTo');const ch=document.getElementById('cutting-hist-count');if(ch)ch.textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='completed').length;}
 }
-function updateCuttingMetrics(){document.getElementById('c-pending').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='pending').length;document.getElementById('c-prog').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='in_progress').length;document.getElementById('c-done').textContent=requests.filter(r=>r.assignedTo==='cutting'&&r.status==='completed').length;}
+function updateCuttingMetrics(){
+  const setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setTxt('c-pending',requests.filter(r=>r.assignedTo==='cutting'&&r.status==='pending').length);
+  setTxt('c-prog',requests.filter(r=>r.assignedTo==='cutting'&&r.status==='in_progress').length);
+  setTxt('c-done',requests.filter(r=>r.assignedTo==='cutting'&&r.status==='completed').length);
+}
 
 function makeDeptCard(r,dept){
   const ip=r.status==='in_progress';const multi=r.items.length>1;const doneCount=r.items.filter(it=>it.deptStatus==='done').length;
@@ -2814,18 +3338,70 @@ function fmtDuration(ms){
 
 //  HISTORY PAGE 
 function renderHistoryPage(){
-  const search=(document.getElementById('hist-search')?.value||'').toLowerCase();
-  const deptFilter=document.getElementById('hist-filter-dept')?.value||'';
-  const statusFilter=document.getElementById('hist-filter-status')?.value||'';
-  let list=[...requests].sort((a,b)=>new Date(b.time)-new Date(a.time));
-  if(search)list=list.filter(r=>r.id.toLowerCase().includes(search)||r.project.toLowerCase().includes(search)||r.items.some(i=>i.wireName.toLowerCase().includes(search)));
-  if(deptFilter)list=list.filter(r=>r.requestedBy===deptFilter);
-  if(statusFilter)list=list.filter(r=>r.status===statusFilter);
-  const badge=document.getElementById('hist-total-badge');if(badge)badge.textContent=`${list.length} order${list.length!==1?'s':''}`;
-  const countLbl=document.getElementById('hist-count-label');if(countLbl)countLbl.textContent=`${list.length} of ${requests.length} order${requests.length!==1?'s':''}`;
-  const container=document.getElementById('hist-list');if(!container)return;
-  if(!list.length){container.innerHTML=`<div class="empty-state" style="margin-top:32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:44px;height:44px;opacity:.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><p style="margin-top:10px">No orders match your filter</p></div>`;return;}
-  container.innerHTML=list.map(r=>buildHistEntry(r)).join('');
+  const searchRaw = (document.getElementById('hist-search')?.value||'');
+  const search = searchRaw.toLowerCase().trim();
+  const deptFilter  = document.getElementById('hist-filter-dept')?.value  || '';
+  const statusFilter= document.getElementById('hist-filter-status')?.value || '';
+
+  // Animate the list during filtering
+  const container = document.getElementById('hist-list');
+  if(container) container.classList.add('filtering');
+
+  let list = [...requests].sort((a,b)=>new Date(b.time)-new Date(a.time));
+
+  // GLOBAL search — case-insensitive, all columns
+  if(search){
+    list = list.filter(r=>{
+      // ID, project, urgency, status, dept fields
+      if(r.id.toLowerCase().includes(search))              return true;
+      if(r.project.toLowerCase().includes(search))         return true;
+      if((r.urgency||'').toLowerCase().includes(search))   return true;
+      if((r.status||'').toLowerCase().includes(search))    return true;
+      if((r.requestedBy||'').toLowerCase().includes(search)) return true;
+      if((r.assignedTo||'').toLowerCase().includes(search))  return true;
+      if((r.pagodaStatus||'').toLowerCase().includes(search)) return true;
+      // Search inside items array — all fields
+      if(r.items && r.items.some(i=>{
+        if((i.wireName||'').toLowerCase().includes(search))  return true;
+        if((i.wireType||'').toLowerCase().includes(search))  return true;
+        if((i.reference||'').toLowerCase().includes(search)) return true;
+        if(String(i.quantity||'').includes(search))          return true;
+        // Also search raw row data
+        if(i._rawRow && Object.values(i._rawRow).some(v=>String(v).toLowerCase().includes(search))) return true;
+        return false;
+      })) return true;
+      // Date/time search
+      const dt = fmtDateTime(r.time);
+      if(dt.date.toLowerCase().includes(search)) return true;
+      return false;
+    });
+  }
+
+  if(deptFilter)   list = list.filter(r=>r.requestedBy===deptFilter);
+  if(statusFilter) list = list.filter(r=>r.status===statusFilter);
+
+  const badge    = document.getElementById('hist-total-badge');
+  const countLbl = document.getElementById('hist-count-label');
+  if(badge)    badge.textContent    = `${list.length} order${list.length!==1?'s':''}`;
+  if(countLbl) countLbl.textContent = `${list.length} of ${requests.length} order${requests.length!==1?'s':''}`;
+
+  if(!container) return;
+
+  // Remove filtering class after short delay for smooth transition
+  requestAnimationFrame(()=>{
+    if(!list.length){
+      container.innerHTML = `<div class="empty-state" style="margin-top:32px;padding:48px 20px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:44px;height:44px;opacity:.2;display:block;margin:0 auto 12px">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <p style="margin-top:0;font-size:13px;font-weight:600">No orders match your filter</p>
+        ${search?`<p style="font-size:11px;color:var(--tx-4);margin-top:6px">Searching for "<strong style="color:var(--copper)">${searchRaw}</strong>" across all fields</p>`:''}
+      </div>`;
+    } else {
+      container.innerHTML = list.map(r=>buildHistEntry(r)).join('');
+    }
+    container.classList.remove('filtering');
+  });
 }
 
 function buildHistEntry(r){
@@ -3467,20 +4043,25 @@ let _refreshTimer = null;
 function debouncedRefreshAll(){
   clearTimeout(_refreshTimer);
   _refreshTimer = setTimeout(() => {
-    updateBadges();
-    renderAnalytics();
-    if(!isModalOpen()){
-      loadPage(currentPage);
-      renderReqList('assembly');
-      renderReqList('wpa');
-      renderReqList('twist');
-      if(currentPage === 'history') renderHistoryPage();
-    } else {
-      // Even with a modal open, keep badges and background lists fresh
-      renderReqList('assembly');
-      renderReqList('wpa');
-      renderReqList('twist');
+    try {
       updateBadges();
+      renderAnalytics();
+      if(!isModalOpen()){
+        loadPage(currentPage);
+        renderReqList('assembly');
+        renderReqList('wpa');
+        renderReqList('twist');
+        if(currentPage === 'history') renderHistoryPage();
+        refreshDeptHistories();
+      } else {
+        // Even with a modal open, keep badges and background lists fresh
+        renderReqList('assembly');
+        renderReqList('wpa');
+        renderReqList('twist');
+        updateBadges();
+      }
+    } catch(err) {
+      console.error('[debouncedRefreshAll] Error during UI refresh:', err);
     }
   }, 180);
 }
@@ -3591,18 +4172,55 @@ async function applyDbConfig(){
 }
 
 //  10. AUTO-INIT ON LOAD 
-window.addEventListener('load', ()=>{
+// ============================================================
+//  initApp() — called once on window load; wires event listeners
+// ============================================================
+function initApp(){
   updateClock();
   setInterval(updateClock, 1000);
-  // Restore session if user refreshed the page
+
+  // ---- Refresh button (single binding, no duplicate) ----
+  const refreshBtn = document.getElementById('refresh-btn');
+  if(refreshBtn){
+    // Remove any stale inline onclick, bind once
+    refreshBtn.removeAttribute('onclick');
+    refreshBtn.addEventListener('click', refreshAll, { once: false });
+  }
+
+  // ---- Drop zones: drag-over / drag-leave / drop ----
+  document.addEventListener('dragover', e => {
+    const dz = e.target.closest('.drop-zone');
+    if(dz){ e.preventDefault(); dz.classList.add('drag-over'); }
+  });
+  document.addEventListener('dragleave', e => {
+    const dz = e.target.closest('.drop-zone');
+    if(dz && !dz.contains(e.relatedTarget)) dz.classList.remove('drag-over');
+  });
+  document.addEventListener('drop', e => {
+    const dz = e.target.closest('.drop-zone');
+    if(dz){ dz.classList.remove('drag-over'); }
+  });
+
+  // ---- History page search: debounced input ----
+  const histSearch = document.getElementById('hist-search');
+  if(histSearch){
+    histSearch.removeAttribute('oninput');
+    let _ht = null;
+    histSearch.addEventListener('input', () => {
+      clearTimeout(_ht);
+      _ht = setTimeout(() => renderHistoryPage(), 120);
+    });
+  }
+
+  // ---- Session restore or show login ----
   try{
-    const sess=sessionStorage.getItem('me_v7_session');
+    const sess = sessionStorage.getItem('me_v7_session');
     if(sess){
-      const s=JSON.parse(sess);
-      const users=getUsers();
-      const user=users[s.uid];
+      const s = JSON.parse(sess);
+      const users = getUsers();
+      const user = users[s.uid];
       if(user){
-        currentUser={username:s.uid,department:s.dept,name:s.name||s.uid};
+        currentUser = { username:s.uid, department:s.dept, name:s.name||s.uid };
         document.getElementById('login-screen').style.display='none';
         document.getElementById('app').style.display='flex';
         applyDeptNav(s.dept);
@@ -3612,30 +4230,33 @@ window.addEventListener('load', ()=>{
             else{store[d][p.id]={refs:[],refData:{}};}
           });
         });
-        setInterval(refreshAll,12000);
-        const landing=s.dept==='admin'?'analytics':s.dept;
-        const defaultBtn=document.querySelector(`.nav-btn[data-page="${landing}"]`);
+        startAutoRefresh();
+        const landing = s.dept==='admin'?'analytics':s.dept;
+        const defaultBtn = document.querySelector(`.nav-btn[data-page="${landing}"]`);
         if(defaultBtn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));defaultBtn.classList.add('active');}
-        loadPage(landing);updateBadges();renderNotifBell();
+        loadPage(landing); updateBadges(); renderNotifBell();
         if(SUPABASE_URL!=='https://YOUR_PROJECT.supabase.co'&&SUPABASE_ANON!=='YOUR_ANON_KEY_HERE'){
           initSupabase().then(()=>{
-            if(['assembly','wpa','twist'].includes(s.dept))renderRequestArea(s.dept);
+            if(['assembly','wpa','twist'].includes(s.dept)) renderRequestArea(s.dept);
           });
         } else {
           showDbIndicator(false);
-          if(['assembly','wpa','twist'].includes(s.dept))renderRequestArea(s.dept);
+          if(['assembly','wpa','twist'].includes(s.dept)) renderRequestArea(s.dept);
         }
         return;
       }
     }
   }catch(e){}
-  // No session — show login
+
+  // No session — show login; init Supabase in background if credentials present
   if(SUPABASE_URL !== 'https://YOUR_PROJECT.supabase.co' && SUPABASE_ANON !== 'YOUR_ANON_KEY_HERE'){
     initSupabase();
   } else {
     showDbIndicator(false);
   }
-});
+}
+
+window.addEventListener('load', initApp);
 // Unlock AudioContext on first click anywhere (browser autoplay policy)
 document.addEventListener('click', ()=>{
   if(_audioCtx && _audioCtx.state==='suspended') _audioCtx.resume();
@@ -3728,6 +4349,7 @@ async function loadStoreFromDb(){
 //  11. refreshAll alias — actual implementation is debouncedRefreshAll above 
 // This alias exists only so any third-party calls to refreshAll() still work.
 // debouncedRefreshAll() is the single authoritative refresh path.
+
 
 // ============================================================
 //   THEME SYSTEM — Dark / Light Mode
