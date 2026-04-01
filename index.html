@@ -2558,32 +2558,16 @@ function navTo(dept,level){
   else if(level==='refs'){navState[dept].level='refs';navState[dept].refId=null;}
   renderRequestArea(dept);
 }
-function searchRefs(e, dept){
+function searchRefs(e,dept){
   const term = e.target.value;
-  const cursorPos = e.target.selectionStart;
   formState[dept].refSearch = term;
+  // Update the clear-button state on the wrapper
   const wrap = e.target.closest('.search-input-wrap');
-  if(wrap) wrap.classList.toggle('has-value', term.length > 0);
-  pagination.refs[dept + navState[dept].projectKey] = 1;
+  if(wrap){ wrap.classList.toggle('has-value', term.length > 0); }
+  pagination.refs[dept+navState[dept].projectKey]=1;
   renderRequestArea(dept);
-  // Restore focus + cursor after DOM is fully rebuilt
-  requestAnimationFrame(() => {
-    const input = document.getElementById(`${dept}-ref-search`);
-    if(input){
-      input.focus();
-      try { input.setSelectionRange(cursorPos, cursorPos); } catch(_) {}
-    }
-  });
 }
-  // Restore focus + cursor after DOM is fully rebuilt
-  requestAnimationFrame(() => {
-    const input = document.getElementById(`${dept}-ref-search`);
-    if(input){
-      input.focus();
-      try { input.setSelectionRange(cursorPos, cursorPos); } catch(_) {}
-    }
-  });
-}
+
 // ============================================================
 //  handleSearch — global dispatcher called by any search input
 //  Supports: refs table, wires table, history page
@@ -2603,31 +2587,12 @@ function handleSearch(e, context, dept){
 
 // Clear search helper — called by ✕ button
 function clearSearch(inputId, context, dept){
-  if(context === 'refs'){
-    // For refs: update formState first, then re-render, then refocus
-    formState[dept].refSearch = '';
-    pagination.refs[dept + navState[dept].projectKey] = 1;
-    renderRequestArea(dept);
-    requestAnimationFrame(() => {
-      const input = document.getElementById(inputId);
-      if(input){
-        input.value = '';
-        input.closest('.search-input-wrap')?.classList.remove('has-value');
-        input.focus();
-      }
-    });
-    return;
-  }
-  // Wire search and history search: DOM is not rebuilt, direct clear works
   const input = document.getElementById(inputId);
   if(!input) return;
   input.value = '';
-  input.closest('.search-input-wrap')?.classList.remove('has-value');
-  handleSearch({target: input}, context, dept);
-  requestAnimationFrame(() => {
-    const fresh = document.getElementById(inputId);
-    if(fresh) fresh.focus();
-  });
+  input.dispatchEvent(new Event('input', {bubbles:true}));
+  handleSearch({target:input}, context, dept);
+  input.focus();
 }
 function searchWires(e,dept){
   const term = e.target.value;
