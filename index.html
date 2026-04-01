@@ -2559,13 +2559,30 @@ function navTo(dept,level){
   renderRequestArea(dept);
 }
 function searchRefs(e,dept){
+// ✅ NEW — debounced, stores cursor position, smooth UX
+
+let _refSearchTimer = null;
+
+function searchRefs(e,dept){
+
   const term = e.target.value;
-  formState[dept].refSearch = term;
-  // Update the clear-button state on the wrapper
+
   const wrap = e.target.closest('.search-input-wrap');
-  if(wrap){ wrap.classList.toggle('has-value', term.length > 0); }
-  pagination.refs[dept+navState[dept].projectKey]=1;
-  renderRequestArea(dept);
+
+  if(wrap) wrap.classList.toggle('has-value', term.length > 0);
+
+  formState[dept].refSearch = term;
+
+  clearTimeout(_refSearchTimer);
+
+  _refSearchTimer = setTimeout(() => {
+
+    pagination.refs[dept + (navState[dept]?.projectKey || '')] = 1;
+
+    renderRequestArea(dept);
+
+  }, 200);
+
 }
 
 // ============================================================
@@ -2587,13 +2604,7 @@ function handleSearch(e, context, dept){
 
 // Clear search helper — called by ✕ button
 function clearSearch(inputId, context, dept){
-  const input = document.getElementById(inputId);
-  if(!input) return;
-  input.value = '';
-  input.dispatchEvent(new Event('input', {bubbles:true}));
-  handleSearch({target:input}, context, dept);
-  input.focus();
-}
+ function clearSearch
 function searchWires(e,dept){
   const term = e.target.value;
   formState[dept].wireSearch = term;
