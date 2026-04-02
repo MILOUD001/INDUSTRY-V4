@@ -2409,7 +2409,7 @@ function renderRefsLevel(dept){
 
   let html=`${backBtn(dept,isVolvoSub?'volvo_subs':'projects',isVolvoSub?'← Back to VOLVO Projects':'← Back to Projects')}${renderBreadcrumb(dept)}<div class="ref-section"><div class="level-header"><div class="level-title"><div style="width:28px;height:28px;background:${color};border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:'Syne',sans-serif;font-size:10px;font-weight:800;box-shadow:0 2px 8px ${color}44">${label.split(' ')[0].slice(0,2).toUpperCase()}</div><span>${label}</span>${pStore.refs.length>0?`<span class="badge badge-emerald">${pStore.refs.length} loaded</span>`:''}</div><div class="level-actions">`;
   if(pStore.refs.length>0){
-    html+=`<div class="search-input-wrap ${searchTerm?'has-value':''}"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" class="search-input" id="${dept}-ref-search" placeholder="Search references…" value="${searchTerm}" oninput="handleSearch(event,'refs','${dept}')"><button type="button" class="search-clear-btn" onclick="clearSearch('${dept}-ref-search','refs','${dept}')" title="Clear search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`;
+    html+=`<div class="search-input-wrap ${searchTerm?'has-value':''}"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" class="search-input" id="${dept}-ref-search" placeholder="Search references…" value="${searchTerm}" autocomplete="off" spellcheck="false" oninput="handleSearch(event,'refs','${dept}')"><button type="button" class="search-clear-btn" onclick="clearSearch('${dept}-ref-search','refs','${dept}')" title="Clear search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`;
     if(isAdmin()){
       html+=`<label class="upload-btn upload-btn-outline"><input type="file" accept=".xlsx,.xls,.csv" onchange="handleRefsUpload(event,'${dept}','${key}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Replace</label> <button onclick="clearProjectRefs('${dept}','${key}')" class="upload-btn upload-btn-outline" style="border-color:rgba(255,71,87,.3);color:var(--crimson)">Clear</button>`;
     }
@@ -2457,7 +2457,7 @@ function setRefPage(dept,key,page){
   const pkey=dept+key;
   const pStore=store[dept][key]||{refs:[]};
   const searchTerm=formState[dept].refSearch||'';
-  const filteredRefs=pStore.refs.filter(r=>!searchTerm||r.id.toLowerCase().includes(searchTerm.toLowerCase())||r.desc.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredRefs=pStore.refs.filter(r=>{if(!searchTerm)return true;const term=searchTerm.toLowerCase();if(r.id.toLowerCase().includes(term)||r.desc.toLowerCase().includes(term))return true;if(r._raw){return Object.values(r._raw).some(v=>String(v).toLowerCase().includes(term));}return false;});
   const totalPages=Math.ceil(filteredRefs.length/15);
   pagination.refs[pkey]=Math.max(1,Math.min(page,totalPages));
   renderRequestArea(dept);
@@ -2558,14 +2558,36 @@ function navTo(dept,level){
   else if(level==='refs'){navState[dept].level='refs';navState[dept].refId=null;}
   renderRequestArea(dept);
 }
-function searchRefs(e,dept){
-  const term = e.target.value;
+// Debounce timers — one slot per dept so depts don't clobber each other
+const _refSearchTimers = {};
+
+function searchRefs(e, dept){
+  const term      = e.target.value;
+  // Save cursor position BEFORE re-render destroys this input element
+  const cursorPos = (typeof e.target.selectionStart === 'number')
+                    ? e.target.selectionStart
+                    : term.length;
+
+  // Update state + clear-btn wrapper immediately (no visual flicker)
   formState[dept].refSearch = term;
-  // Update the clear-button state on the wrapper
   const wrap = e.target.closest('.search-input-wrap');
   if(wrap){ wrap.classList.toggle('has-value', term.length > 0); }
-  pagination.refs[dept+navState[dept].projectKey]=1;
-  renderRequestArea(dept);
+
+  // Always reset to page 1 when the search term changes
+  pagination.refs[dept + navState[dept].projectKey] = 1;
+
+  // Debounce: wait 140ms before re-rendering so fast typing doesn't
+  // fire a full DOM rebuild (and focus loss) on every single keystroke
+  clearTimeout(_refSearchTimers[dept]);
+  _refSearchTimers[dept] = setTimeout(() => {
+    renderRequestArea(dept);
+    // Re-focus the freshly-rendered input and restore cursor position
+    const newInput = document.getElementById(dept + '-ref-search');
+    if(newInput){
+      newInput.focus();
+      try{ newInput.setSelectionRange(cursorPos, cursorPos); }catch(_){}
+    }
+  }, 140);
 }
 
 // ============================================================
@@ -2590,9 +2612,14 @@ function clearSearch(inputId, context, dept){
   const input = document.getElementById(inputId);
   if(!input) return;
   input.value = '';
+  // Dispatch 'input' so the search handler picks up the empty value.
+  // For 'refs' this triggers the debounced searchRefs which will
+  // re-render and re-focus automatically — no need to call focus() here
+  // on the soon-to-be-destroyed element.
   input.dispatchEvent(new Event('input', {bubbles:true}));
-  handleSearch({target:input}, context, dept);
-  input.focus();
+  // For non-refs contexts (wires, history) the input stays in the DOM,
+  // so focusing it immediately is safe.
+  if(context !== 'refs') input.focus();
 }
 function searchWires(e,dept){
   const term = e.target.value;
