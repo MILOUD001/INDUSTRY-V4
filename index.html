@@ -1775,6 +1775,79 @@ html[data-theme="light"] #global-loader {
 html[data-theme="light"] .no-results-row td {
   color: var(--tx-3) !important;
 }
+
+/* ============================================================
+   DRAG-SELECT  —  rubber-band multi-row selection
+   ============================================================ */
+
+/* The animated selection rectangle drawn while the user drags */
+.ds-rect {
+  position: absolute;
+  pointer-events: none;
+  z-index: 20;
+  display: none;
+  border-radius: 3px;
+  /* marching-ants border */
+  background-image:
+    linear-gradient(90deg, var(--steel-lt) 50%, transparent 50%),
+    linear-gradient(90deg, var(--steel-lt) 50%, transparent 50%),
+    linear-gradient(0deg,  var(--steel-lt) 50%, transparent 50%),
+    linear-gradient(0deg,  var(--steel-lt) 50%, transparent 50%);
+  background-size: 8px 1.5px, 8px 1.5px, 1.5px 8px, 1.5px 8px;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-color: rgba(74,158,255,.09);
+}
+.ds-rect.ds-active {
+  display: block;
+  animation: dsMarch .45s linear infinite;
+}
+@keyframes dsMarch {
+  to {
+    background-position: 100% 0, -100% 100%, 0 -100%, 100% 100%;
+  }
+}
+
+/* Scroll container when a drag is live */
+.excel-scroll.ds-dragging {
+  cursor: crosshair !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* Rows swept by the rubber band get an instant highlight */
+.excel-tbl tbody tr.ds-sweep td,
+.excel-tbl tbody tr.ds-sweep .excel-row-num {
+  background: rgba(74,158,255,.16) !important;
+  transition: none !important;
+}
+
+/* "Drag to select" hint pill in the toolbar */
+.ds-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid rgba(74,158,255,.18);
+  background: rgba(74,158,255,.06);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--tx-3);
+  letter-spacing: .3px;
+  flex-shrink: 0;
+  user-select: none;
+  cursor: default;
+}
+.ds-hint svg {
+  width: 11px; height: 11px;
+  color: var(--steel-lt);
+  flex-shrink: 0;
+}
+html[data-theme="light"] .ds-hint {
+  border-color: rgba(26,111,196,.2);
+  background: rgba(26,111,196,.06);
+}
 </style>
 </head>
 <body> <!--  LOGIN  -->
@@ -2363,7 +2436,11 @@ function renderRequestArea(dept){
   if(ns.level==='projects')el.innerHTML=renderProjectsLevel(dept);
   else if(ns.level==='volvo_subs')el.innerHTML=renderVolvoSubsLevel(dept);
   else if(ns.level==='refs')el.innerHTML=renderRefsLevel(dept);
-  else if(ns.level==='wires')el.innerHTML=renderWiresLevel(dept);
+  else if(ns.level==='wires'){
+    el.innerHTML=renderWiresLevel(dept);
+    // Attach drag-select to the freshly created scroll container
+    requestAnimationFrame(()=>initDragSelect(dept));
+  }
 }
 
 function renderProjectsLevel(dept){
@@ -2507,6 +2584,13 @@ function renderWiresLevel(dept){
           <span class="sel-count" id="${dept}-sel-count">0 selected</span>
           <button class="small-btn" onclick="selectAll('${dept}')">All</button>
           <button class="small-btn" onclick="deselectAll('${dept}')">None</button>
+          <span class="ds-hint" title="Left-click and drag on any row to select multiple wires">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 9V5h4M15 5h4v4M19 15v4h-4M9 19H5v-4"/>
+              <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".35"/>
+            </svg>
+            Drag to select
+          </span>
         </div>
       </div>`;
     // ── Excel table body via helper ──────────────────────────
@@ -2739,6 +2823,216 @@ function updateSelCount(dept){
 function toggleAll(dept,v){document.querySelectorAll(`.${dept}-wcb`).forEach(c=>{c.checked=v;});updateSelCount(dept);}
 function selectAll(dept){toggleAll(dept,true);}
 function deselectAll(dept){toggleAll(dept,false);}
+
+// ============================================================
+//  initDragSelect(dept)
+//  Rubber-band multi-row selection for the wire list table.
+//
+//  FEATURE SUMMARY
+//  ───────────────
+//  • Left-click + drag on any data cell → draws an animated
+//    marching-ants selection rectangle; every visible row
+//    whose bounding box overlaps the rect is checked live.
+//  • Ctrl / Cmd / Shift held during drag → ADD mode: rows
+//    outside the band keep their pre-drag checked state.
+//  • No modifier → REPLACE mode: only swept rows are checked.
+//  • Plain click (< 5 px movement) on a blank cell with no
+//    modifier key → deselects all.
+//  • Escape while dragging → cancels and restores the exact
+//    checkbox states from before the drag started.
+//  • Never fires on inputs, checkboxes, buttons or labels.
+//  • Works correctly with horizontal + vertical scroll.
+//  • Self-cleans on every re-render (no listener leaks).
+//
+//  CALLED BY  renderRequestArea()  after the wires level
+//  is inserted into the DOM (via requestAnimationFrame).
+// ============================================================
+function initDragSelect(dept){
+
+  // ── 1. Find the scrollable container ──────────────────────
+  const scrollEl = document.getElementById(dept + '-wit')
+                            ?.closest('.excel-scroll');
+  if(!scrollEl) return;
+
+  // ── 2. Tear down any previous instance on this container ──
+  if(scrollEl._dsDestroy) scrollEl._dsDestroy();
+
+  // ── 3. Create the rubber-band overlay ─────────────────────
+  // It lives *inside* scrollEl so it scrolls with the content.
+  scrollEl.style.position = 'relative'; // needed for abs. child
+  const band = document.createElement('div');
+  band.className = 'ds-rect';
+  band.setAttribute('aria-hidden', 'true');
+  scrollEl.appendChild(band);
+
+  // ── 4. Internal state ─────────────────────────────────────
+  let live       = false;   // true while user is dragging
+  let originX    = 0;       // drag-start in content coordinates
+  let originY    = 0;
+  let preSnap    = null;    // Map<rowId → bool> of checked states
+
+  // ── 5. Coordinate helper ──────────────────────────────────
+  // Converts a viewport point to the scrollable content space.
+  function toContentXY(clientX, clientY){
+    const cr = scrollEl.getBoundingClientRect();
+    return {
+      x: clientX - cr.left + scrollEl.scrollLeft,
+      y: clientY - cr.top  + scrollEl.scrollTop,
+    };
+  }
+
+  // ── 6. Row helpers ────────────────────────────────────────
+  function allVisibleRows(){
+    const tbl = document.getElementById(dept + '-wit');
+    if(!tbl) return [];
+    return Array.from(
+      tbl.querySelectorAll(`tr[id^="${dept}-wrow-"]`)
+    ).filter(r => r.style.display !== 'none');
+  }
+
+  // Returns rows whose vertical span overlaps [top, bottom].
+  // Horizontal overlap is ignored — rows fill the full width,
+  // so any horizontal drag position hits them.
+  function rowsInBand(top, bottom){
+    const cr = scrollEl.getBoundingClientRect();
+    return allVisibleRows().filter(row => {
+      const r    = row.getBoundingClientRect();
+      const rTop = r.top    - cr.top  + scrollEl.scrollTop;
+      const rBot = r.bottom - cr.top  + scrollEl.scrollTop;
+      return rBot > top && rTop < bottom; // overlap test
+    });
+  }
+
+  // ── 7. Apply selection state during drag ──────────────────
+  function applyBand(top, bottom, addMode){
+    const swept    = new Set(rowsInBand(top, bottom).map(r => r.id));
+    allVisibleRows().forEach(row => {
+      const cb = row.querySelector('.wire-cb');
+      if(!cb) return;
+      const inBand = swept.has(row.id);
+      // ADD mode → preserve pre-snap state for rows outside band
+      cb.checked = inBand || (addMode && !!preSnap.get(row.id));
+      row.classList.toggle('ds-sweep', inBand);
+    });
+    updateSelCount(dept);
+  }
+
+  function clearSweep(){
+    allVisibleRows().forEach(r => r.classList.remove('ds-sweep'));
+  }
+
+  // ── 8. mousedown ──────────────────────────────────────────
+  function onDown(e){
+    if(e.button !== 0) return;
+
+    // Skip interactive elements
+    const tag = e.target.tagName.toUpperCase();
+    if(['INPUT','BUTTON','LABEL','SELECT','A'].includes(tag)) return;
+    if(e.target.closest('.excel-checkbox-col')) return;
+    if(e.target.closest('.excel-row-num'))      return;
+
+    const p  = toContentXY(e.clientX, e.clientY);
+    originX  = p.x;
+    originY  = p.y;
+    live     = false;
+
+    // Snapshot current selection for Ctrl/Shift add-mode
+    preSnap = new Map(
+      allVisibleRows().map(r => {
+        const cb = r.querySelector('.wire-cb');
+        return [r.id, cb ? cb.checked : false];
+      })
+    );
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup',   onUp);
+    document.addEventListener('keydown',   onKey);
+    e.preventDefault(); // suppress text-selection
+  }
+
+  // ── 9. mousemove ──────────────────────────────────────────
+  const THRESHOLD = 5; // px — minimum movement to start drag
+
+  function onMove(e){
+    const p  = toContentXY(e.clientX, e.clientY);
+    const dx = p.x - originX;
+    const dy = p.y - originY;
+
+    // Activate drag once threshold is crossed
+    if(!live){
+      if(Math.abs(dx) < THRESHOLD && Math.abs(dy) < THRESHOLD) return;
+      live = true;
+      scrollEl.classList.add('ds-dragging');
+      band.classList.add('ds-active');
+    }
+
+    // ── Compute rect in content space ─────────────────────
+    const left   = Math.min(p.x, originX);
+    const top    = Math.min(p.y, originY);
+    const right  = Math.max(p.x, originX);
+    const bottom = Math.max(p.y, originY);
+
+    // Position the visual band
+    band.style.left   = left          + 'px';
+    band.style.top    = top           + 'px';
+    band.style.width  = (right - left) + 'px';
+    band.style.height = (bottom - top) + 'px';
+
+    // Update checkboxes
+    applyBand(top, bottom, e.ctrlKey || e.metaKey || e.shiftKey);
+  }
+
+  // ── 10. mouseup ───────────────────────────────────────────
+  function onUp(e){
+    detach();
+
+    if(!live){
+      // Plain click: deselect-all if no modifier and not on interactive
+      const tag = e.target.tagName.toUpperCase();
+      const onWidget = ['INPUT','BUTTON','LABEL','SELECT'].includes(tag)
+                    || e.target.closest('.excel-checkbox-col');
+      if(!onWidget && !e.ctrlKey && !e.metaKey && !e.shiftKey){
+        deselectAll(dept);
+      }
+    } else {
+      clearSweep();
+      updateSelCount(dept);
+    }
+  }
+
+  // ── 11. Escape = cancel drag ──────────────────────────────
+  function onKey(e){
+    if(e.key !== 'Escape' || !live) return;
+    detach();
+    // Restore pre-drag snapshot
+    allVisibleRows().forEach(row => {
+      const cb = row.querySelector('.wire-cb');
+      if(cb) cb.checked = !!preSnap.get(row.id);
+    });
+    updateSelCount(dept);
+  }
+
+  // ── 12. Shared teardown ───────────────────────────────────
+  function detach(){
+    live = false;
+    band.classList.remove('ds-active');
+    scrollEl.classList.remove('ds-dragging');
+    clearSweep();
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup',   onUp);
+    document.removeEventListener('keydown',   onKey);
+  }
+
+  // ── 13. Attach and expose cleanup ─────────────────────────
+  scrollEl.addEventListener('mousedown', onDown);
+
+  scrollEl._dsDestroy = () => {
+    scrollEl.removeEventListener('mousedown', onDown);
+    detach();
+    band.remove();
+    delete scrollEl._dsDestroy;
+  };
+}
 
 function viewWireList(dept,key,refId){
   const wires=store[dept][key].refData[refId]||[];
