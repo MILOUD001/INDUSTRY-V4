@@ -180,7 +180,8 @@ html[data-theme="light"] .form-input,
 html[data-theme="light"] .field select,
 html[data-theme="light"] .field input,
 html[data-theme="light"] .search-input,
-html[data-theme="light"] .qty-input{
+html[data-theme="light"] .qty-input,
+html[data-theme="light"] input[type="datetime-local"]{
   background:#ffffff;
   border:1px solid rgba(0,0,0,.15);
   color:var(--tx-1);
@@ -1681,6 +1682,52 @@ html[data-theme="light"] #global-loader {
   box-shadow: 0 2px 8px rgba(224,123,57,.25);
 }
 
+/* -- datetime-local inputs styled for dark/light themes -- */
+input[type="datetime-local"] {
+  color-scheme: dark;
+  background: var(--bg-03);
+  border: 1px solid var(--bd-1);
+  border-radius: var(--r-sm);
+  color: var(--tx-1);
+  outline: none;
+  transition: border-color .2s;
+}
+input[type="datetime-local"]:focus { border-color: var(--copper); }
+html[data-theme="light"] input[type="datetime-local"] { color-scheme: light; }
+
+/* -- Clickable KPI cards -- */
+.kpi-clickable {
+  cursor: pointer;
+  transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s !important;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-clickable::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,.03);
+  opacity: 0;
+  transition: opacity .2s;
+  pointer-events: none;
+}
+.kpi-clickable:hover::after { opacity: 1; }
+.kpi-clickable:hover {
+  transform: translateY(-3px) scale(1.015);
+  box-shadow: var(--sh-md);
+}
+.kpi-clickable:active { transform: translateY(0) scale(.99); }
+.kpi-click-hint {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  color: var(--tx-4);
+  margin-top: 4px;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.kpi-clickable:hover .kpi-click-hint { opacity: 1; }
+
 /* -- Enhanced toast -- */
 .toast-item {
   transition: all .25s var(--ease);
@@ -1775,83 +1822,10 @@ html[data-theme="light"] #global-loader {
 html[data-theme="light"] .no-results-row td {
   color: var(--tx-3) !important;
 }
-
-/* ============================================================
-   DRAG-SELECT  —  rubber-band multi-row selection
-   ============================================================ */
-
-/* The animated selection rectangle drawn while the user drags */
-.ds-rect {
-  position: absolute;
-  pointer-events: none;
-  z-index: 20;
-  display: none;
-  border-radius: 3px;
-  /* marching-ants border */
-  background-image:
-    linear-gradient(90deg, var(--steel-lt) 50%, transparent 50%),
-    linear-gradient(90deg, var(--steel-lt) 50%, transparent 50%),
-    linear-gradient(0deg,  var(--steel-lt) 50%, transparent 50%),
-    linear-gradient(0deg,  var(--steel-lt) 50%, transparent 50%);
-  background-size: 8px 1.5px, 8px 1.5px, 1.5px 8px, 1.5px 8px;
-  background-position: 0 0, 0 100%, 0 0, 100% 0;
-  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
-  background-color: rgba(74,158,255,.09);
-}
-.ds-rect.ds-active {
-  display: block;
-  animation: dsMarch .45s linear infinite;
-}
-@keyframes dsMarch {
-  to {
-    background-position: 100% 0, -100% 100%, 0 -100%, 100% 100%;
-  }
-}
-
-/* Scroll container when a drag is live */
-.excel-scroll.ds-dragging {
-  cursor: crosshair !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-}
-
-/* Rows swept by the rubber band get an instant highlight */
-.excel-tbl tbody tr.ds-sweep td,
-.excel-tbl tbody tr.ds-sweep .excel-row-num {
-  background: rgba(74,158,255,.16) !important;
-  transition: none !important;
-}
-
-/* "Drag to select" hint pill in the toolbar */
-.ds-hint {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: 20px;
-  border: 1px solid rgba(74,158,255,.18);
-  background: rgba(74,158,255,.06);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--tx-3);
-  letter-spacing: .3px;
-  flex-shrink: 0;
-  user-select: none;
-  cursor: default;
-}
-.ds-hint svg {
-  width: 11px; height: 11px;
-  color: var(--steel-lt);
-  flex-shrink: 0;
-}
-html[data-theme="light"] .ds-hint {
-  border-color: rgba(26,111,196,.2);
-  background: rgba(26,111,196,.06);
-}
 </style>
 </head>
 <body> <!--  LOGIN  -->
-<div id="login-screen"> <div class="login-wire-line" style="top:15%;width:60%;left:20%;animation-duration:9s;animation-delay:0s"></div> <div class="login-wire-line" style="top:35%;width:40%;left:5%;animation-duration:12s;animation-delay:2s"></div> <div class="login-wire-line" style="top:55%;width:70%;left:15%;animation-duration:8s;animation-delay:3.5s"></div> <div class="login-wire-line" style="top:75%;width:50%;left:30%;animation-duration:11s;animation-delay:1s"></div> <div class="login-wrap"> <div class="login-header"> <div class="login-logo"> <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#080b12"/><circle cx="10" cy="16" r="4" fill="#080b12"/><circle cx="22" cy="16" r="4" fill="#080b12"/><path d="M6 10L16 6l10 4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/><path d="M6 22l10 4 10-4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/></svg> </div> <div class="login-brand">MILOUD <em>EZZAKY</em></div> <div class="login-version">Industry V.7 &nbsp;·&nbsp; Wire Harness Manufacturing</div> </div> <!--  TAB SWITCHER  --> <div class="auth-tabs"> <button class="auth-tab active" id="tab-signin" onclick="showAuthPanel('signin')">Sign In</button> <button class="auth-tab" id="tab-signup" onclick="showAuthPanel('signup')">Sign Up</button> </div> <!--  SIGN IN PANEL  --> <div class="login-card" id="panel-signin"> <div class="login-card-title">Welcome Back</div> <div class="login-card-sub">Sign in with your Employee ID and password</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="si-uid" placeholder="e.g. ME-001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="si-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px"> <button type="button" onclick="togglePw('si-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> </div> <div id="si-error" class="auth-msg auth-err" style="display:none"></div> <button class="login-submit" onclick="doLogin()">Sign In →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('forgot')">Forgot password?</button> </div> </div> <!--  SIGN UP PANEL  --> <div class="login-card" id="panel-signup" style="display:none"> <div class="login-card-title">Create Account</div> <div class="login-card-sub">Register with your Gmail — login is always with Employee ID &amp; password</div> <div class="form-group"><label class="form-label">Full Name</label> <input type="text" class="form-input" id="su-name" placeholder="e.g. Ahmed Benali" autocomplete="name"> </div> <div class="form-group"><label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(used for account recovery)</span></label> <div style="position:relative"> <input type="email" class="form-input" id="su-gmail" placeholder="yourname@gmail.com" autocomplete="email" oninput="validateGmail(this)" style="padding-right:36px"> <span id="su-gmail-icon" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none"></span> </div> <div id="su-gmail-hint" style="font-size:10px;color:var(--tx-3);margin-top:4px">Must be a @gmail.com address</div> </div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="su-uid" placeholder="e.g. ME-042" autocomplete="username"> </div> <div class="form-group"><label class="form-label">Department</label> <select id="su-dept" class="form-input"> <option value="assembly">ASSEMBLY — Request Only</option> <option value="pagoda">PAGODA — Central Hub</option> <option value="cutting">CUTTING AREA</option> <option value="wpa">WIRE PREP AREA</option> <option value="twist">TWIST DEPARTMENT</option> </select> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="su-pw" placeholder="Min 6 characters" style="padding-right:40px" oninput="checkPwStrength(this.value)"> <button type="button" onclick="togglePw('su-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="pw-strength-bar"><div id="pw-strength-fill"></div></div> <div id="pw-strength-label" style="font-size:10px;color:var(--tx-3);margin-top:3px"></div> </div> <div class="form-group"><label class="form-label">Confirm Password</label> <input type="password" class="form-input" id="su-pw2" placeholder="Repeat password"> </div> <div id="su-error" class="auth-msg auth-err" style="display:none"></div> <div id="su-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" onclick="doSignUp()">Create Account →</button> <div style="text-align:center;margin-top:14px"> <span style="font-size:11px;color:var(--tx-3)">Already have an account?</span> <button class="auth-link" onclick="showAuthPanel('signin')">Sign In</button> </div> </div> <!--  FORGOT PASSWORD PANEL  --> <div class="login-card" id="panel-forgot" style="display:none"> <div class="login-card-title">Reset Password</div> <div class="login-card-sub">Verify your identity using your Employee ID and Gmail</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="fp-uid" placeholder="e.g. ME-001"> </div> <div class="form-group" id="fp-secret-group"> <label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(registered at sign up)</span></label> <input type="email" class="form-input" id="fp-secret" placeholder="yourname@gmail.com"> </div> <div class="form-group" id="fp-newpw-group" style="display:none"> <label class="form-label">New Password</label> <div style="position:relative"> <input type="password" class="form-input" id="fp-newpw" placeholder="Min 6 characters" style="padding-right:40px"> <button type="button" onclick="togglePw('fp-newpw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="form-group" style="margin-top:10px"><label class="form-label">Confirm New Password</label> <input type="password" class="form-input" id="fp-newpw2" placeholder="Repeat new password"> </div> </div> <div id="fp-error" class="auth-msg auth-err" style="display:none"></div> <div id="fp-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" id="fp-btn" onclick="doForgotStep()">Verify Identity →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('signin')">← Back to Sign In</button> </div> </div> <div class="login-footer">© 2026 Miloud Ezzaky Industry V.7 &nbsp;·&nbsp; Project → Reference → Wire</div> </div>
+<div id="login-screen"> <div class="login-wire-line" style="top:15%;width:60%;left:20%;animation-duration:9s;animation-delay:0s"></div> <div class="login-wire-line" style="top:35%;width:40%;left:5%;animation-duration:12s;animation-delay:2s"></div> <div class="login-wire-line" style="top:55%;width:70%;left:15%;animation-duration:8s;animation-delay:3.5s"></div> <div class="login-wire-line" style="top:75%;width:50%;left:30%;animation-duration:11s;animation-delay:1s"></div> <div class="login-wrap"> <div class="login-header"> <div class="login-logo"> <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#080b12"/><circle cx="10" cy="16" r="4" fill="#080b12"/><circle cx="22" cy="16" r="4" fill="#080b12"/><path d="M6 10L16 6l10 4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/><path d="M6 22l10 4 10-4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/></svg> </div> <div class="login-brand">MILOUD <em>EZZAKY</em></div> <div class="login-version">Industry V.7 &nbsp;·&nbsp; Wire Harness Manufacturing</div> </div> <!--  TAB SWITCHER  --> <div class="auth-tabs"> <button class="auth-tab active" id="tab-signin" onclick="showAuthPanel('signin')">Sign In</button> <button class="auth-tab" id="tab-signup" onclick="showAuthPanel('signup')">Sign Up</button> </div> <!--  SIGN IN PANEL  --> <div class="login-card" id="panel-signin"> <div class="login-card-title">Welcome Back</div> <div class="login-card-sub">Sign in with your Employee ID and password</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="si-uid" placeholder="e.g. ME-001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="si-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px"> <button type="button" onclick="togglePw('si-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> </div> <div id="si-error" class="auth-msg auth-err" style="display:none"></div> <button class="login-submit" onclick="doLogin()">Sign In →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('forgot')">Forgot password?</button> </div> </div> <!--  SIGN UP PANEL  --> <div class="login-card" id="panel-signup" style="display:none"> <div class="login-card-title">Create Account</div> <div class="login-card-sub">Register with your Gmail — login is always with Employee ID &amp; password</div> <div class="form-group"><label class="form-label">Full Name</label> <input type="text" class="form-input" id="su-name" placeholder="e.g. Ahmed Benali" autocomplete="name"> </div> <div class="form-group"><label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(used for account recovery)</span></label> <div style="position:relative"> <input type="email" class="form-input" id="su-gmail" placeholder="yourname@gmail.com" autocomplete="email" oninput="validateGmail(this)" style="padding-right:36px"> <span id="su-gmail-icon" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none"></span> </div> <div id="su-gmail-hint" style="font-size:10px;color:var(--tx-3);margin-top:4px">Must be a @gmail.com address</div> </div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="su-uid" placeholder="e.g. ME-042" autocomplete="username"> </div> <div class="form-group"><label class="form-label">Department</label> <select id="su-dept" class="form-input" onchange="renderProjectCheckboxes()"> <option value="assembly">ASSEMBLY — Request Only</option> <option value="pagoda">PAGODA — Central Hub</option> <option value="cutting">CUTTING AREA</option> <option value="wpa">WIRE PREP AREA</option> <option value="twist">TWIST DEPARTMENT</option> </select> </div> <div class="form-group" id="su-proj-group"> <label class="form-label">Project Access <span style="color:var(--crimson)">*</span> <span style="color:var(--tx-3);font-size:9px;font-weight:400;letter-spacing:0">— select one or more</span></label> <div id="su-proj-list" style="max-height:160px;overflow-y:auto;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:var(--r-sm);padding:8px 10px;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;"></div> <div style="display:flex;gap:7px;margin-top:6px"> <button type="button" onclick="toggleAllProjects(true)" style="font-size:10px;padding:3px 9px;background:var(--bg-04);border:1px solid var(--bd-1);border-radius:5px;color:var(--tx-2);cursor:pointer">All</button> <button type="button" onclick="toggleAllProjects(false)" style="font-size:10px;padding:3px 9px;background:var(--bg-04);border:1px solid var(--bd-1);border-radius:5px;color:var(--tx-2);cursor:pointer">None</button> </div> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="su-pw" placeholder="Min 6 characters" style="padding-right:40px" oninput="checkPwStrength(this.value)"> <button type="button" onclick="togglePw('su-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="pw-strength-bar"><div id="pw-strength-fill"></div></div> <div id="pw-strength-label" style="font-size:10px;color:var(--tx-3);margin-top:3px"></div> </div> <div class="form-group"><label class="form-label">Confirm Password</label> <input type="password" class="form-input" id="su-pw2" placeholder="Repeat password"> </div> <div id="su-error" class="auth-msg auth-err" style="display:none"></div> <div id="su-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" onclick="doSignUp()">Create Account →</button> <div style="text-align:center;margin-top:14px"> <span style="font-size:11px;color:var(--tx-3)">Already have an account?</span> <button class="auth-link" onclick="showAuthPanel('signin')">Sign In</button> </div> </div> <!--  FORGOT PASSWORD PANEL  --> <div class="login-card" id="panel-forgot" style="display:none"> <div class="login-card-title">Reset Password</div> <div class="login-card-sub">Verify your identity using your Employee ID and Gmail</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="fp-uid" placeholder="e.g. ME-001"> </div> <div class="form-group" id="fp-secret-group"> <label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(registered at sign up)</span></label> <input type="email" class="form-input" id="fp-secret" placeholder="yourname@gmail.com"> </div> <div class="form-group" id="fp-newpw-group" style="display:none"> <label class="form-label">New Password</label> <div style="position:relative"> <input type="password" class="form-input" id="fp-newpw" placeholder="Min 6 characters" style="padding-right:40px"> <button type="button" onclick="togglePw('fp-newpw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="form-group" style="margin-top:10px"><label class="form-label">Confirm New Password</label> <input type="password" class="form-input" id="fp-newpw2" placeholder="Repeat new password"> </div> </div> <div id="fp-error" class="auth-msg auth-err" style="display:none"></div> <div id="fp-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" id="fp-btn" onclick="doForgotStep()">Verify Identity →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('signin')">← Back to Sign In</button> </div> </div> <div class="login-footer">© 2026 Miloud Ezzaky Industry V.7 &nbsp;·&nbsp; Project → Reference → Wire</div> </div>
 </div> <!--  APP  -->
 <div id="app"> <div class="sb-overlay" id="sb-overlay" onclick="closeSB()"></div> <aside class="sidebar"> <div class="sb-brand"> <div class="sb-icon"> <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#fff"/><circle cx="10" cy="16" r="4" fill="#fff"/><circle cx="22" cy="16" r="4" fill="#fff"/></svg> </div> <div><div class="sb-brand-name">Miloud Ezzaky</div><div class="sb-brand-ver">Industry V.7</div></div> </div> <nav class="sb-nav"> <div class="nav-section"> <span class="nav-section-label">Overview</span> <button class="nav-btn active" onclick="switchPage('analytics',this)" data-page="analytics"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Analytics
         </button> <button class="nav-btn" onclick="switchPage('history',this)" data-page="history"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History<span class="nav-badge nb-copper" id="b-history">0</span> </button> </div> <div class="nav-section"> <span class="nav-section-label">Departments</span> <button class="nav-btn" onclick="switchPage('assembly',this)" data-page="assembly"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Assembly<span class="nav-badge nb-copper" id="b-assembly">0</span> </button> <button class="nav-btn" onclick="switchPage('pagoda',this)" data-page="pagoda"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> Pagoda Hub<span class="nav-badge nb-crimson" id="b-pagoda">0</span> </button> <button class="nav-btn" onclick="switchPage('cutting',this)" data-page="cutting"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg> Cutting<span class="nav-badge nb-steel" id="b-cutting">0</span> </button> <button class="nav-btn" onclick="switchPage('wpa',this)" data-page="wpa"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Wire Prep Area<span class="nav-badge nb-teal" id="b-wpa">0</span> </button> <button class="nav-btn" onclick="switchPage('twist',this)" data-page="twist"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg> Twist<span class="nav-badge nb-violet" id="b-twist">0</span> </button> </nav> <div class="sb-clock"> <div class="clk-time" id="clk-time">--:--:--</div> <div class="clk-date" id="clk-date">…</div> <div class="shift-tag"><span class="shift-dot"></span><span id="clk-shift">—</span></div> </div> </aside> <div class="main"> <header class="topbar"> <button class="menu-toggle" onclick="toggleSB()"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> </button> <div class="topbar-title" id="topbar-title">Analytics Dashboard</div> <div id="topbar-user-chip" style="display:none;align-items:center;gap:4px;font-size:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;margin-right:6px"></div> <button class="notif-bell" id="notif-bell-btn" onclick="toggleNotifPanel()" title="Notifications"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> <span class="notif-dot" id="notif-dot"></span> <span class="notif-badge" id="notif-badge">0</span> </button> <button id="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
@@ -1859,12 +1833,20 @@ html[data-theme="light"] .ds-hint {
   <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
   <span id="theme-toggle-label">Light</span>
 </button> <button class="topbar-btn" data-action="refresh" id="refresh-btn" title="Refresh all data"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg> Refresh
-      </button> </header> <!--  ANALYTICS  --> <div id="page-analytics" class="page active"> <div class="kpi-grid"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="kpi-val" id="a-total">0</div><div class="kpi-label">Total Requests</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="a-done">0</div><div class="kpi-label">Completed</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="a-pending">0</div><div class="kpi-label">Pending</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="a-prog">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="two-col" style="margin-bottom:16px"> <div class="card"><div class="card-head"><div class="card-title">Daily Requests — Last 7 Days</div><span class="badge badge-steel">Live</span></div><div style="padding:18px"><div class="bar-track" id="daily-chart"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">Department Workload</div></div><div class="donut-wrap"><svg width="100" height="100" viewBox="0 0 100 100" id="donut-svg"><circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="12"/></svg><div id="donut-legend"></div></div></div> </div> <div class="two-col"> <div class="card"><div class="card-head"><div class="card-title">Top Requested Wires</div></div><div class="card-body" id="top-wires"></div></div> <div class="card"><div class="card-head"><div class="card-title">Requests by Project</div></div><div class="card-body" id="proj-chart"></div></div> </div> </div> <!--  HISTORY  --> <div id="page-history" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#090e1c,#0e1d38)"> <div> <div class="db-title" style="display:flex;align-items:center;gap:9px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--copper)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History
+      </button> </header> <!--  ANALYTICS  --> <div id="page-analytics" class="page active"> <div class="kpi-grid"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="kpi-val" id="a-total">0</div><div class="kpi-label">Total Requests</div></div> <div class="kpi-card kpi-emerald kpi-clickable" onclick="showStatusModal('completed')" title="Click to see completed requests"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="a-done">0</div><div class="kpi-label">Completed</div><div class="kpi-click-hint">Click to view ↗</div></div> <div class="kpi-card kpi-amber kpi-clickable" onclick="showStatusModal('pending')" title="Click to see pending requests"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="a-pending">0</div><div class="kpi-label">Pending</div><div class="kpi-click-hint">Click to view ↗</div></div> <div class="kpi-card kpi-teal kpi-clickable" onclick="showStatusModal('in_progress')" title="Click to see in-progress requests"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="a-prog">0</div><div class="kpi-label">In Progress</div><div class="kpi-click-hint">Click to view ↗</div></div> </div> <div class="two-col" style="margin-bottom:16px"> <div class="card"><div class="card-head"><div class="card-title">Daily Requests — Last 7 Days</div><span class="badge badge-steel">Live</span></div><div style="padding:18px"><div class="bar-track" id="daily-chart"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">Department Workload</div></div><div class="donut-wrap"><svg width="100" height="100" viewBox="0 0 100 100" id="donut-svg"><circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="12"/></svg><div id="donut-legend"></div></div></div> </div> <div class="two-col"> <div class="card"><div class="card-head"><div class="card-title">Top Requested Wires</div></div><div class="card-body" id="top-wires"></div></div> <div class="card"><div class="card-head"><div class="card-title">Requests by Project</div></div><div class="card-body" id="proj-chart"></div></div> </div> </div> <!--  HISTORY  --> <div id="page-history" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#090e1c,#0e1d38)"> <div> <div class="db-title" style="display:flex;align-items:center;gap:9px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--copper)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History
           </div> <div class="db-sub">All submitted orders — click any row to expand full details</div> </div> <span class="badge badge-copper" id="hist-total-badge">0 orders</span> </div> <div class="card" style="margin-bottom:14px"> <div style="padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px"> <div class="search-input-wrap" id="hist-search-wrap" style="flex:1;min-width:150px;max-width:340px;display:flex">
   <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
   <input id="hist-search" type="text" class="search-input" placeholder="Search ID, wire, project, dept, status…" style="width:100%;font-size:12px;padding:8px 12px 8px 28px" oninput="(function(e){var w=document.getElementById('hist-search-wrap');if(w)w.classList.toggle('has-value',e.target.value.length>0);var t=window._histSearchTimer;clearTimeout(t);window._histSearchTimer=setTimeout(function(){renderHistoryPage();},120);})(event)">
   <button type="button" class="search-clear-btn" onclick="(function(){var i=document.getElementById('hist-search');if(i){i.value='';document.getElementById('hist-search-wrap').classList.remove('has-value');renderHistoryPage();i.focus();}})()" title="Clear search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-</div> <select id="hist-filter-dept" class="form-input" style="width:155px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Departments</option> <option value="assembly">Assembly</option> <option value="wpa">Wire Prep Area</option> <option value="twist">Twist</option> </select> <select id="hist-filter-status" class="form-input" style="width:145px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Statuses</option> <option value="completed">Completed</option> <option value="in_progress">In Progress</option> <option value="pending">Pending</option> </select> <div style="font-size:10px;color:var(--tx-3);margin-left:auto;font-family:'IBM Plex Mono',monospace" id="hist-count-label">— orders</div> </div> </div> <div id="hist-list"></div> </div> <!--  ASSEMBLY  --> <div id="page-assembly" class="page"> <div class="dept-banner db-asm"> <div><div class="db-title">Assembly Department</div><div class="db-sub">Project → Reference → Wire → Submit Request</div></div> <span class="badge badge-emerald">Request Only</span> </div> <div id="asm-request-area"></div> <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Active Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-copper" id="asm-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="asm-hist-count">0</span></div><div class="card-body" id="asm-hist"></div></div> </div> <!--  PAGODA  --> <div id="page-pagoda" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#070e28,#0e2060)"> <div><div class="db-title">Pagoda · Central Hub</div><div class="db-sub">Review all incoming requests · Mark In Stock or Out of Stock</div></div> <span class="badge badge-steel">Hub</span> </div> <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="kpi-val" id="p-pending">0</div><div class="kpi-label">Pending</div></div> </div> <div class="two-col"> <div> <div class="card"><div class="card-head"><div class="card-title">Pending Requests</div><span class="badge badge-copper" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="pagoda-hist-count">0</span></div><div class="card-body" id="pagoda-hist"></div></div> </div> <div style="display:flex;flex-direction:column;gap:14px"> <div class="card"><div class="card-head"><div class="card-title">Metrics</div></div><div class="card-body"><div class="perf-row"><span class="perf-k">Requests Today</span><span class="perf-v" id="p-today">0</span></div><div class="perf-row"><span class="perf-k">Fulfillment Rate</span><span class="perf-v" id="p-rate">0%</span></div><div class="prog-bar"><div class="prog-fill" id="p-rate-bar" style="width:0%"></div></div></div></div> </div> </div> </div> <!--  CUTTING  --> <div id="page-cutting" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#031f14,#054a30)"> <div><div class="db-title">Cutting Area</div><div class="db-sub">Simple wires routed from Pagoda when Out of Stock</div></div> </div> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="c-pending">0</div><div class="kpi-label">To Cut</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="c-prog">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="c-done">0</div><div class="kpi-label">Done Today</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="cutting-hist-count">0</span></div><div class="card-body" id="cutting-hist"></div></div> </div> <!--  WPA  --> <div id="page-wpa" class="page"> <div class="dept-banner db-wpa"><div><div class="db-title">Wire Prep Area</div><div class="db-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-teal">Request & Fulfill</span></div> <div class="tab-row"> <button id="wpa-tab-req" class="topbar-btn" style="background:var(--teal);color:var(--bg-base);border-color:var(--teal)" onclick="switchTab('wpa','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchTab('wpa','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-teal" id="wpa-fc" style="margin-left:4px">0</span></button> <button id="wpa-tab-hist" class="topbar-btn" onclick="switchTab('wpa','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="wpa-req-panel"> <div id="wpa-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active WPA Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-teal" id="wpa-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="wpa-req-hist-count">0</span></div><div class="card-body" id="wpa-req-hist"></div></div> </div> <div id="wpa-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> WPA Completed History</div><span class="badge badge-emerald" id="wpa-hist-count">0</span></div><div class="card-body" id="wpa-hist"></div></div> </div> <div id="wpa-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="wpa-xe-cnt">0</div><div class="kpi-label">XE Wires</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0"/></svg></div><div class="kpi-val" id="wpa-sp-cnt">0</div><div class="kpi-label">SP Wires</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="wpa-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="card" style="margin-bottom:14px"><div class="card-head"><div class="card-title">XE Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-list"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">SP Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-list"></div></div></div> </div> </div> <!--  TWIST  --> <div id="page-twist" class="page"> <div class="dept-banner db-twist"><div><div class="db-title">Twist Department</div><div class="db-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-violet">Request & Fulfill</span></div> <div class="tab-row"> <button id="twist-tab-req" class="topbar-btn" style="background:var(--violet);color:#fff;border-color:var(--violet)" onclick="switchTab('twist','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTab('twist','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-violet" id="twist-fc" style="margin-left:4px">0</span></button> <button id="twist-tab-hist" class="topbar-btn" onclick="switchTab('twist','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="twist-req-panel"> <div id="twist-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active Twist Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-violet" id="twist-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="twist-req-hist-count">0</span></div><div class="card-body" id="twist-req-hist"></div></div> </div> <div id="twist-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> Twist Completed History</div><span class="badge badge-emerald" id="twist-hist-count">0</span></div><div class="card-body" id="twist-hist"></div></div> </div> <div id="twist-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="twist-pend-cnt">0</div><div class="kpi-label">To Twist</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="twist-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0M3 12h18"/></svg></div><div class="kpi-val" id="twist-pairs-cnt">0</div><div class="kpi-label">Wire Pairs</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-fulfill-list"></div></div></div> </div> </div>
+</div> <select id="hist-filter-dept" class="form-input" style="width:155px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Departments</option> <option value="assembly">Assembly</option> <option value="wpa">Wire Prep Area</option> <option value="twist">Twist</option> </select> <select id="hist-filter-status" class="form-input" style="width:145px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Statuses</option> <option value="completed">Completed</option> <option value="in_progress">In Progress</option> <option value="pending">Pending</option> </select>
+<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:var(--copper);flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  <input type="datetime-local" id="hist-filter-from" class="form-input" style="width:175px;padding:6px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace" onchange="renderHistoryPage()" title="From date &amp; time">
+  <span style="font-size:10px;color:var(--tx-4);font-weight:600">→</span>
+  <input type="datetime-local" id="hist-filter-to" class="form-input" style="width:175px;padding:6px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace" onchange="renderHistoryPage()" title="To date &amp; time">
+  <button onclick="clearHistDateFilter()" title="Clear date filter" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:var(--r-sm);cursor:pointer;color:var(--tx-3);transition:all .2s;flex-shrink:0" onmouseover="this.style.borderColor='var(--crimson)';this.style.color='var(--crimson)'" onmouseout="this.style.borderColor='var(--bd-1)';this.style.color='var(--tx-3)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+</div>
+<div style="font-size:10px;color:var(--tx-3);margin-left:auto;font-family:'IBM Plex Mono',monospace" id="hist-count-label">— orders</div> </div> </div> <div id="hist-list"></div> </div> <!--  ASSEMBLY  --> <div id="page-assembly" class="page"> <div class="dept-banner db-asm"> <div><div class="db-title">Assembly Department</div><div class="db-sub">Project → Reference → Wire → Submit Request</div></div> <span class="badge badge-emerald">Request Only</span> </div> <div id="asm-request-area"></div> <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Active Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-copper" id="asm-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="asm-hist-count">0</span></div><div class="card-body" id="asm-hist"></div></div> </div> <!--  PAGODA  --> <div id="page-pagoda" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#070e28,#0e2060)"> <div><div class="db-title">Pagoda · Central Hub</div><div class="db-sub">Review all incoming requests · Mark In Stock or Out of Stock</div></div> <span class="badge badge-steel">Hub</span> </div> <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="kpi-val" id="p-pending">0</div><div class="kpi-label">Pending</div></div> </div> <div class="two-col"> <div> <div class="card"><div class="card-head"><div class="card-title">Pending Requests</div><span class="badge badge-copper" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="pagoda-hist-count">0</span></div><div class="card-body" id="pagoda-hist"></div></div> </div> <div style="display:flex;flex-direction:column;gap:14px"> <div class="card"><div class="card-head"><div class="card-title">Metrics</div></div><div class="card-body"><div class="perf-row"><span class="perf-k">Requests Today</span><span class="perf-v" id="p-today">0</span></div><div class="perf-row"><span class="perf-k">Fulfillment Rate</span><span class="perf-v" id="p-rate">0%</span></div><div class="prog-bar"><div class="prog-fill" id="p-rate-bar" style="width:0%"></div></div></div></div> </div> </div> </div> <!--  CUTTING  --> <div id="page-cutting" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#031f14,#054a30)"> <div><div class="db-title">Cutting Area</div><div class="db-sub">Simple wires routed from Pagoda when Out of Stock</div></div> </div> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="c-pending">0</div><div class="kpi-label">To Cut</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="c-prog">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="c-done">0</div><div class="kpi-label">Done Today</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="cutting-hist-count">0</span></div><div class="card-body" id="cutting-hist"></div></div> </div> <!--  WPA  --> <div id="page-wpa" class="page"> <div class="dept-banner db-wpa"><div><div class="db-title">Wire Prep Area</div><div class="db-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-teal">Request & Fulfill</span></div> <div class="tab-row"> <button id="wpa-tab-req" class="topbar-btn" style="background:var(--teal);color:var(--bg-base);border-color:var(--teal)" onclick="switchTab('wpa','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchTab('wpa','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-teal" id="wpa-fc" style="margin-left:4px">0</span></button> <button id="wpa-tab-hist" class="topbar-btn" onclick="switchTab('wpa','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="wpa-req-panel"> <div id="wpa-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active WPA Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-teal" id="wpa-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="wpa-req-hist-count">0</span></div><div class="card-body" id="wpa-req-hist"></div></div> </div> <div id="wpa-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> WPA Completed History</div><span class="badge badge-emerald" id="wpa-hist-count">0</span></div><div class="card-body" id="wpa-hist"></div></div> </div> <div id="wpa-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="wpa-xe-cnt">0</div><div class="kpi-label">XE Wires</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0"/></svg></div><div class="kpi-val" id="wpa-sp-cnt">0</div><div class="kpi-label">SP Wires</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="wpa-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="card" style="margin-bottom:14px"><div class="card-head"><div class="card-title">XE Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-list"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">SP Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-list"></div></div></div> </div> </div> <!--  TWIST  --> <div id="page-twist" class="page"> <div class="dept-banner db-twist"><div><div class="db-title">Twist Department</div><div class="db-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-violet">Request & Fulfill</span></div> <div class="tab-row"> <button id="twist-tab-req" class="topbar-btn" style="background:var(--violet);color:#fff;border-color:var(--violet)" onclick="switchTab('twist','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTab('twist','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-violet" id="twist-fc" style="margin-left:4px">0</span></button> <button id="twist-tab-hist" class="topbar-btn" onclick="switchTab('twist','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="twist-req-panel"> <div id="twist-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active Twist Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-violet" id="twist-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="twist-req-hist-count">0</span></div><div class="card-body" id="twist-req-hist"></div></div> </div> <div id="twist-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> Twist Completed History</div><span class="badge badge-emerald" id="twist-hist-count">0</span></div><div class="card-body" id="twist-hist"></div></div> </div> <div id="twist-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="twist-pend-cnt">0</div><div class="kpi-label">To Twist</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="twist-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0M3 12h18"/></svg></div><div class="kpi-val" id="twist-pairs-cnt">0</div><div class="kpi-label">Wire Pairs</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-fulfill-list"></div></div></div> </div> </div>
 
 </div><!-- closes .main -->
 <div id="toast"></div>
@@ -2069,6 +2051,30 @@ function saveUsers(u){localStorage.setItem('me_v7_users',JSON.stringify(u));}
 
 //  Panel switcher 
 let fpVerified=false;
+
+// Build project checkboxes in sign-up form
+function renderProjectCheckboxes(){
+  const list = document.getElementById('su-proj-list');
+  if(!list) return;
+  const items = [];
+  PROJECTS.forEach(p=>{
+    if(p.isMain){
+      p.subs.forEach(sub=>{
+        items.push({value:'VOLVO__'+sub.replace(/ /g,'_'), label:'VOLVO · '+sub});
+      });
+    } else {
+      items.push({value:p.id, label:p.name});
+    }
+  });
+  list.innerHTML = items.map(it=>`
+    <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx-2);cursor:pointer;padding:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${it.label}">
+      <input type="checkbox" value="${it.value}" style="accent-color:var(--copper);width:12px;height:12px;flex-shrink:0">
+      ${it.label}
+    </label>`).join('');
+}
+function toggleAllProjects(v){
+  document.querySelectorAll('#su-proj-list input[type=checkbox]').forEach(c=>c.checked=v);
+}
 function showAuthPanel(panel){
   ['signin','signup','forgot'].forEach(p=>{
     const el=document.getElementById('panel-'+p);
@@ -2077,6 +2083,8 @@ function showAuthPanel(panel){
   // Tabs (only signin/signup have tabs)
   document.getElementById('tab-signin').classList.toggle('active',panel==='signin');
   document.getElementById('tab-signup').classList.toggle('active',panel==='signup');
+  // Build project checkboxes when signup is shown
+  if(panel==='signup') setTimeout(renderProjectCheckboxes, 0);
   // Reset forgot state
   if(panel==='forgot'){
     fpVerified=false;
@@ -2155,7 +2163,7 @@ async function doLogin(){
   if(atob(user.pw)!==pw){authMsg('si-error','Incorrect password.');document.getElementById('si-pw').focus();return;}
   authMsg('si-error','');
   const dept=user.dept||user.department;
-  currentUser={username:uid,department:dept,name:user.name||user.full_name||uid};
+  currentUser={username:uid,department:dept,name:user.name||user.full_name||uid,allowedProjects:user.allowedProjects||null};
   enterApp(dept);
 }
 
@@ -2181,6 +2189,10 @@ async function doSignUp(){
   const gmail=document.getElementById('su-gmail').value.trim().toLowerCase();
   const uid=document.getElementById('su-uid').value.trim();
   const dept=document.getElementById('su-dept').value;
+  // Collect checked projects
+  const projChecks=document.querySelectorAll('#su-proj-list input[type=checkbox]:checked');
+  const allowedProjects=Array.from(projChecks).map(c=>c.value);
+  if(!allowedProjects.length){authMsg('su-error','Please select at least one project.');return;}
   const pw=document.getElementById('su-pw').value;
   const pw2=document.getElementById('su-pw2').value;
   authMsg('su-error','');authMsg('su-success','');
@@ -2194,7 +2206,7 @@ async function doSignUp(){
   // Check Gmail not already used
   const gmailUsed=Object.values(users).find(u=>u.gmail===gmail);
   if(gmailUsed){authMsg('su-error','This Gmail is already linked to another account.');return;}
-  const newUser={uid,name,dept,gmail,pw:btoa(pw),secret:gmail,createdAt:new Date().toISOString()};
+  const newUser={uid,name,dept,gmail,pw:btoa(pw),secret:gmail,allowedProjects,createdAt:new Date().toISOString()};
   users[uid]=newUser;
   saveUsers(users);
   // Sync to Supabase
@@ -2256,7 +2268,7 @@ async function doForgotStep(){
 
 //  ENTER APP 
 function saveSession(){
-  try{sessionStorage.setItem('me_v7_session',JSON.stringify({uid:currentUser.username,dept:currentUser.department,name:currentUser.name}));}catch(e){}
+  try{sessionStorage.setItem('me_v7_session',JSON.stringify({uid:currentUser.username,dept:currentUser.department,name:currentUser.name,allowedProjects:currentUser.allowedProjects||null}));}catch(e){}
 }
 function clearSession(){
   try{sessionStorage.removeItem('me_v7_session');}catch(e){}
@@ -2436,37 +2448,70 @@ function renderRequestArea(dept){
   if(ns.level==='projects')el.innerHTML=renderProjectsLevel(dept);
   else if(ns.level==='volvo_subs')el.innerHTML=renderVolvoSubsLevel(dept);
   else if(ns.level==='refs')el.innerHTML=renderRefsLevel(dept);
-  else if(ns.level==='wires'){
-    el.innerHTML=renderWiresLevel(dept);
-    // Attach drag-select to the freshly created scroll container
-    requestAnimationFrame(()=>initDragSelect(dept));
-  }
+  else if(ns.level==='wires')el.innerHTML=renderWiresLevel(dept);
+}
+
+// ── Project visibility filter ─────────────────────────────────
+// Returns the list of top-level PROJECTS the current user may see.
+// Admin + users with no restrictions → all projects.
+// Users with allowedProjects → only projects (or parents of sub-projects) they own.
+function getVisibleProjects(){
+  if(isAdmin()) return PROJECTS;
+  const ap = currentUser.allowedProjects;
+  if(!ap || ap.length === 0) return PROJECTS; // backward compat
+  return PROJECTS.filter(p=>{
+    if(p.isMain){
+      // Show VOLVO card if user has at least one VOLVO__ sub OR the parent key
+      return ap.some(k => k === p.id || k.startsWith(p.id + '__'));
+    }
+    return ap.includes(p.id);
+  });
+}
+
+// Returns allowed VOLVO sub-project names for current user
+function getVisibleVolvoSubs(){
+  if(isAdmin()) return PROJECTS.find(p=>p.isMain).subs;
+  const ap = currentUser.allowedProjects;
+  if(!ap || ap.length === 0) return PROJECTS.find(p=>p.isMain).subs;
+  const volvo = PROJECTS.find(p=>p.isMain);
+  return volvo.subs.filter(sub => ap.includes('VOLVO__'+sub.replace(/ /g,'_')));
 }
 
 function renderProjectsLevel(dept){
   const deptStore=store[dept];
   const getCount=(key)=>(deptStore[key]||{refs:[]}).refs.length;
+  const visibleProjects = getVisibleProjects();
   let html=`<div class="section-intro"><div class="section-heading">Select a Project</div><div class="section-subtext">Choose a project to upload its reference list and create wire requests</div></div><div class="projects-grid">`;
-  PROJECTS.forEach(p=>{
+  visibleProjects.forEach(p=>{
     const isVolvo=p.isMain;
-    const count=isVolvo?p.subs.reduce((s,sub)=>s+(deptStore[p.id+'__'+sub.replace(/ /g,'_')]||{refs:[]}).refs.length,0)+getCount(p.id):getCount(p.id);
+    // For VOLVO, only count allowed subs
+    const allowedSubs = isVolvo ? getVisibleVolvoSubs() : [];
+    const count=isVolvo?allowedSubs.reduce((s,sub)=>s+(deptStore[p.id+'__'+sub.replace(/ /g,'_')]||{refs:[]}).refs.length,0)+getCount(p.id):getCount(p.id);
     const hasData=count>0;
     const initials=p.name.split(' ').map(w=>w[0]).join('').slice(0,3);
-    html+=`<div class="project-card ${hasData?'has-data':''} ${isVolvo?'volvo-main':''}" onclick="selectProject('${dept}','${p.id}')"> <div class="pc-bar" style="background:${hasData?p.color:'rgba(255,255,255,.05)'}"></div> <div class="pc-body"> <div class="pc-logo" style="background:${p.color};box-shadow:0 4px 14px ${p.color}33">${initials}</div> <div class="pc-name">${p.name}</div> <div class="pc-sub">${isVolvo?'9 sub-projects':'Project'}</div> <div class="pc-foot"> <span class="pc-count ${hasData?'has':''}">${hasData?count+' ref'+(count>1?'s':''):isVolvo?'Expand':'No refs'}</span> <div class="pc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div> </div> </div> </div>`;
+    const subCount = isVolvo ? allowedSubs.length : 0;
+    html+=`<div class="project-card ${hasData?'has-data':''} ${isVolvo?'volvo-main':''}" onclick="selectProject('${dept}','${p.id}')"> <div class="pc-bar" style="background:${hasData?p.color:'rgba(255,255,255,.05)'}"></div> <div class="pc-body"> <div class="pc-logo" style="background:${p.color};box-shadow:0 4px 14px ${p.color}33">${initials}</div> <div class="pc-name">${p.name}</div> <div class="pc-sub">${isVolvo?subCount+' sub-project'+(subCount!==1?'s':''):'Project'}</div> <div class="pc-foot"> <span class="pc-count ${hasData?'has':''}">${hasData?count+' ref'+(count>1?'s':''):isVolvo?'Expand':'No refs'}</span> <div class="pc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div> </div> </div> </div>`;
   });
+  if(visibleProjects.length === 0){
+    html += `<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--tx-3);font-size:13px">No projects assigned. Contact your Admin.</div>`;
+  }
   return html+`</div>`;
 }
 
 function renderVolvoSubsLevel(dept){
   const deptStore=store[dept];
   const volvo=PROJECTS.find(p=>p.isMain);
+  const visibleSubs = getVisibleVolvoSubs();
   let html=`${backBtn(dept,'projects','← Back to Projects')}${renderBreadcrumb(dept)}<div class="volvo-header"><div class="volvo-logo">V</div><div><div class="volvo-title">VOLVO Projects</div><div class="volvo-sub">Select a sub-project to manage its references and wire lists</div></div></div><div class="volvo-subs">`;
-  volvo.subs.forEach(sub=>{
+  visibleSubs.forEach(sub=>{
     const key='VOLVO__'+sub.replace(/ /g,'_');
     const count=(deptStore[key]||{refs:[]}).refs.length;
     const hasData=count>0;
     html+=`<div class="vsub-card ${hasData?'has-data':''}" onclick="selectProject('${dept}','${key}')"><div class="vsub-name">${sub}</div><div class="vsub-meta">${hasData?count+' reference'+(count>1?'s':''):'No references yet'}</div></div>`;
   });
+  if(visibleSubs.length === 0){
+    html += `<div style="padding:24px;color:var(--tx-3);font-size:12px;text-align:center">No VOLVO sub-projects assigned. Contact your Admin.</div>`;
+  }
   return html+`</div>`;
 }
 
@@ -2584,13 +2629,18 @@ function renderWiresLevel(dept){
           <span class="sel-count" id="${dept}-sel-count">0 selected</span>
           <button class="small-btn" onclick="selectAll('${dept}')">All</button>
           <button class="small-btn" onclick="deselectAll('${dept}')">None</button>
-          <span class="ds-hint" title="Left-click and drag on any row to select multiple wires">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 9V5h4M15 5h4v4M19 15v4h-4M9 19H5v-4"/>
-              <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".35"/>
-            </svg>
-            Drag to select
-          </span>
+          <div style="width:1px;height:18px;background:var(--bd-2);margin:0 3px;flex-shrink:0"></div>
+          <span style="font-size:10px;color:var(--tx-3);white-space:nowrap;font-weight:600;letter-spacing:.3px">Bulk Qty:</span>
+          <input type="number" id="${dept}-bulk-qty" class="qty-input" min="1" value="1"
+            style="width:58px;font-size:11px"
+            title="Enter a quantity to apply to all selected wires at once"
+            onclick="event.stopPropagation()">
+          <button class="small-btn"
+            style="background:rgba(74,158,255,.12);border-color:rgba(74,158,255,.35);color:var(--steel-lt);white-space:nowrap"
+            onclick="applyBulkQty('${dept}')"
+            title="Apply this quantity to all selected wires (or all wires if none selected)">
+            ⚡ Apply to Selected
+          </button>
         </div>
       </div>`;
     // ── Excel table body via helper ──────────────────────────
@@ -2824,214 +2874,25 @@ function toggleAll(dept,v){document.querySelectorAll(`.${dept}-wcb`).forEach(c=>
 function selectAll(dept){toggleAll(dept,true);}
 function deselectAll(dept){toggleAll(dept,false);}
 
-// ============================================================
-//  initDragSelect(dept)
-//  Rubber-band multi-row selection for the wire list table.
-//
-//  FEATURE SUMMARY
-//  ───────────────
-//  • Left-click + drag on any data cell → draws an animated
-//    marching-ants selection rectangle; every visible row
-//    whose bounding box overlaps the rect is checked live.
-//  • Ctrl / Cmd / Shift held during drag → ADD mode: rows
-//    outside the band keep their pre-drag checked state.
-//  • No modifier → REPLACE mode: only swept rows are checked.
-//  • Plain click (< 5 px movement) on a blank cell with no
-//    modifier key → deselects all.
-//  • Escape while dragging → cancels and restores the exact
-//    checkbox states from before the drag started.
-//  • Never fires on inputs, checkboxes, buttons or labels.
-//  • Works correctly with horizontal + vertical scroll.
-//  • Self-cleans on every re-render (no listener leaks).
-//
-//  CALLED BY  renderRequestArea()  after the wires level
-//  is inserted into the DOM (via requestAnimationFrame).
-// ============================================================
-function initDragSelect(dept){
-
-  // ── 1. Find the scrollable container ──────────────────────
-  const scrollEl = document.getElementById(dept + '-wit')
-                            ?.closest('.excel-scroll');
-  if(!scrollEl) return;
-
-  // ── 2. Tear down any previous instance on this container ──
-  if(scrollEl._dsDestroy) scrollEl._dsDestroy();
-
-  // ── 3. Create the rubber-band overlay ─────────────────────
-  // It lives *inside* scrollEl so it scrolls with the content.
-  scrollEl.style.position = 'relative'; // needed for abs. child
-  const band = document.createElement('div');
-  band.className = 'ds-rect';
-  band.setAttribute('aria-hidden', 'true');
-  scrollEl.appendChild(band);
-
-  // ── 4. Internal state ─────────────────────────────────────
-  let live       = false;   // true while user is dragging
-  let originX    = 0;       // drag-start in content coordinates
-  let originY    = 0;
-  let preSnap    = null;    // Map<rowId → bool> of checked states
-
-  // ── 5. Coordinate helper ──────────────────────────────────
-  // Converts a viewport point to the scrollable content space.
-  function toContentXY(clientX, clientY){
-    const cr = scrollEl.getBoundingClientRect();
-    return {
-      x: clientX - cr.left + scrollEl.scrollLeft,
-      y: clientY - cr.top  + scrollEl.scrollTop,
-    };
-  }
-
-  // ── 6. Row helpers ────────────────────────────────────────
-  function allVisibleRows(){
-    const tbl = document.getElementById(dept + '-wit');
-    if(!tbl) return [];
-    return Array.from(
-      tbl.querySelectorAll(`tr[id^="${dept}-wrow-"]`)
-    ).filter(r => r.style.display !== 'none');
-  }
-
-  // Returns rows whose vertical span overlaps [top, bottom].
-  // Horizontal overlap is ignored — rows fill the full width,
-  // so any horizontal drag position hits them.
-  function rowsInBand(top, bottom){
-    const cr = scrollEl.getBoundingClientRect();
-    return allVisibleRows().filter(row => {
-      const r    = row.getBoundingClientRect();
-      const rTop = r.top    - cr.top  + scrollEl.scrollTop;
-      const rBot = r.bottom - cr.top  + scrollEl.scrollTop;
-      return rBot > top && rTop < bottom; // overlap test
-    });
-  }
-
-  // ── 7. Apply selection state during drag ──────────────────
-  function applyBand(top, bottom, addMode){
-    const swept    = new Set(rowsInBand(top, bottom).map(r => r.id));
-    allVisibleRows().forEach(row => {
-      const cb = row.querySelector('.wire-cb');
-      if(!cb) return;
-      const inBand = swept.has(row.id);
-      // ADD mode → preserve pre-snap state for rows outside band
-      cb.checked = inBand || (addMode && !!preSnap.get(row.id));
-      row.classList.toggle('ds-sweep', inBand);
-    });
-    updateSelCount(dept);
-  }
-
-  function clearSweep(){
-    allVisibleRows().forEach(r => r.classList.remove('ds-sweep'));
-  }
-
-  // ── 8. mousedown ──────────────────────────────────────────
-  function onDown(e){
-    if(e.button !== 0) return;
-
-    // Skip interactive elements
-    const tag = e.target.tagName.toUpperCase();
-    if(['INPUT','BUTTON','LABEL','SELECT','A'].includes(tag)) return;
-    if(e.target.closest('.excel-checkbox-col')) return;
-    if(e.target.closest('.excel-row-num'))      return;
-
-    const p  = toContentXY(e.clientX, e.clientY);
-    originX  = p.x;
-    originY  = p.y;
-    live     = false;
-
-    // Snapshot current selection for Ctrl/Shift add-mode
-    preSnap = new Map(
-      allVisibleRows().map(r => {
-        const cb = r.querySelector('.wire-cb');
-        return [r.id, cb ? cb.checked : false];
-      })
-    );
-
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup',   onUp);
-    document.addEventListener('keydown',   onKey);
-    e.preventDefault(); // suppress text-selection
-  }
-
-  // ── 9. mousemove ──────────────────────────────────────────
-  const THRESHOLD = 5; // px — minimum movement to start drag
-
-  function onMove(e){
-    const p  = toContentXY(e.clientX, e.clientY);
-    const dx = p.x - originX;
-    const dy = p.y - originY;
-
-    // Activate drag once threshold is crossed
-    if(!live){
-      if(Math.abs(dx) < THRESHOLD && Math.abs(dy) < THRESHOLD) return;
-      live = true;
-      scrollEl.classList.add('ds-dragging');
-      band.classList.add('ds-active');
-    }
-
-    // ── Compute rect in content space ─────────────────────
-    const left   = Math.min(p.x, originX);
-    const top    = Math.min(p.y, originY);
-    const right  = Math.max(p.x, originX);
-    const bottom = Math.max(p.y, originY);
-
-    // Position the visual band
-    band.style.left   = left          + 'px';
-    band.style.top    = top           + 'px';
-    band.style.width  = (right - left) + 'px';
-    band.style.height = (bottom - top) + 'px';
-
-    // Update checkboxes
-    applyBand(top, bottom, e.ctrlKey || e.metaKey || e.shiftKey);
-  }
-
-  // ── 10. mouseup ───────────────────────────────────────────
-  function onUp(e){
-    detach();
-
-    if(!live){
-      // Plain click: deselect-all if no modifier and not on interactive
-      const tag = e.target.tagName.toUpperCase();
-      const onWidget = ['INPUT','BUTTON','LABEL','SELECT'].includes(tag)
-                    || e.target.closest('.excel-checkbox-col');
-      if(!onWidget && !e.ctrlKey && !e.metaKey && !e.shiftKey){
-        deselectAll(dept);
-      }
-    } else {
-      clearSweep();
-      updateSelCount(dept);
-    }
-  }
-
-  // ── 11. Escape = cancel drag ──────────────────────────────
-  function onKey(e){
-    if(e.key !== 'Escape' || !live) return;
-    detach();
-    // Restore pre-drag snapshot
-    allVisibleRows().forEach(row => {
-      const cb = row.querySelector('.wire-cb');
-      if(cb) cb.checked = !!preSnap.get(row.id);
-    });
-    updateSelCount(dept);
-  }
-
-  // ── 12. Shared teardown ───────────────────────────────────
-  function detach(){
-    live = false;
-    band.classList.remove('ds-active');
-    scrollEl.classList.remove('ds-dragging');
-    clearSweep();
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup',   onUp);
-    document.removeEventListener('keydown',   onKey);
-  }
-
-  // ── 13. Attach and expose cleanup ─────────────────────────
-  scrollEl.addEventListener('mousedown', onDown);
-
-  scrollEl._dsDestroy = () => {
-    scrollEl.removeEventListener('mousedown', onDown);
-    detach();
-    band.remove();
-    delete scrollEl._dsDestroy;
-  };
+// Apply a single quantity to all selected wires at once (or all if none selected)
+function applyBulkQty(dept){
+  const bulkInput = document.getElementById(`${dept}-bulk-qty`);
+  if(!bulkInput) return;
+  const qty = parseInt(bulkInput.value);
+  if(!qty || qty < 1){ toast('Enter a valid quantity (min 1) in the Bulk Qty field','error'); return; }
+  const allCbs = Array.from(document.querySelectorAll(`.${dept}-wcb`));
+  const selectedCbs = allCbs.filter(c => c.checked);
+  const targets = selectedCbs.length > 0 ? selectedCbs : allCbs;
+  if(!targets.length){ toast('No wires available to update','error'); return; }
+  targets.forEach(cb => {
+    const idx = cb.dataset.idx;
+    const inp = document.getElementById(`${dept}-qty-${idx}`);
+    if(inp) inp.value = qty;
+  });
+  const scope = selectedCbs.length > 0
+    ? `${targets.length} selected wire${targets.length>1?'s':''}`
+    : `all ${targets.length} wire${targets.length>1?'s':''}`;
+  toast(`Quantity set to ×${qty} for ${scope}`,'success');
 }
 
 function viewWireList(dept,key,refId){
@@ -3606,7 +3467,7 @@ async function startReq(id){
   const r=requests.find(x=>x.id===id);if(!r)return;
   const prev=r.status;
   r.status='in_progress';
-  loadPage(currentPage);updateBadges();
+  loadPage(currentPage);updateBadges();renderAnalytics();
   const result = await dbSave(r);
   if(!result.ok && sbReady){
     r.status=prev; loadPage(currentPage);updateBadges(); return;
@@ -3663,6 +3524,10 @@ function renderHistoryPage(){
   const search = searchRaw.toLowerCase().trim();
   const deptFilter  = document.getElementById('hist-filter-dept')?.value  || '';
   const statusFilter= document.getElementById('hist-filter-status')?.value || '';
+  const fromVal     = document.getElementById('hist-filter-from')?.value || '';
+  const toVal       = document.getElementById('hist-filter-to')?.value   || '';
+  const fromTs      = fromVal ? new Date(fromVal).getTime() : null;
+  const toTs        = toVal   ? new Date(toVal).getTime()   : null;
 
   // Animate the list during filtering
   const container = document.getElementById('hist-list');
@@ -3700,6 +3565,8 @@ function renderHistoryPage(){
 
   if(deptFilter)   list = list.filter(r=>r.requestedBy===deptFilter);
   if(statusFilter) list = list.filter(r=>r.status===statusFilter);
+  if(fromTs) list = list.filter(r=>{ const t=new Date(r.time).getTime(); return t>=fromTs; });
+  if(toTs)   list = list.filter(r=>{ const t=new Date(r.time).getTime(); return t<=toTs; });
 
   const badge    = document.getElementById('hist-total-badge');
   const countLbl = document.getElementById('hist-count-label');
@@ -3831,11 +3698,40 @@ function loadHistory(containerId,dept,field){
 }
 
 //  ANALYTICS 
+
+// Returns the true "effective" status of a root request, considering
+// its downstream child requests (created when Pagoda routes OOS items).
+function getEffectiveStatus(r){
+  // Already fully completed with no children → done
+  if(r.status==='completed'){
+    const children=getDownstreamReqs(r.id);
+    if(!children.length) return 'completed';
+    if(children.every(c=>c.status==='completed')) return 'completed';
+    if(children.some(c=>c.status==='in_progress')) return 'in_progress';
+    // children still pending (routed but not started)
+    return 'in_progress';
+  }
+  if(r.status==='in_progress') return 'in_progress';
+  // status === 'pending'
+  const children=getDownstreamReqs(r.id);
+  if(!children.length){
+    // No children: if pagoda already acted on it (not pending at pagoda), treat as in_progress
+    if(r.pagodaStatus && r.pagodaStatus!=='pending') return 'in_progress';
+    return 'pending';
+  }
+  if(children.every(c=>c.status==='completed')) return 'completed';
+  if(children.some(c=>c.status==='in_progress')) return 'in_progress';
+  return 'in_progress'; // has children = routed = in progress
+}
+
 function renderAnalytics(){
-  document.getElementById('a-total').textContent=requests.length;
-  document.getElementById('a-done').textContent=requests.filter(r=>r.status==='completed').length;
-  document.getElementById('a-pending').textContent=requests.filter(r=>r.status==='pending').length;
-  document.getElementById('a-prog').textContent=requests.filter(r=>r.status==='in_progress').length;
+  // Only count root (non-child) requests to avoid double-counting
+  const rootReqs = requests.filter(r=>!r.parentId);
+  const effStatuses = rootReqs.map(r=>getEffectiveStatus(r));
+  document.getElementById('a-total').textContent=rootReqs.length;
+  document.getElementById('a-done').textContent=effStatuses.filter(s=>s==='completed').length;
+  document.getElementById('a-pending').textContent=effStatuses.filter(s=>s==='pending').length;
+  document.getElementById('a-prog').textContent=effStatuses.filter(s=>s==='in_progress').length;
   const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];const counts={};const labels=[];
   for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toDateString();counts[k]=0;labels.push({l:days[d.getDay()],k});}
   requests.forEach(r=>{const k=new Date(r.time).toDateString();if(counts[k]!==undefined)counts[k]++;});
@@ -4541,7 +4437,7 @@ function initApp(){
       const users = getUsers();
       const user = users[s.uid];
       if(user){
-        currentUser = { username:s.uid, department:s.dept, name:s.name||s.uid };
+        currentUser = { username:s.uid, department:s.dept, name:s.name||s.uid, allowedProjects:s.allowedProjects||user.allowedProjects||null };
         document.getElementById('login-screen').style.display='none';
         document.getElementById('app').style.display='flex';
         applyDeptNav(s.dept);
@@ -4577,7 +4473,7 @@ function initApp(){
   }
 }
 
-window.addEventListener('load', initApp);
+window.addEventListener('load', ()=>{ initApp(); renderProjectCheckboxes(); });
 // Unlock AudioContext on first click anywhere (browser autoplay policy)
 document.addEventListener('click', ()=>{
   if(_audioCtx && _audioCtx.state==='suspended') _audioCtx.resume();
@@ -4665,6 +4561,92 @@ async function loadStoreFromDb(){
   } catch(err) {
     console.error('[Supabase] loadStoreFromDb error:', err);
   }
+}
+
+function clearHistDateFilter(){
+  const f=document.getElementById('hist-filter-from');
+  const t=document.getElementById('hist-filter-to');
+  if(f) f.value='';
+  if(t) t.value='';
+  renderHistoryPage();
+}
+
+// ============================================================
+//  STATUS MODAL — click KPI card to see filtered requests
+// ============================================================
+function showStatusModal(status){
+  document.getElementById('status-modal')?.remove();
+  // Use effective status on root requests only — same logic as analytics KPI counts
+  const filtered = requests
+    .filter(r => !r.parentId && getEffectiveStatus(r) === status)
+    .sort((a,b)=>new Date(b.time)-new Date(a.time));
+  const labels = { completed:'Completed', pending:'Pending', in_progress:'In Progress' };
+  const colors = { completed:'var(--emerald)', pending:'var(--amber)', in_progress:'var(--teal)' };
+  const bgGrad = { completed:'linear-gradient(135deg,#031f14,#054a30)', pending:'linear-gradient(135deg,#1c1200,#3a2a00)', in_progress:'linear-gradient(135deg,#001a1f,#003740)' };
+  const label  = labels[status]  || status;
+  const color  = colors[status]  || 'var(--copper)';
+  const bg     = bgGrad[status]  || 'linear-gradient(135deg,#080b12,#101520)';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'status-modal';
+  overlay.onclick = e => { if(e.target===overlay) closeStatusModal(); };
+
+  const listHtml = filtered.length === 0
+    ? `<div class="empty-state" style="padding:48px 20px;text-align:center">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:44px;height:44px;opacity:.2;display:block;margin:0 auto 12px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+         <p style="font-size:13px;font-weight:600;color:var(--tx-3)">No ${label.toLowerCase()} requests</p>
+       </div>`
+    : filtered.map(r=>{
+        const dt = fmtDateTime(r.time);
+        const urgColors = {normal:'badge-emerald',urgent:'badge-amber',critical:'badge-crimson'};
+        const wirePreview = r.items.slice(0,2).map(i=>`${i.quantity}× ${i.wireName}`).join(', ')+(r.items.length>2?` +${r.items.length-2} more`:'');
+        const deptBg={assembly:'rgba(224,123,57,.1)',wpa:'rgba(20,184,166,.1)',twist:'rgba(168,85,247,.1)',pagoda:'rgba(74,158,255,.1)',cutting:'rgba(0,214,143,.1)'};
+        const deptTxt={assembly:'var(--copper)',wpa:'var(--teal)',twist:'var(--violet-lt)',pagoda:'var(--steel-lt)',cutting:'var(--emerald)'};
+        const entryId='sm_'+r.id.replace(/[^a-z0-9]/gi,'_');
+        return`<div class="hist-entry" id="${entryId}" onclick="toggleHistEntry('${entryId}')" style="margin-bottom:8px">
+          <div class="hist-row">
+            <svg class="hist-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            <span class="hist-id">${r.id}</span>
+            <div style="flex:1;min-width:0;font-size:11px;color:var(--tx-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${wirePreview}</div>
+            <span class="hist-project">${r.project}</span>
+            <span class="hist-dept-badge" style="background:${deptBg[r.requestedBy]||'var(--bg-03)'};color:${deptTxt[r.requestedBy]||'var(--tx-2)'};border:1px solid ${deptTxt[r.requestedBy]||'var(--bd-1)'}33">${(r.requestedBy||'').toUpperCase()}</span>
+            <span class="badge ${urgColors[r.urgency]||'badge-grey'}" style="font-size:9px">${(r.urgency||'').toUpperCase()}</span>
+            <div class="hist-datetime"><div>${dt.date}</div><div style="color:var(--tx-2)">${dt.time}</div></div>
+          </div>
+          <div class="hist-details">${buildHistDetails(r)}</div>
+        </div>`;
+      }).join('');
+
+  overlay.innerHTML = `
+    <div class="modal" style="max-width:820px;width:95vw;max-height:85vh;display:flex;flex-direction:column">
+      <div class="modal-hd" style="background:${bg};flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:34px;height:34px;border-radius:10px;background:${color}22;border:1px solid ${color}44;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <div style="width:10px;height:10px;border-radius:50%;background:${color};box-shadow:0 0 8px ${color}"></div>
+          </div>
+          <div>
+            <div class="modal-title">${label} Requests</div>
+            <div class="modal-sub">${filtered.length} order${filtered.length!==1?'s':''} · Click any row to expand details</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeStatusModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" style="overflow-y:auto;flex:1;padding:16px 18px">
+        ${listHtml}
+      </div>
+      <div class="modal-footer" style="flex-shrink:0">
+        <button class="btn btn-outline" onclick="closeStatusModal()" style="flex:0;padding:8px 22px">Close</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function closeStatusModal(){
+  const m=document.getElementById('status-modal');
+  if(m){ m.style.opacity='0'; m.style.transition='opacity .15s'; setTimeout(()=>m.remove(),160); }
 }
 
 //  11. refreshAll alias — actual implementation is debouncedRefreshAll above 
