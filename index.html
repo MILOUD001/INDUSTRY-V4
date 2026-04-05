@@ -6,66 +6,68 @@
 <title>MILOUD EZZAKY INDUSTRY V.7 — Wire Request System</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /*  RESET & BASE  */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  /* Core palette */
-  --bg-base:#080b12;
-  --bg-01:#0c1018;
-  --bg-02:#101520;
-  --bg-03:#141a28;
-  --bg-04:#1a2235;
-  --bg-05:#202a42;
-  --bg-card:#0f1420;
-  --bg-card-hover:#131a2a;
-  --bg-surface:#0c1118;
+  /* ── Industrial Dark — Siemens/Rockwell/ABB palette ── */
 
-  /* Copper accent (primary) */
-  --copper:#e07b39;
-  --copper-lt:#f0a060;
-  --copper-dk:#b85e22;
-  --copper-glow:rgba(224,123,57,.2);
-  --copper-subtle:rgba(224,123,57,.06);
+  /* Backgrounds: deep charcoal, cold steel grays */
+  --bg-base:#0d0f11;
+  --bg-01:#111416;
+  --bg-02:#161a1d;
+  --bg-03:#1c2026;
+  --bg-04:#222830;
+  --bg-05:#2a3038;
+  --bg-card:#141719;
+  --bg-card-hover:#1a1e22;
+  --bg-surface:#111416;
 
-  /* Steel blue (secondary) */
-  --steel:#4a9eff;
-  --steel-lt:#70b8ff;
-  --steel-glow:rgba(74,158,255,.2);
-  --steel-subtle:rgba(74,158,255,.06);
+  /* Primary accent: electric cyan — HMI active state */
+  --copper:#00b4d8;
+  --copper-lt:#48cae4;
+  --copper-dk:#0077a8;
+  --copper-glow:rgba(0,180,216,.22);
+  --copper-subtle:rgba(0,180,216,.07);
 
-  /* Status colors */
-  --emerald:#00d68f;
-  --emerald-lt:#33e5a8;
-  --amber:#f59e0b;
-  --amber-lt:#fbbf24;
-  --crimson:#ff4757;
-  --violet:#a855f7;
-  --violet-lt:#c084fc;
-  --teal:#14b8a6;
+  /* Secondary: cold steel blue */
+  --steel:#4fc3f7;
+  --steel-lt:#81d4fa;
+  --steel-glow:rgba(79,195,247,.2);
+  --steel-subtle:rgba(79,195,247,.06);
 
-  /* Text */
-  --tx-1:#eef2ff;
-  --tx-2:#8892a4;
-  --tx-3:#4a5568;
-  --tx-4:#2d3550;
+  /* Status — industrial signal colors */
+  --emerald:#00e676;   /* RUN / OK — IEC green */
+  --emerald-lt:#69f0ae;
+  --amber:#ffab00;     /* WARNING — safety amber */
+  --amber-lt:#ffd740;
+  --crimson:#ff1744;   /* FAULT / ALARM — safety red */
+  --violet:#7c4dff;
+  --violet-lt:#b388ff;
+  --teal:#00bcd4;
 
-  /* Borders */
-  --bd-1:rgba(255,255,255,.05);
-  --bd-2:rgba(255,255,255,.09);
-  --bd-copper:rgba(224,123,57,.2);
-  --bd-steel:rgba(74,158,255,.2);
+  /* Text: cold white → steel gray */
+  --tx-1:#e8edf2;
+  --tx-2:#7a8a9a;
+  --tx-3:#445060;
+  --tx-4:#2a3540;
 
-  /* Shadows */
-  --sh-sm:0 2px 8px rgba(0,0,0,.5);
-  --sh-md:0 8px 32px rgba(0,0,0,.6);
-  --sh-lg:0 16px 56px rgba(0,0,0,.7);
-  --sh-xl:0 24px 80px rgba(0,0,0,.8);
-  --sh-copper:0 0 32px rgba(224,123,57,.15);
+  /* Borders: sharp, defined — not glowy */
+  --bd-1:rgba(255,255,255,.06);
+  --bd-2:rgba(255,255,255,.11);
+  --bd-copper:rgba(0,180,216,.25);
+  --bd-steel:rgba(79,195,247,.2);
 
-  /* Radii */
-  --r-xs:3px;--r-sm:7px;--r-md:11px;--r-lg:15px;--r-xl:20px;--r-2xl:26px;
+  /* Shadows: deeper, harder */
+  --sh-sm:0 1px 4px rgba(0,0,0,.6);
+  --sh-md:0 4px 20px rgba(0,0,0,.7);
+  --sh-lg:0 12px 40px rgba(0,0,0,.8);
+  --sh-xl:0 20px 60px rgba(0,0,0,.9);
+  --sh-copper:0 0 24px rgba(0,180,216,.18);
+
+  /* Radii — tighter, more HMI-like */
+  --r-xs:2px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-xl:10px;--r-2xl:14px;
 
   /* Sidebar */
   --sb-w:260px;
@@ -79,58 +81,60 @@
    LIGHT MODE — overrides all CSS variables
    ============================================================ */
 html[data-theme="light"]{
-  /* Backgrounds — clean whites & very light grays */
-  --bg-base:#f0f2f7;
-  --bg-01:#ffffff;
-  --bg-02:#f5f7fb;
-  --bg-03:#eef0f6;
-  --bg-04:#e5e8f0;
-  --bg-05:#d8dce8;
-  --bg-card:#ffffff;
-  --bg-card-hover:#f7f9fd;
-  --bg-surface:#f8fafc;
+  /* ── Industrial Light — control room dayshift palette ── */
 
-  /* Text — very high contrast */
-  --tx-1:#0f1523;
-  --tx-2:#3d4a5c;
-  --tx-3:#6b7a90;
-  --tx-4:#9ba8bc;
+  /* Backgrounds: cool neutral grays — like HMI panels */
+  --bg-base:#d8dde4;
+  --bg-01:#eaeef3;
+  --bg-02:#f0f3f7;
+  --bg-03:#e2e7ed;
+  --bg-04:#d5dbe3;
+  --bg-05:#c8d0da;
+  --bg-card:#f5f7fa;
+  --bg-card-hover:#eef1f6;
+  --bg-surface:#edf0f5;
 
-  /* Borders — visible but not harsh */
-  --bd-1:rgba(0,0,0,.10);
-  --bd-2:rgba(0,0,0,.16);
-  --bd-copper:rgba(176,90,20,.25);
-  --bd-steel:rgba(30,100,200,.2);
+  /* Text — maximum contrast, engineering readability */
+  --tx-1:#0a0e12;
+  --tx-2:#2c3845;
+  --tx-3:#5a6878;
+  --tx-4:#8a9aaa;
 
-  /* Copper accent — slightly richer for light bg */
-  --copper:#c05a10;
-  --copper-lt:#d97030;
-  --copper-dk:#8a3d08;
-  --copper-glow:rgba(192,90,16,.15);
-  --copper-subtle:rgba(192,90,16,.07);
+  /* Borders */
+  --bd-1:rgba(0,0,0,.12);
+  --bd-2:rgba(0,0,0,.20);
+  --bd-copper:rgba(0,130,160,.30);
+  --bd-steel:rgba(0,100,150,.22);
 
-  /* Steel blue */
-  --steel:#1a6fc4;
-  --steel-lt:#2580d8;
-  --steel-glow:rgba(26,111,196,.15);
-  --steel-subtle:rgba(26,111,196,.06);
+  /* Primary: deep industrial cyan */
+  --copper:#0077a8;
+  --copper-lt:#0096cc;
+  --copper-dk:#005580;
+  --copper-glow:rgba(0,119,168,.18);
+  --copper-subtle:rgba(0,119,168,.08);
 
-  /* Status — keep same hue, adjust for light bg */
-  --emerald:#0a9e68;
-  --emerald-lt:#0bb575;
-  --amber:#b57a08;
-  --amber-lt:#c98c10;
-  --crimson:#d42b3a;
-  --violet:#7c3abf;
-  --violet-lt:#8f4ace;
-  --teal:#0d9484;
+  /* Secondary steel */
+  --steel:#0369a1;
+  --steel-lt:#0284c7;
+  --steel-glow:rgba(3,105,161,.15);
+  --steel-subtle:rgba(3,105,161,.07);
 
-  /* Shadows — soft and subtle */
-  --sh-sm:0 1px 4px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
-  --sh-md:0 4px 16px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.07);
-  --sh-lg:0 8px 32px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.08);
-  --sh-xl:0 16px 48px rgba(0,0,0,.14),0 6px 16px rgba(0,0,0,.09);
-  --sh-copper:0 0 24px rgba(192,90,16,.12);
+  /* Status */
+  --emerald:#007a3d;
+  --emerald-lt:#009e50;
+  --amber:#c47f00;
+  --amber-lt:#d99000;
+  --crimson:#c8001a;
+  --violet:#5c2d9e;
+  --violet-lt:#7340b8;
+  --teal:#006d7a;
+
+  /* Shadows */
+  --sh-sm:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);
+  --sh-md:0 3px 12px rgba(0,0,0,.14),0 2px 5px rgba(0,0,0,.09);
+  --sh-lg:0 6px 24px rgba(0,0,0,.16),0 3px 8px rgba(0,0,0,.10);
+  --sh-xl:0 12px 40px rgba(0,0,0,.18),0 5px 12px rgba(0,0,0,.11);
+  --sh-copper:0 0 20px rgba(0,119,168,.15);
 }
 
 /* Light mode body */
@@ -146,33 +150,33 @@ html[data-theme="light"] body::before{
 
 /* Topbar backdrop in light mode */
 html[data-theme="light"] .topbar{
-  background:rgba(255,255,255,.92);
+  background:rgba(234,238,243,.95);
   border-bottom:1px solid var(--bd-1);
 }
 
 /* Sidebar in light mode */
 html[data-theme="light"] .sidebar{
-  background:#ffffff;
+  background:#eaeef3;
   border-right:1px solid var(--bd-1);
-  box-shadow:2px 0 12px rgba(0,0,0,.06);
+  box-shadow:2px 0 8px rgba(0,0,0,.10);
 }
 
 /* Sidebar clock area */
 html[data-theme="light"] .sb-clock{
-  background:#f5f7fb;
+  background:#e2e7ed;
   border-top:1px solid var(--bd-1);
 }
 
 /* Login screen background in light mode */
 html[data-theme="light"] #login-screen{
-  background:linear-gradient(135deg,#e8ecf4 0%,#f2f5fb 50%,#eef1f8 100%);
+  background:linear-gradient(135deg,#c8d0da 0%,#d8dde4 50%,#cdd4dd 100%);
 }
 
 /* Login card in light mode */
 html[data-theme="light"] .login-card{
-  background:#ffffff;
-  border:1px solid rgba(0,0,0,.10);
-  box-shadow:0 8px 40px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.07);
+  background:#f0f3f7;
+  border:1px solid rgba(0,0,0,.15);
+  box-shadow:0 4px 20px rgba(0,0,0,.14),0 2px 6px rgba(0,0,0,.09);
 }
 
 /* Form inputs in light mode */
@@ -182,8 +186,8 @@ html[data-theme="light"] .field input,
 html[data-theme="light"] .search-input,
 html[data-theme="light"] .qty-input,
 html[data-theme="light"] input[type="datetime-local"]{
-  background:#ffffff;
-  border:1px solid rgba(0,0,0,.15);
+  background:#f5f7fa;
+  border:1px solid rgba(0,0,0,.18);
   color:var(--tx-1);
 }
 html[data-theme="light"] .form-input::placeholder,
@@ -198,9 +202,9 @@ html[data-theme="light"] .field select option{
 
 /* Tables in light mode */
 html[data-theme="light"] .dt th{
-  background:#f5f7fb;
-  color:var(--tx-2);
-  border-bottom:1px solid var(--bd-1);
+  background:#d5dbe3;
+  color:var(--tx-1);
+  border-bottom:1px solid var(--bd-2);
 }
 html[data-theme="light"] .dt td{
   border-bottom:1px solid rgba(0,0,0,.05);
@@ -210,7 +214,7 @@ html[data-theme="light"] .dt tr:hover td{
   background:#eef2fb;
 }
 html[data-theme="light"] .excel-tbl thead tr th{
-  background:#f0f3fa;
+  background:#c8d0da;
   color:var(--tx-1);
   border-bottom:2px solid var(--bd-copper);
 }
@@ -236,10 +240,10 @@ html[data-theme="light"] .excel-tbl thead .excel-row-num{
 
 /* Scrollbar in light mode */
 html[data-theme="light"] ::-webkit-scrollbar-thumb{
-  background:#c8cfe0;
+  background:#9aaabb;
 }
 html[data-theme="light"] ::-webkit-scrollbar-thumb:hover{
-  background:#aab2c8;
+  background:#7a8fa0;
 }
 
 /* Badges — ensure readability in light mode */
@@ -279,24 +283,24 @@ html[data-theme="light"] .row-pill{
 
 /* Modal */
 html[data-theme="light"] .modal{
-  background:#ffffff;
-  border:1px solid rgba(0,0,0,.12);
+  background:#eaeef3;
+  border:1px solid rgba(0,0,0,.18);
 }
 
 /* Topbar after-gradient */
 html[data-theme="light"] .topbar::after{
-  background:linear-gradient(90deg,transparent,rgba(192,90,16,.12),transparent);
+  background:linear-gradient(90deg,transparent,rgba(0,119,168,.12),transparent);
 }
 
 /* Notif panel */
 html[data-theme="light"] #notif-panel{
-  background:#ffffff;
-  border:1px solid rgba(0,0,0,.12);
-  box-shadow:0 8px 32px rgba(0,0,0,.12);
+  background:#eaeef3;
+  border:1px solid rgba(0,0,0,.15);
+  box-shadow:0 8px 24px rgba(0,0,0,.16);
 }
 html[data-theme="light"] .notif-hd{
-  background:#f5f7fb;
-  border-bottom:1px solid var(--bd-1);
+  background:#d8dde4;
+  border-bottom:1px solid var(--bd-2);
 }
 
 /* ============================================================
@@ -313,7 +317,7 @@ html[data-theme="light"] .notif-hd{
   user-select:none;
 }
 #topbar-clock-chip .tb-time{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:13px;font-weight:500;
   letter-spacing:1.5px;
   color:var(--tx-1);
@@ -335,7 +339,7 @@ html[data-theme="light"] .notif-hd{
   flex-shrink:0;
 }
 #topbar-clock-chip .tb-shift-label{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:9px;font-weight:600;
   letter-spacing:1.5px;text-transform:uppercase;
   color:var(--copper);
@@ -349,8 +353,8 @@ html[data-theme="light"] .notif-hd{
 }
 .tb-stack{ display:flex;flex-direction:column;gap:3px; }
 html[data-theme="light"] #topbar-clock-chip{
-  background:#ffffff;
-  border-color:rgba(0,0,0,.12);
+  background:#e2e7ed;
+  border-color:rgba(0,0,0,.18);
 }
 
 #theme-toggle{
@@ -360,7 +364,7 @@ html[data-theme="light"] #topbar-clock-chip{
   border:1px solid var(--bd-1);
   background:var(--bg-03);
   color:var(--tx-2);
-  font-family:'Barlow',sans-serif;
+  font-family:'Outfit',sans-serif;
   font-size:11px;font-weight:600;letter-spacing:.3px;
   cursor:pointer;
   transition:all .22s var(--ease);
@@ -385,8 +389,8 @@ html[data-theme="light"] #topbar-clock-chip{
 html[data-theme="light"] #theme-toggle .icon-sun{display:block}
 html[data-theme="light"] #theme-toggle .icon-moon{display:none}
 html[data-theme="light"] #theme-toggle{
-  border-color:rgba(0,0,0,.13);
-  background:#ffffff;
+  border-color:rgba(0,0,0,.18);
+  background:#e2e7ed;
   color:var(--tx-2);
 }
 html[data-theme="light"] #theme-toggle:hover{
@@ -397,159 +401,14 @@ html[data-theme="light"] #theme-toggle:hover{
 
 html,body{height:100%;scroll-behavior:smooth;font-size:14px}
 body{
-  font-family:'Barlow',sans-serif;
+  font-family:'Outfit',sans-serif;
   background:var(--bg-base);
   color:var(--tx-1);
-  line-height:1.5;
+  line-height:1.6;
   -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
   min-height:100vh;
   overflow-x:hidden;
   overflow-y:scroll;
-  font-weight:400;
-  font-size:13.5px;
-}
-
-/* ── Industrial font tuning ── */
-/* Barlow Condensed: used for all titles, labels, badges, buttons — tight mechanical look */
-.login-brand,.sb-brand-name,.topbar-title,.card-title,.db-title,.kpi-label,
-.nav-section-label,.form-label,.modal-title,.wire-panel-title,.dz-title,
-.volvo-title,.vsub-name,.pc-name,.login-card-title,.login-submit,
-.btn,.topbar-btn,.sb-logout-btn,.nav-btn,.badge,h1,h2,h3,h4{
-  font-family:'Barlow Condensed',sans-serif;
-  letter-spacing:.4px;
-}
-/* JetBrains Mono: data, IDs, timestamps, codes — sharp engineering readout feel */
-.hist-id,.srb-id,.clk-time,.kpi-val,.nav-badge,
-code,pre,.mono,
-#powered-footer span{
-  font-family:'JetBrains Mono',monospace;
-  font-variant-numeric:tabular-nums;
-}
-/* Barlow body: UI labels, paragraphs, inputs */
-input,select,textarea,button{
-  font-family:'Barlow',sans-serif;
-}
-/* Tighten line-height for condensed titles */
-.login-brand,.topbar-title,.db-title,.card-title,.kpi-val{
-  line-height:1.1;
-}
-/* KPI values — larger, bolder, mono for instant readout */
-.kpi-val{
-  font-family:'JetBrains Mono',monospace;
-  font-size:32px;
-  font-weight:700;
-  letter-spacing:-1px;
-}
-/* Badge text tighter */
-.badge{
-  letter-spacing:.8px;
-  font-size:9.5px;
-}
-/* Nav buttons — slightly larger condensed text */
-.nav-btn{
-  font-size:13.5px;
-  font-weight:500;
-  letter-spacing:.2px;
-}
-/* Topbar title — bold condensed, industrial panel header */
-.topbar-title{
-  font-size:17px;
-  font-weight:800;
-  letter-spacing:2px;
-  text-transform:uppercase;
-}
-/* Card titles */
-.card-title{
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:1.2px;
-  text-transform:uppercase;
-}
-/* Dept banner title */
-.db-title{
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:2px;
-  text-transform:uppercase;
-}
-/* Login brand */
-.login-brand{
-  font-size:26px;
-  font-weight:900;
-  letter-spacing:5px;
-}
-/* Login card title */
-.login-card-title{
-  font-size:19px;
-  font-weight:700;
-  letter-spacing:.5px;
-}
-/* Sidebar brand */
-.sb-brand-name{
-  font-size:15px;
-  font-weight:800;
-  letter-spacing:2px;
-}
-/* Form labels — tight uppercase condensed */
-.form-label,.nav-section-label{
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:2.5px;
-}
-/* Buttons — punchy condensed */
-.login-submit{
-  font-size:15px;
-  font-weight:800;
-  letter-spacing:3px;
-}
-.btn,.topbar-btn{
-  font-size:12px;
-  font-weight:700;
-  letter-spacing:.8px;
-}
-/* Sidebar logout */
-.sb-logout-btn{
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.5px;
-}
-/* Clock display */
-.clk-time{
-  font-size:28px;
-  font-weight:400;
-  letter-spacing:2px;
-}
-/* History IDs */
-.hist-id{
-  font-size:12px;
-  font-weight:600;
-  letter-spacing:.5px;
-}
-/* Table headers */
-.dt th{
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:10.5px;
-  font-weight:700;
-  letter-spacing:1.8px;
-  text-transform:uppercase;
-}
-/* Inputs — Barlow regular, readable */
-.form-input,.search-input,.qty-input,input[type="datetime-local"]{
-  font-family:'Barlow',sans-serif;
-  font-size:13px;
-  font-weight:500;
-}
-/* Modal title */
-.modal-title{
-  font-size:16px;
-  font-weight:800;
-  letter-spacing:1px;
-}
-/* Powered footer */
-#powered-footer span{
-  font-size:9.5px;
-  letter-spacing:2.5px;
 }
 
 /* Scrollbars */
@@ -575,14 +434,14 @@ body::before{
 #login-screen::before{
   content:'';position:absolute;inset:0;
   background:
-    radial-gradient(ellipse 60% 50% at 30% 50%, rgba(224,123,57,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 30% 50%, rgba(0,180,216,.07) 0%, transparent 60%),
     radial-gradient(ellipse 50% 60% at 75% 30%, rgba(74,158,255,.06) 0%, transparent 55%);
 }
 #login-screen::after{
   content:'';position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(224,123,57,.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(224,123,57,.035) 1px, transparent 1px);
+    linear-gradient(rgba(0,180,216,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,180,216,.03) 1px, transparent 1px);
   background-size:48px 48px;
   animation:gridDrift 30s linear infinite;
 }
@@ -590,7 +449,7 @@ body::before{
 
 .login-wire-line{
   position:absolute;pointer-events:none;
-  height:1px;background:linear-gradient(90deg,transparent,rgba(224,123,57,.3),transparent);
+  height:1px;background:linear-gradient(90deg,transparent,rgba(0,180,216,.28),transparent);
   animation:wireSlide linear infinite;opacity:0;
 }
 @keyframes wireSlide{
@@ -612,7 +471,7 @@ body::before{
   width:68px;height:68px;
   background:linear-gradient(135deg,var(--copper-dk),var(--copper));
   border-radius:18px;margin-bottom:18px;
-  box-shadow:0 12px 40px rgba(224,123,57,.35),0 0 0 1px rgba(224,123,57,.25);
+  box-shadow:0 12px 40px rgba(0,180,216,.32),0 0 0 1px rgba(0,180,216,.25);
   animation:logoPulse 5s ease-in-out infinite;
   position:relative;overflow:hidden;
 }
@@ -620,10 +479,10 @@ body::before{
   content:'';position:absolute;inset:0;
   background:linear-gradient(135deg,rgba(255,255,255,.18),transparent 60%);
 }
-@keyframes logoPulse{0%,100%{box-shadow:0 12px 40px rgba(224,123,57,.35),0 0 0 1px rgba(224,123,57,.25)}50%{box-shadow:0 12px 48px rgba(224,123,57,.5),0 0 0 1px rgba(224,123,57,.35)}}
+@keyframes logoPulse{0%,100%{box-shadow:0 12px 40px rgba(0,180,216,.32),0 0 0 1px rgba(0,180,216,.25)}50%{box-shadow:0 12px 48px rgba(0,180,216,.5),0 0 0 1px rgba(0,180,216,.32)}}
 .login-logo svg{width:34px;height:34px;position:relative;z-index:1}
 
-.login-brand{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--tx-1)}
+.login-brand{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--tx-1)}
 .login-brand em{color:var(--copper);font-style:normal}
 .login-version{font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--tx-3);margin-top:5px}
 
@@ -637,9 +496,9 @@ body::before{
 }
 .login-card::before{
   content:'';position:absolute;top:0;left:20%;right:20%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(224,123,57,.5),transparent);
+  background:linear-gradient(90deg,transparent,rgba(0,180,216,.5),transparent);
 }
-.login-card-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--tx-1);margin-bottom:3px}
+.login-card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--tx-1);margin-bottom:3px}
 .login-card-sub{font-size:12px;color:var(--tx-3);margin-bottom:24px}
 
 .form-group{margin-bottom:14px}
@@ -654,7 +513,7 @@ body::before{
   border:1px solid var(--bd-1);
   border-radius:var(--r-md);
   color:var(--tx-1);font-size:13px;
-  font-family:'Barlow',sans-serif;
+  font-family:'Outfit',sans-serif;
   transition:all .2s var(--ease);outline:none;
 }
 .form-input::placeholder{color:var(--tx-4)}
@@ -664,7 +523,7 @@ body::before{
 .login-submit{
   width:100%;margin-top:22px;padding:14px;
   background:linear-gradient(135deg,var(--copper-dk),var(--copper));
-  color:#fff;font-family:'Barlow Condensed',sans-serif;
+  color:#fff;font-family:'Syne',sans-serif;
   font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
   border:none;border-radius:var(--r-md);cursor:pointer;
   transition:all .25s var(--ease);
@@ -676,7 +535,7 @@ body::before{
   opacity:0;transition:opacity .2s;
 }
 .login-submit:hover::after{opacity:1}
-.login-submit:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(224,123,57,.4)}
+.login-submit:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,180,216,.38)}
 .login-submit:active{transform:translateY(0)}
 .login-footer{text-align:center;margin-top:18px;font-size:10px;color:var(--tx-4);letter-spacing:.5px}
 
@@ -694,7 +553,6 @@ body::before{
   transform:translateX(0);
   transition:transform .32s cubic-bezier(.16,1,.3,1);
   will-change:transform;
-  padding-bottom:32px; /* clear the fixed powered-footer bar */
 }
 /* Hidden state — fully off-screen */
 .sidebar.hidden{
@@ -717,10 +575,10 @@ body::before{
   border-radius:10px;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
-  box-shadow:0 4px 14px rgba(224,123,57,.3);
+  box-shadow:0 4px 14px rgba(0,180,216,.28);
 }
 .sb-icon svg{width:19px;height:19px}
-.sb-brand-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx-1);line-height:1.2}
+.sb-brand-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx-1);line-height:1.2}
 .sb-brand-ver{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--tx-3);margin-top:2px}
 
 
@@ -737,7 +595,7 @@ body::before{
   border-radius:var(--r-md);
   background:rgba(255,71,87,.06);
   color:#e05c6a;
-  font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;
+  font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;
   cursor:pointer;transition:all .18s var(--ease);
   text-align:left;white-space:nowrap;overflow:hidden;
   margin-top:6px;
@@ -770,7 +628,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   background:linear-gradient(135deg,#1d4ed8,var(--steel));
   border-radius:9px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;
   flex-shrink:0;
   box-shadow:0 2px 8px rgba(74,158,255,.3);
 }
@@ -790,7 +648,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   border-radius:var(--r-md);
   background:transparent;
   color:var(--tx-3);
-  font-family:'Barlow',sans-serif;font-size:13px;font-weight:500;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;
   cursor:pointer;transition:all .15s var(--ease);
   text-align:left;position:relative;
   margin-bottom:2px;
@@ -812,10 +670,10 @@ html[data-theme="light"] .sb-logout-btn:hover{
   margin-left:auto;
   font-size:10px;font-weight:700;
   padding:2px 7px;border-radius:20px;
-  font-family:'JetBrains Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   min-width:20px;text-align:center;
 }
-.nb-copper{background:rgba(224,123,57,.15);color:var(--copper);border:1px solid rgba(224,123,57,.25)}
+.nb-copper{background:rgba(0,180,216,.15);color:var(--copper);border:1px solid rgba(0,180,216,.25)}
 .nb-crimson{background:rgba(255,71,87,.15);color:var(--crimson);border:1px solid rgba(255,71,87,.25)}
 .nb-steel{background:rgba(74,158,255,.15);color:var(--steel-lt);border:1px solid rgba(74,158,255,.25)}
 .nb-emerald{background:rgba(0,214,143,.15);color:var(--emerald);border:1px solid rgba(0,214,143,.25)}
@@ -828,15 +686,15 @@ html[data-theme="light"] .sb-logout-btn:hover{
   background:var(--bg-surface);
 }
 .clk-time{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:26px;font-weight:400;color:var(--tx-1);
   letter-spacing:1.5px;line-height:1;
 }
 .clk-date{font-size:10px;color:var(--tx-3);margin-top:4px;letter-spacing:.3px}
 .shift-tag{
   display:inline-flex;align-items:center;gap:5px;margin-top:8px;
-  background:rgba(224,123,57,.07);
-  border:1px solid rgba(224,123,57,.15);
+  background:rgba(0,180,216,.07);
+  border:1px solid rgba(0,180,216,.15);
   color:var(--copper);font-size:9px;font-weight:700;
   letter-spacing:1.5px;text-transform:uppercase;
   padding:3px 9px;border-radius:20px;
@@ -873,11 +731,11 @@ html[data-theme="light"] .sb-logout-btn:hover{
 }
 .topbar::after{
   content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(224,123,57,.15),transparent);
+  background:linear-gradient(90deg,transparent,rgba(0,180,216,.15),transparent);
   pointer-events:none;
 }
 .topbar-title{
-  font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;
+  font-family:'Syne',sans-serif;font-size:16px;font-weight:700;
   letter-spacing:1px;text-transform:uppercase;color:var(--tx-1);flex:1;
 }
 .menu-toggle{
@@ -895,7 +753,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   font-size:11px;font-weight:600;letter-spacing:.3px;
   cursor:pointer;border:1px solid var(--bd-1);
   background:var(--bg-03);color:var(--tx-2);
-  font-family:'Barlow',sans-serif;transition:all .2s;
+  font-family:'Outfit',sans-serif;transition:all .2s;
 }
 .topbar-btn:hover{border-color:var(--copper);color:var(--copper);background:var(--copper-subtle)}
 .topbar-btn svg{width:12px;height:12px}
@@ -941,7 +799,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 }
 .kpi-icon svg{width:16px;height:16px}
 .kpi-val{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:30px;font-weight:600;
   color:var(--tx-1);line-height:1;
   margin-bottom:4px;letter-spacing:-1px;
@@ -968,7 +826,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   flex-wrap:wrap;gap:8px;
 }
 .card-title{
-  font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
   letter-spacing:1.5px;text-transform:uppercase;color:var(--tx-1);
 }
 .card-body{padding:16px 18px}
@@ -984,7 +842,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .badge-amber{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
 .badge-crimson{background:rgba(255,71,87,.1);color:#ff8090;border:1px solid rgba(255,71,87,.2)}
 .badge-grey{background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid var(--bd-1)}
-.badge-copper{background:rgba(224,123,57,.1);color:var(--copper);border:1px solid rgba(224,123,57,.2)}
+.badge-copper{background:rgba(0,180,216,.1);color:var(--copper);border:1px solid rgba(0,180,216,.2)}
 .badge-violet{background:rgba(168,85,247,.1);color:var(--violet-lt);border:1px solid rgba(168,85,247,.2)}
 .badge-teal{background:rgba(20,184,166,.1);color:var(--teal);border:1px solid rgba(20,184,166,.2)}
 
@@ -1011,7 +869,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .db-wpa{background:linear-gradient(135deg,#071c35,#0b4264)}
 .db-twist{background:linear-gradient(135deg,#1a0830,#3c1080)}
 .db-title{
-  font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:800;
   letter-spacing:1.5px;text-transform:uppercase;color:#fff;
 }
 .db-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
@@ -1022,7 +880,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   padding:8px 15px;
   background:var(--bg-03);border:1px solid var(--bd-1);
   border-radius:var(--r-md);color:var(--tx-2);
-  font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;
+  font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;
   cursor:pointer;transition:all .2s var(--ease);
   margin-bottom:14px;text-decoration:none;
 }
@@ -1050,8 +908,8 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .project-card:hover{border-color:var(--bd-2);transform:translateY(-3px);box-shadow:var(--sh-md)}
 .project-card.has-data{border-color:rgba(0,214,143,.18)}
 .project-card.has-data:hover{border-color:rgba(0,214,143,.35)}
-.project-card.volvo-main{border-color:rgba(224,123,57,.2)}
-.project-card.volvo-main:hover{border-color:rgba(224,123,57,.4);box-shadow:0 8px 28px rgba(224,123,57,.1)}
+.project-card.volvo-main{border-color:rgba(0,180,216,.2)}
+.project-card.volvo-main:hover{border-color:rgba(0,180,216,.38);box-shadow:0 8px 28px rgba(0,180,216,.1)}
 
 .pc-bar{height:3px;width:100%}
 .pc-body{padding:16px}
@@ -1059,16 +917,16 @@ html[data-theme="light"] .sb-logout-btn:hover{
   width:40px;height:40px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
   margin-bottom:12px;
-  font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:800;
   letter-spacing:1px;color:#fff;flex-shrink:0;
 }
-.pc-name{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--tx-1);margin-bottom:2px}
+.pc-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--tx-1);margin-bottom:2px}
 .pc-sub{font-size:11px;color:var(--tx-3)}
 .pc-foot{
   display:flex;align-items:center;justify-content:space-between;
   margin-top:12px;padding-top:10px;border-top:1px solid var(--bd-1);
 }
-.pc-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx-3)}
+.pc-count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--tx-3)}
 .pc-count.has{color:var(--emerald);font-weight:600}
 .pc-arrow{
   width:24px;height:24px;background:var(--bg-03);
@@ -1081,8 +939,8 @@ html[data-theme="light"] .sb-logout-btn:hover{
 
 /*  Volvo subs  */
 .volvo-header{
-  background:linear-gradient(135deg,rgba(224,123,57,.07),rgba(224,123,57,.03));
-  border:1px solid rgba(224,123,57,.18);
+  background:linear-gradient(135deg,rgba(0,180,216,.07),rgba(0,180,216,.03));
+  border:1px solid rgba(0,180,216,.18);
   border-radius:var(--r-lg);padding:18px 22px;
   margin-bottom:18px;display:flex;align-items:center;gap:14px;
 }
@@ -1091,22 +949,22 @@ html[data-theme="light"] .sb-logout-btn:hover{
   background:linear-gradient(135deg,var(--copper-dk),var(--copper));
   border-radius:12px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;
+  font-family:'Syne',sans-serif;font-size:17px;font-weight:800;
   color:var(--bg-base);flex-shrink:0;
-  box-shadow:0 4px 16px rgba(224,123,57,.25);
+  box-shadow:0 4px 16px rgba(0,180,216,.25);
 }
-.volvo-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx-1)}
+.volvo-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx-1)}
 .volvo-sub{font-size:11px;color:var(--tx-3);margin-top:2px}
 .volvo-subs{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:9px;margin-bottom:20px}
 .vsub-card{
   background:var(--bg-card);
-  border:1px solid rgba(224,123,57,.14);
+  border:1px solid rgba(0,180,216,.14);
   border-left:3px solid var(--copper);
   border-radius:var(--r-md);padding:13px;
   cursor:pointer;transition:all .2s var(--ease);
 }
-.vsub-card:hover{background:var(--bg-card-hover);border-color:rgba(224,123,57,.3);transform:translateY(-2px);box-shadow:0 4px 16px rgba(224,123,57,.08)}
-.vsub-name{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--tx-1);margin-bottom:3px}
+.vsub-card:hover{background:var(--bg-card-hover);border-color:rgba(0,180,216,.28);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,180,216,.08)}
+.vsub-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--tx-1);margin-bottom:3px}
 .vsub-meta{font-size:11px;color:var(--tx-3)}
 
 /*  Breadcrumb  */
@@ -1117,7 +975,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   border-radius:20px;border:1px solid transparent;
   transition:all .15s;letter-spacing:.3px;
 }
-.bc-item:hover{color:var(--copper);background:var(--copper-subtle);border-color:rgba(224,123,57,.18)}
+.bc-item:hover{color:var(--copper);background:var(--copper-subtle);border-color:rgba(0,180,216,.18)}
 .bc-item.active{color:var(--tx-1);cursor:default;background:var(--bg-03);border-color:var(--bd-1)}
 .bc-sep{color:var(--tx-4);font-size:14px}
 
@@ -1127,7 +985,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   margin-bottom:14px;flex-wrap:wrap;gap:10px;
 }
 .level-title{
-  font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;
+  font-family:'Syne',sans-serif;font-size:16px;font-weight:700;
   letter-spacing:.8px;text-transform:uppercase;
   color:var(--tx-1);display:flex;align-items:center;gap:9px;
 }
@@ -1139,7 +997,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   font-size:11px;font-weight:600;letter-spacing:.3px;
   cursor:pointer;transition:all .2s;
   position:relative;overflow:hidden;
-  font-family:'Barlow',sans-serif;
+  font-family:'Outfit',sans-serif;
 }
 .upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .upload-btn-primary{background:var(--steel);color:#fff;border:none}
@@ -1151,7 +1009,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .search-input{
   padding:7px 12px;background:var(--bg-03);
   border:1px solid var(--bd-1);border-radius:var(--r-sm);
-  font-size:11px;font-family:'Barlow',sans-serif;
+  font-size:11px;font-family:'Outfit',sans-serif;
   color:var(--tx-1);outline:none;width:200px;transition:all .2s;
 }
 .search-input::placeholder{color:var(--tx-4)}
@@ -1174,7 +1032,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   border:1px solid rgba(74,158,255,.2);
 }
 .dz-icon svg{width:24px;height:24px}
-.dz-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--tx-1);margin-bottom:5px}
+.dz-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--tx-1);margin-bottom:5px}
 .dz-sub{font-size:12px;color:var(--tx-3);line-height:1.7}
 .dz-hint{
   display:inline-flex;align-items:center;gap:5px;margin-top:12px;
@@ -1213,9 +1071,9 @@ html[data-theme="light"] .sb-logout-btn:hover{
 }
 .dt tr:last-child td{border-bottom:none}
 .dt tr:hover td{background:var(--bg-03)}
-.dt td.mono{font-family:'JetBrains Mono',monospace;color:var(--steel-lt);font-size:11px;font-weight:500}
+.dt td.mono{font-family:'IBM Plex Mono',monospace;color:var(--steel-lt);font-size:11px;font-weight:500}
 .row-pill{
-  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;
   padding:2px 7px;border-radius:20px;
   background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid var(--bd-1);
 }
@@ -1238,7 +1096,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   padding:5px 12px;border:none;border-radius:var(--r-sm);
   font-size:11px;font-weight:700;letter-spacing:.3px;
   cursor:pointer;transition:all .15s;
-  font-family:'Barlow',sans-serif;
+  font-family:'Outfit',sans-serif;
 }
 .select-btn:hover{opacity:.85;transform:translateX(2px)}
 
@@ -1255,11 +1113,11 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .excel-toolbar-left{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .excel-title-label{font-size:11px;font-weight:600;color:var(--tx-2);display:flex;align-items:center;gap:6px}
 .excel-filename{
-  font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--copper);
-  background:rgba(224,123,57,.07);padding:2px 7px;
-  border-radius:4px;border:1px solid rgba(224,123,57,.14);
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--copper);
+  background:rgba(0,180,216,.07);padding:2px 7px;
+  border-radius:4px;border:1px solid rgba(0,180,216,.14);
 }
-.excel-rowcount{font-size:10px;color:var(--tx-3);font-family:'JetBrains Mono',monospace}
+.excel-rowcount{font-size:10px;color:var(--tx-3);font-family:'IBM Plex Mono',monospace}
 
 .excel-scroll{
   overflow-x:auto;overflow-y:auto;max-height:420px;
@@ -1271,7 +1129,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 
 .excel-tbl{
   border-collapse:collapse;width:max-content;min-width:100%;
-  font-family:'JetBrains Mono',monospace;font-size:12px;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;
 }
 .excel-row-num{
   position:sticky;left:0;z-index:3;
@@ -1330,7 +1188,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   display:flex;align-items:center;justify-content:space-between;
   flex-wrap:wrap;gap:9px;
 }
-.wire-panel-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#fff}
+.wire-panel-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#fff}
 .wire-panel-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
 .wire-panel-body{padding:18px 20px}
 
@@ -1346,7 +1204,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   flex-shrink:0;box-shadow:0 2px 8px rgba(74,158,255,.4);
 }
 .srb-icon svg{width:13px;height:13px;color:#fff}
-.srb-id{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--steel-lt)}
+.srb-id{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--steel-lt)}
 .srb-meta{font-size:10px;color:var(--tx-3);margin-top:2px}
 .srb-clear{
   width:26px;height:26px;background:var(--bg-03);
@@ -1363,13 +1221,13 @@ html[data-theme="light"] .sb-logout-btn:hover{
   border-bottom:1px solid var(--bd-1);flex-wrap:wrap;gap:6px;
 }
 .wit-label{font-size:11px;font-weight:600;color:var(--tx-2)}
-.sel-count{font-size:11px;font-weight:700;color:var(--steel-lt);font-family:'JetBrains Mono',monospace}
+.sel-count{font-size:11px;font-weight:700;color:var(--steel-lt);font-family:'IBM Plex Mono',monospace}
 .wit-actions{display:flex;gap:5px}
 .small-btn{
   padding:4px 10px;background:var(--bg-03);
   border:1px solid var(--bd-1);border-radius:5px;
   font-size:10px;font-weight:600;color:var(--tx-2);
-  cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif;
+  cursor:pointer;transition:all .15s;font-family:'Outfit',sans-serif;
 }
 .small-btn:hover{border-color:var(--steel-lt);color:var(--steel-lt)}
 
@@ -1377,7 +1235,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   width:60px;padding:4px 7px;
   background:var(--bg-03);border:1px solid var(--bd-1);
   border-radius:6px;font-size:11px;
-  font-family:'JetBrains Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   text-align:center;color:var(--tx-1);outline:none;transition:all .15s;
 }
 .qty-input:focus{border-color:var(--steel-lt);box-shadow:0 0 0 2px rgba(74,158,255,.1)}
@@ -1389,7 +1247,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .field select,.field input{
   width:100%;padding:9px 12px;background:var(--bg-03);
   border:1px solid var(--bd-1);border-radius:var(--r-sm);
-  font-family:'Barlow',sans-serif;font-size:12px;color:var(--tx-1);
+  font-family:'Outfit',sans-serif;font-size:12px;color:var(--tx-1);
   outline:none;transition:all .15s;
 }
 .field select:focus,.field input:focus{border-color:var(--copper);box-shadow:0 0 0 3px var(--copper-subtle)}
@@ -1397,7 +1255,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 
 .submit-btn{
   width:100%;padding:13px;color:#fff;
-  font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
   letter-spacing:1.5px;text-transform:uppercase;
   border:none;border-radius:var(--r-md);
   cursor:pointer;transition:all .25s var(--ease);
@@ -1426,7 +1284,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .rc-normal{border-left-color:var(--emerald)}
 
 .rc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;flex-wrap:wrap;gap:5px}
-.rc-id{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--steel-lt)}
+.rc-id{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--steel-lt)}
 .rc-meta{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .rc-items{display:flex;flex-direction:column;gap:4px;margin:9px 0}
 .rc-item{
@@ -1446,12 +1304,12 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .sd-progress{background:var(--steel-lt);animation:dotPulse 1.5s ease-in-out infinite;box-shadow:0 0 6px rgba(74,158,255,.4)}
 .sd-done{background:var(--emerald);box-shadow:0 0 6px rgba(0,214,143,.4)}
 @keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.3}}
-.time-label{font-size:10px;color:var(--tx-4);font-family:'JetBrains Mono',monospace}
+.time-label{font-size:10px;color:var(--tx-4);font-family:'IBM Plex Mono',monospace}
 
 .btn-row{display:flex;gap:7px;margin-top:9px}
 .btn{
   flex:1;padding:8px 11px;border:none;border-radius:var(--r-sm);
-  font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;
+  font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;
   letter-spacing:.3px;cursor:pointer;transition:all .2s var(--ease);text-align:center;
 }
 .btn:hover{transform:translateY(-1px)}
@@ -1491,7 +1349,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .hist-table td{padding:9px 13px;font-size:12px;color:var(--tx-2);border-bottom:1px solid rgba(255,255,255,.025);transition:background .1s}
 .hist-table tr:last-child td{border-bottom:none}
 .hist-table tr:hover td{background:var(--bg-03)}
-.hist-table .mono{font-family:'JetBrains Mono',monospace;color:var(--steel-lt);font-size:10px}
+.hist-table .mono{font-family:'IBM Plex Mono',monospace;color:var(--steel-lt);font-size:10px}
 
 /* Expandable history entries */
 .hist-entry{background:var(--bg-card);border:1px solid var(--bd-1);border-radius:var(--r-lg);margin-bottom:9px;overflow:hidden;transition:all .2s var(--ease);cursor:pointer}
@@ -1500,11 +1358,11 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .hist-row{display:flex;align-items:center;gap:10px;padding:12px 16px;flex-wrap:wrap}
 .hist-chevron{width:16px;height:16px;color:var(--tx-3);flex-shrink:0;transition:transform .25s var(--ease)}
 .hist-entry.expanded .hist-chevron{transform:rotate(90deg)}
-.hist-id{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--copper);flex-shrink:0;min-width:130px}
+.hist-id{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--copper);flex-shrink:0;min-width:130px}
 .hist-wires{font-size:12px;color:var(--tx-1);flex:1;min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hist-project{font-size:10px;color:var(--tx-3);background:var(--bg-03);border:1px solid var(--bd-1);padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
 .hist-dept-badge{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 7px;border-radius:20px;flex-shrink:0}
-.hist-datetime{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx-3);flex-shrink:0;text-align:right;line-height:1.5}
+.hist-datetime{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--tx-3);flex-shrink:0;text-align:right;line-height:1.5}
 .hist-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .hist-details{border-top:1px solid var(--bd-1);background:var(--bg-01);padding:16px 18px;display:none}
 .hist-entry.expanded .hist-details{display:block}
@@ -1520,8 +1378,8 @@ html[data-theme="light"] .sb-logout-btn:hover{
 @keyframes htPulse{0%,100%{box-shadow:0 0 0 0 rgba(74,158,255,.4)}50%{box-shadow:0 0 0 6px rgba(74,158,255,0)}}
 .ht-body{padding:4px 0 16px;flex:1}
 .ht-label{font-size:11px;font-weight:600;color:var(--tx-1);margin-bottom:2px}
-.ht-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--tx-3)}
-.ht-duration{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:12px;background:rgba(224,123,57,.07);color:var(--copper);border:1px solid rgba(224,123,57,.14);margin-top:3px}
+.ht-time{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--tx-3)}
+.ht-duration{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:12px;background:rgba(0,180,216,.07);color:var(--copper);border:1px solid rgba(0,180,216,.14);margin-top:3px}
 .ht-sub{font-size:10px;color:var(--tx-3);margin-top:3px}
 
 .hist-wire-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:9px}
@@ -1547,7 +1405,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   padding:5px 11px;border-radius:6px;
   font-size:10px;font-weight:700;letter-spacing:.3px;
   cursor:pointer;border:none;transition:all .2s var(--ease);
-  font-family:'Barlow',sans-serif;
+  font-family:'Outfit',sans-serif;
 }
 .wbtn:hover{transform:translateY(-1px)}
 .wbtn-ok{background:var(--emerald);color:var(--bg-base)}.wbtn-ok:hover{box-shadow:0 3px 10px rgba(0,214,143,.4)}
@@ -1566,14 +1424,14 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .perf-row{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--bd-1);margin-bottom:10px}
 .perf-row:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
 .perf-k{font-size:11px;color:var(--tx-3)}
-.perf-v{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--tx-1)}
+.perf-v{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--tx-1)}
 .prog-bar{background:var(--bg-04);border-radius:4px;height:3px;overflow:hidden;margin-top:12px}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--steel),var(--teal));border-radius:4px;transition:width .5s var(--ease)}
 
 /* Low stock alerts */
 .alert-item{display:flex;align-items:center;justify-content:space-between;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.14);border-radius:8px;padding:9px 13px;margin-bottom:7px}
 .alert-name{font-size:12px;font-weight:600;color:var(--amber-lt)}
-.alert-stock{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--crimson)}
+.alert-stock{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--crimson)}
 .alert-ok{font-size:12px;color:var(--emerald);font-weight:500;display:flex;align-items:center;gap:5px}
 
 /*  CHARTS  */
@@ -1585,7 +1443,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
   background:linear-gradient(to top,var(--steel),rgba(74,158,255,.3));
   box-shadow:0 0 12px rgba(74,158,255,.18);
 }
-.bar-val{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--steel-lt);white-space:nowrap}
+.bar-val{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--steel-lt);white-space:nowrap}
 .bar-lbl{font-size:10px;color:var(--tx-3)}
 
 .donut-wrap{display:flex;align-items:center;gap:20px;padding:16px 18px}
@@ -1596,7 +1454,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .wbar-name{flex:1;color:var(--tx-2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wbar-track{width:80px;height:4px;background:var(--bg-04);border-radius:3px;overflow:hidden}
 .wbar-fill{height:100%;border-radius:3px;transition:width .5s var(--ease)}
-.wbar-count{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--tx-2);min-width:18px;text-align:right}
+.wbar-count{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--tx-2);min-width:18px;text-align:right}
 
 /*  TABS  */
 .tab-row{display:flex;gap:7px;margin-bottom:18px;flex-wrap:wrap}
@@ -1624,7 +1482,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 }
 @keyframes modalPop{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .modal-hd{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#fff}
+.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#fff}
 .modal-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
 .modal-close{
   width:30px;height:30px;background:rgba(255,255,255,.07);
@@ -1663,7 +1521,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 
 /*  SECTION INTRO  */
 .section-intro{margin-bottom:20px}
-.section-heading{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--tx-1);margin-bottom:5px}
+.section-heading{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--tx-1);margin-bottom:5px}
 .section-subtext{font-size:12px;color:var(--tx-3)}
 
 /*  SIDEBAR OVERLAY  */
@@ -1673,19 +1531,19 @@ html[data-theme="light"] .sb-logout-btn:hover{
 /* Fulfill stats */
 .fulfill-stats{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
 .fulfill-stat{flex:1;min-width:75px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:var(--r-md);padding:12px;text-align:center}
-.fulfill-stat-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--tx-1)}
+.fulfill-stat-val{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;color:var(--tx-1)}
 .fulfill-stat-lbl{font-size:9px;color:var(--tx-3);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
 
 /*  PAGINATION  */
 .pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--bd-1);background:var(--bg-02);flex-wrap:wrap;gap:8px}
-.pagination-info{font-size:11px;color:var(--tx-3);font-family:'JetBrains Mono',monospace}
+.pagination-info{font-size:11px;color:var(--tx-3);font-family:'IBM Plex Mono',monospace}
 .pagination-btns{display:flex;gap:5px}
 .pg-btn{
   width:30px;height:30px;background:var(--bg-03);
   border:1px solid var(--bd-1);border-radius:var(--r-sm);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;color:var(--tx-3);font-size:11px;font-weight:600;
-  transition:all .15s;font-family:'JetBrains Mono',monospace;
+  transition:all .15s;font-family:'IBM Plex Mono',monospace;
 }
 .pg-btn:hover{border-color:var(--copper);color:var(--copper)}
 .pg-btn.active{background:var(--copper);border-color:var(--copper);color:#fff}
@@ -1799,7 +1657,7 @@ html[data-theme="light"] .sb-logout-btn:hover{
 .notif-body{flex:1;min-width:0}
 .notif-title{font-size:12px;font-weight:600;color:var(--tx-1);line-height:1.3}
 .notif-sub{font-size:11px;color:var(--tx-3);margin-top:2px;line-height:1.4}
-.notif-time{font-size:10px;color:var(--tx-4);margin-top:4px;font-family:'JetBrains Mono',monospace}
+.notif-time{font-size:10px;color:var(--tx-4);margin-top:4px;font-family:'IBM Plex Mono',monospace}
 .notif-empty{text-align:center;padding:32px 16px;color:var(--tx-4);font-size:12px}
 
 /* ============================================================
@@ -1845,7 +1703,7 @@ html[data-theme="light"] #global-loader {
   animation: btnSpin 0.7s linear infinite;
 }
 .loader-text {
-  font-family: 'Barlow', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-size: 12px; font-weight: 600;
   color: var(--tx-2); letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -1933,7 +1791,7 @@ html[data-theme="light"] #global-loader {
 /* -- Improved pagination -- */
 .pg-btn:hover:not(:disabled):not(.active) {
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(224,123,57,.25);
+  box-shadow: 0 2px 8px rgba(0,180,216,.25);
 }
 
 /* -- datetime-local inputs styled for dark/light themes -- */
@@ -2015,7 +1873,7 @@ html[data-theme="light"] input[type="datetime-local"] { color-scheme: light; }
 
 /* -- Wire table search highlight -- */
 .excel-tbl td.search-match {
-  background: rgba(224,123,57,.07) !important;
+  background: rgba(0,180,216,.07) !important;
 }
 
 /* -- Improved sort icon in dt headers -- */
@@ -2083,7 +1941,7 @@ html[data-theme="light"] .no-results-row td {
 </div> <!--  APP  -->
 <div id="app"> <div class="sb-overlay" id="sb-overlay" onclick="closeSB()"></div> <aside class="sidebar"> <nav class="sb-nav"> <div class="nav-section"> <span class="nav-section-label">Overview</span> <button class="nav-btn active" onclick="switchPage('analytics',this)" data-page="analytics" data-label="Analytics"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Analytics
         </button> <button class="nav-btn" onclick="switchPage('history',this)" data-page="history" data-label="Order History"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History<span class="nav-badge nb-copper" id="b-history">0</span> </button> </div> <div class="nav-section"> <span class="nav-section-label">Departments</span> <button class="nav-btn" onclick="switchPage('assembly',this)" data-page="assembly" data-label="Assembly"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Assembly<span class="nav-badge nb-copper" id="b-assembly">0</span> </button> <button class="nav-btn" onclick="switchPage('pagoda',this)" data-page="pagoda" data-label="Pagoda Hub"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> Pagoda Hub<span class="nav-badge nb-crimson" id="b-pagoda">0</span> </button> <button class="nav-btn" onclick="switchPage('cutting',this)" data-page="cutting" data-label="Cutting"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg> Cutting<span class="nav-badge nb-steel" id="b-cutting">0</span> </button> <button class="nav-btn" onclick="switchPage('wpa',this)" data-page="wpa" data-label="Wire Prep Area"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Wire Prep Area<span class="nav-badge nb-teal" id="b-wpa">0</span> </button> <button class="nav-btn" onclick="switchPage('twist',this)" data-page="twist" data-label="Twist"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg> Twist<span class="nav-badge nb-violet" id="b-twist">0</span> </button> </nav>
- <div style="padding:10px 10px 42px;border-top:1px solid var(--bd-1);background:var(--bg-surface);flex-shrink:0">
+ <div style="padding:10px 10px 14px;border-top:1px solid var(--bd-1);background:var(--bg-surface)">
    <button class="sb-logout-btn" onclick="doLogout()" data-label="Logout">
      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
      <span class="sb-logout-label">Logout</span>
@@ -2105,7 +1963,7 @@ html[data-theme="light"] .no-results-row td {
   <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
   <span id="theme-toggle-label">Light</span>
 </button> <button class="topbar-btn" data-action="refresh" id="refresh-btn" title="Refresh all data"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.41"/></svg> Refresh
-      </button> </header> <!--  ANALYTICS  --> <div id="page-analytics" class="page active"> <div class="kpi-grid"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="kpi-val" id="a-total">0</div><div class="kpi-label">Total Requests</div></div> <div class="kpi-card kpi-emerald kpi-clickable" onclick="showStatusModal('completed')" title="Click to see completed requests"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="a-done">0</div><div class="kpi-label">Completed</div><div class="kpi-click-hint">Click to view ↗</div></div> <div class="kpi-card kpi-amber kpi-clickable" onclick="showStatusModal('pending')" title="Click to see pending requests"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="a-pending">0</div><div class="kpi-label">Pending</div><div class="kpi-click-hint">Click to view ↗</div></div> <div class="kpi-card kpi-teal kpi-clickable" onclick="showStatusModal('in_progress')" title="Click to see in-progress requests"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="a-prog">0</div><div class="kpi-label">In Progress</div><div class="kpi-click-hint">Click to view ↗</div></div> </div> <div class="two-col" style="margin-bottom:16px"> <div class="card"><div class="card-head"><div class="card-title">Daily Requests — Last 7 Days</div><span class="badge badge-steel">Live</span></div><div style="padding:18px"><div class="bar-track" id="daily-chart"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">Department Workload</div></div><div class="donut-wrap"><svg width="100" height="100" viewBox="0 0 100 100" id="donut-svg"><circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="12"/></svg><div id="donut-legend"></div></div></div> </div> <div class="two-col"> <div class="card"><div class="card-head"><div class="card-title">Top Requested Wires</div></div><div class="card-body" id="top-wires"></div></div> <div class="card"><div class="card-head"><div class="card-title">Requests by Project</div></div><div class="card-body" id="proj-chart"></div></div> </div> </div> <!--  HISTORY  --> <div id="page-history" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#090e1c,#0e1d38)"> <div> <div class="db-title" style="display:flex;align-items:center;gap:9px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--copper)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History
+      </button> </header> <!--  ANALYTICS  --> <div id="page-analytics" class="page active"> <div class="kpi-grid"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="kpi-val" id="a-total">0</div><div class="kpi-label">Total Requests</div></div> <div class="kpi-card kpi-emerald kpi-clickable" onclick="showStatusModal('completed')" title="Click to see completed requests"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="a-done">0</div><div class="kpi-label">Completed</div><div class="kpi-click-hint">Click to view ↗</div></div> <div class="kpi-card kpi-amber kpi-clickable" onclick="showStatusModal('pending')" title="Click to see pending requests"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="a-pending">0</div><div class="kpi-label">Pending</div><div class="kpi-click-hint">Click to view ↗</div></div> <div class="kpi-card kpi-teal kpi-clickable" onclick="showStatusModal('in_progress')" title="Click to see in-progress requests"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="a-prog">0</div><div class="kpi-label">In Progress</div><div class="kpi-click-hint">Click to view ↗</div></div> </div> <div class="two-col" style="margin-bottom:16px"> <div class="card"><div class="card-head"><div class="card-title">Daily Requests — Last 7 Days</div><span class="badge badge-steel">Live</span></div><div style="padding:18px"><div class="bar-track" id="daily-chart"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">Department Workload</div></div><div class="donut-wrap"><svg width="100" height="100" viewBox="0 0 100 100" id="donut-svg"><circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="12"/></svg><div id="donut-legend"></div></div></div> </div> <div class="two-col"> <div class="card"><div class="card-head"><div class="card-title">Top Requested Wires</div></div><div class="card-body" id="top-wires"></div></div> <div class="card"><div class="card-head"><div class="card-title">Requests by Project</div></div><div class="card-body" id="proj-chart"></div></div> </div> </div> <!--  HISTORY  --> <div id="page-history" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#0d1117,#111820)"> <div> <div class="db-title" style="display:flex;align-items:center;gap:9px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--copper)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History
           </div> <div class="db-sub">All submitted orders — click any row to expand full details</div> </div> <span class="badge badge-copper" id="hist-total-badge">0 orders</span> </div> <div class="card" style="margin-bottom:14px"> <div style="padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:10px"> <div class="search-input-wrap" id="hist-search-wrap" style="flex:1;min-width:150px;max-width:340px;display:flex">
   <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
   <input id="hist-search" type="text" class="search-input" placeholder="Search ID, wire, project, dept, status…" style="width:100%;font-size:12px;padding:8px 12px 8px 28px" oninput="(function(e){var w=document.getElementById('hist-search-wrap');if(w)w.classList.toggle('has-value',e.target.value.length>0);var t=window._histSearchTimer;clearTimeout(t);window._histSearchTimer=setTimeout(function(){renderHistoryPage();},120);})(event)">
@@ -2113,12 +1971,12 @@ html[data-theme="light"] .no-results-row td {
 </div> <select id="hist-filter-dept" class="form-input" style="width:155px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Departments</option> <option value="assembly">Assembly</option> <option value="wpa">Wire Prep Area</option> <option value="twist">Twist</option> </select> <select id="hist-filter-status" class="form-input" style="width:145px;padding:8px 12px;font-size:12px" onchange="renderHistoryPage()"> <option value="">All Statuses</option> <option value="completed">Completed</option> <option value="in_progress">In Progress</option> <option value="pending">Pending</option> </select>
 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:var(--copper);flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-  <input type="datetime-local" id="hist-filter-from" class="form-input" style="width:175px;padding:6px 10px;font-size:11px;font-family:'JetBrains Mono',monospace" onchange="renderHistoryPage()" title="From date &amp; time">
+  <input type="datetime-local" id="hist-filter-from" class="form-input" style="width:175px;padding:6px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace" onchange="renderHistoryPage()" title="From date &amp; time">
   <span style="font-size:10px;color:var(--tx-4);font-weight:600">→</span>
-  <input type="datetime-local" id="hist-filter-to" class="form-input" style="width:175px;padding:6px 10px;font-size:11px;font-family:'JetBrains Mono',monospace" onchange="renderHistoryPage()" title="To date &amp; time">
+  <input type="datetime-local" id="hist-filter-to" class="form-input" style="width:175px;padding:6px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace" onchange="renderHistoryPage()" title="To date &amp; time">
   <button onclick="clearHistDateFilter()" title="Clear date filter" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:var(--r-sm);cursor:pointer;color:var(--tx-3);transition:all .2s;flex-shrink:0" onmouseover="this.style.borderColor='var(--crimson)';this.style.color='var(--crimson)'" onmouseout="this.style.borderColor='var(--bd-1)';this.style.color='var(--tx-3)'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
 </div>
-<div style="font-size:10px;color:var(--tx-3);margin-left:auto;font-family:'JetBrains Mono',monospace" id="hist-count-label">— orders</div> </div> </div> <div id="hist-list"></div> </div> <!--  ASSEMBLY  --> <div id="page-assembly" class="page"> <div class="dept-banner db-asm"> <div><div class="db-title">Assembly Department</div><div class="db-sub">Project → Reference → Wire → Submit Request</div></div> <span class="badge badge-emerald">Request Only</span> </div> <div id="asm-request-area"></div> <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Active Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-copper" id="asm-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="asm-hist-count">0</span></div><div class="card-body" id="asm-hist"></div></div> </div> <!--  PAGODA  --> <div id="page-pagoda" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#070e28,#0e2060)"> <div><div class="db-title">Pagoda · Central Hub</div><div class="db-sub">Review all incoming requests · Mark In Stock or Out of Stock</div></div> <span class="badge badge-steel">Hub</span> </div> <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="kpi-val" id="p-pending">0</div><div class="kpi-label">Pending</div></div> </div> <div class="two-col"> <div> <div class="card"><div class="card-head"><div class="card-title">Pending Requests</div><span class="badge badge-copper" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="pagoda-hist-count">0</span></div><div class="card-body" id="pagoda-hist"></div></div> </div> <div style="display:flex;flex-direction:column;gap:14px"> <div class="card"><div class="card-head"><div class="card-title">Metrics</div></div><div class="card-body"><div class="perf-row"><span class="perf-k">Requests Today</span><span class="perf-v" id="p-today">0</span></div><div class="perf-row"><span class="perf-k">Fulfillment Rate</span><span class="perf-v" id="p-rate">0%</span></div><div class="prog-bar"><div class="prog-fill" id="p-rate-bar" style="width:0%"></div></div></div></div> </div> </div> </div> <!--  CUTTING  --> <div id="page-cutting" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#031f14,#054a30)"> <div><div class="db-title">Cutting Area</div><div class="db-sub">Simple wires routed from Pagoda when Out of Stock</div></div> </div> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="c-pending">0</div><div class="kpi-label">To Cut</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="c-prog">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="c-done">0</div><div class="kpi-label">Done Today</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="cutting-hist-count">0</span></div><div class="card-body" id="cutting-hist"></div></div> </div> <!--  WPA  --> <div id="page-wpa" class="page"> <div class="dept-banner db-wpa"><div><div class="db-title">Wire Prep Area</div><div class="db-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-teal">Request & Fulfill</span></div> <div class="tab-row"> <button id="wpa-tab-req" class="topbar-btn" style="background:var(--teal);color:var(--bg-base);border-color:var(--teal)" onclick="switchTab('wpa','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchTab('wpa','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-teal" id="wpa-fc" style="margin-left:4px">0</span></button> <button id="wpa-tab-hist" class="topbar-btn" onclick="switchTab('wpa','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="wpa-req-panel"> <div id="wpa-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active WPA Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-teal" id="wpa-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="wpa-req-hist-count">0</span></div><div class="card-body" id="wpa-req-hist"></div></div> </div> <div id="wpa-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> WPA Completed History</div><span class="badge badge-emerald" id="wpa-hist-count">0</span></div><div class="card-body" id="wpa-hist"></div></div> </div> <div id="wpa-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="wpa-xe-cnt">0</div><div class="kpi-label">XE Wires</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0"/></svg></div><div class="kpi-val" id="wpa-sp-cnt">0</div><div class="kpi-label">SP Wires</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="wpa-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="card" style="margin-bottom:14px"><div class="card-head"><div class="card-title">XE Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-list"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">SP Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-list"></div></div></div> </div> </div> <!--  TWIST  --> <div id="page-twist" class="page"> <div class="dept-banner db-twist"><div><div class="db-title">Twist Department</div><div class="db-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-violet">Request & Fulfill</span></div> <div class="tab-row"> <button id="twist-tab-req" class="topbar-btn" style="background:var(--violet);color:#fff;border-color:var(--violet)" onclick="switchTab('twist','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTab('twist','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-violet" id="twist-fc" style="margin-left:4px">0</span></button> <button id="twist-tab-hist" class="topbar-btn" onclick="switchTab('twist','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="twist-req-panel"> <div id="twist-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active Twist Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-violet" id="twist-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="twist-req-hist-count">0</span></div><div class="card-body" id="twist-req-hist"></div></div> </div> <div id="twist-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> Twist Completed History</div><span class="badge badge-emerald" id="twist-hist-count">0</span></div><div class="card-body" id="twist-hist"></div></div> </div> <div id="twist-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="twist-pend-cnt">0</div><div class="kpi-label">To Twist</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="twist-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0M3 12h18"/></svg></div><div class="kpi-val" id="twist-pairs-cnt">0</div><div class="kpi-label">Wire Pairs</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-fulfill-list"></div></div></div> </div> </div>
+<div style="font-size:10px;color:var(--tx-3);margin-left:auto;font-family:'IBM Plex Mono',monospace" id="hist-count-label">— orders</div> </div> </div> <div id="hist-list"></div> </div> <!--  ASSEMBLY  --> <div id="page-assembly" class="page"> <div class="dept-banner db-asm"> <div><div class="db-title">Assembly Department</div><div class="db-sub">Project → Reference → Wire → Submit Request</div></div> <span class="badge badge-emerald">Request Only</span> </div> <div id="asm-request-area"></div> <div class="card" style="margin-top:18px"><div class="card-head"><div class="card-title">Active Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-copper" id="asm-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="asm-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="asm-hist-count">0</span></div><div class="card-body" id="asm-hist"></div></div> </div> <!--  PAGODA  --> <div id="page-pagoda" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#0a0f1a,#0d1a38)"> <div><div class="db-title">Pagoda · Central Hub</div><div class="db-sub">Review all incoming requests · Mark In Stock or Out of Stock</div></div> <span class="badge badge-steel">Hub</span> </div> <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16h12a2 2 0 0 0 2-2V8z"/></svg></div><div class="kpi-val" id="p-pending">0</div><div class="kpi-label">Pending</div></div> </div> <div class="two-col"> <div> <div class="card"><div class="card-head"><div class="card-title">Pending Requests</div><span class="badge badge-copper" id="p-req-count">0</span></div><div class="card-body"><div class="req-list" id="pagoda-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="pagoda-hist-count">0</span></div><div class="card-body" id="pagoda-hist"></div></div> </div> <div style="display:flex;flex-direction:column;gap:14px"> <div class="card"><div class="card-head"><div class="card-title">Metrics</div></div><div class="card-body"><div class="perf-row"><span class="perf-k">Requests Today</span><span class="perf-v" id="p-today">0</span></div><div class="perf-row"><span class="perf-k">Fulfillment Rate</span><span class="perf-v" id="p-rate">0%</span></div><div class="prog-bar"><div class="prog-fill" id="p-rate-bar" style="width:0%"></div></div></div></div> </div> </div> </div> <!--  CUTTING  --> <div id="page-cutting" class="page"> <div class="dept-banner" style="background:linear-gradient(135deg,#061410,#0a2a1e)"> <div><div class="db-title">Cutting Area</div><div class="db-sub">Simple wires routed from Pagoda when Out of Stock</div></div> </div> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="c-pending">0</div><div class="kpi-label">To Cut</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="c-prog">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-emerald"><div class="kpi-icon" style="background:rgba(0,214,143,.12);color:var(--emerald)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="kpi-val" id="c-done">0</div><div class="kpi-label">Done Today</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Cutting Requests</div></div><div class="card-body"><div class="req-list" id="cutting-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="cutting-hist-count">0</span></div><div class="card-body" id="cutting-hist"></div></div> </div> <!--  WPA  --> <div id="page-wpa" class="page"> <div class="dept-banner db-wpa"><div><div class="db-title">Wire Prep Area</div><div class="db-sub">XE & SP wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-teal">Request & Fulfill</span></div> <div class="tab-row"> <button id="wpa-tab-req" class="topbar-btn" style="background:var(--teal);color:var(--bg-base);border-color:var(--teal)" onclick="switchTab('wpa','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="wpa-tab-fulfill" class="topbar-btn" onclick="switchTab('wpa','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-teal" id="wpa-fc" style="margin-left:4px">0</span></button> <button id="wpa-tab-hist" class="topbar-btn" onclick="switchTab('wpa','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="wpa-req-panel"> <div id="wpa-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active WPA Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-teal" id="wpa-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="wpa-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="wpa-req-hist-count">0</span></div><div class="card-body" id="wpa-req-hist"></div></div> </div> <div id="wpa-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> WPA Completed History</div><span class="badge badge-emerald" id="wpa-hist-count">0</span></div><div class="card-body" id="wpa-hist"></div></div> </div> <div id="wpa-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="wpa-xe-cnt">0</div><div class="kpi-label">XE Wires</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0"/></svg></div><div class="kpi-val" id="wpa-sp-cnt">0</div><div class="kpi-label">SP Wires</div></div> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="wpa-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> </div> <div class="card" style="margin-bottom:14px"><div class="card-head"><div class="card-title">XE Requests</div></div><div class="card-body"><div class="req-list" id="wpa-xe-list"></div></div></div> <div class="card"><div class="card-head"><div class="card-title">SP Requests</div></div><div class="card-body"><div class="req-list" id="wpa-sp-list"></div></div></div> </div> </div> <!--  TWIST  --> <div id="page-twist" class="page"> <div class="dept-banner db-twist"><div><div class="db-title">Twist Department</div><div class="db-sub">Twisted wires · Create requests to Pagoda · Fulfill assigned work</div></div><span class="badge badge-violet">Request & Fulfill</span></div> <div class="tab-row"> <button id="twist-tab-req" class="topbar-btn" style="background:var(--violet);color:#fff;border-color:var(--violet)" onclick="switchTab('twist','req')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Request</button> <button id="twist-tab-fulfill" class="topbar-btn" onclick="switchTab('twist','fulfill')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>Assigned Work<span class="nav-badge nb-violet" id="twist-fc" style="margin-left:4px">0</span></button> <button id="twist-tab-hist" class="topbar-btn" onclick="switchTab('twist','hist')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</button> </div> <div id="twist-req-panel"> <div id="twist-request-area"></div> <div class="card"><div class="card-head"><div class="card-title">Active Twist Requests</div><span class="badge badge-steel">Live</span><span class="badge badge-violet" id="twist-active-count" style="margin-left:4px">0</span></div><div class="card-body"><div class="req-list" id="twist-req-list"></div></div></div> <div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title"> Completed History</div><span class="badge badge-emerald" id="twist-req-hist-count">0</span></div><div class="card-body" id="twist-req-hist"></div></div> </div> <div id="twist-hist-panel" style="display:none"> <div class="card"><div class="card-head"><div class="card-title"> Twist Completed History</div><span class="badge badge-emerald" id="twist-hist-count">0</span></div><div class="card-body" id="twist-hist"></div></div> </div> <div id="twist-fulfill-panel" style="display:none"> <div class="three-col"> <div class="kpi-card kpi-amber"><div class="kpi-icon" style="background:rgba(245,158,11,.12);color:var(--amber)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-val" id="twist-pend-cnt">0</div><div class="kpi-label">To Twist</div></div> <div class="kpi-card kpi-teal"><div class="kpi-icon" style="background:rgba(20,184,166,.12);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="kpi-val" id="twist-prog-cnt">0</div><div class="kpi-label">In Progress</div></div> <div class="kpi-card kpi-steel"><div class="kpi-icon" style="background:rgba(74,158,255,.12);color:var(--steel-lt)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0M3 12h18"/></svg></div><div class="kpi-val" id="twist-pairs-cnt">0</div><div class="kpi-label">Wire Pairs</div></div> </div> <div class="card"><div class="card-head"><div class="card-title">Twist Requests</div></div><div class="card-body"><div class="req-list" id="twist-req-fulfill-list"></div></div></div> </div> </div>
 
 </div><!-- closes .main -->
 <div id="toast"></div>
@@ -2801,7 +2659,7 @@ function renderRefsLevel(dept){
   const totalPages=Math.ceil(filteredRefs.length/perPage);
   const pageRefs=filteredRefs.slice((page-1)*perPage,page*perPage);
 
-  let html=`${backBtn(dept,isVolvoSub?'volvo_subs':'projects',isVolvoSub?'← Back to VOLVO Projects':'← Back to Projects')}${renderBreadcrumb(dept)}<div class="ref-section"><div class="level-header"><div class="level-title"><div style="width:28px;height:28px;background:${color};border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;box-shadow:0 2px 8px ${color}44">${label.split(' ')[0].slice(0,2).toUpperCase()}</div><span>${label}</span>${pStore.refs.length>0?`<span class="badge badge-emerald">${pStore.refs.length} loaded</span>`:''}</div><div class="level-actions">`;
+  let html=`${backBtn(dept,isVolvoSub?'volvo_subs':'projects',isVolvoSub?'← Back to VOLVO Projects':'← Back to Projects')}${renderBreadcrumb(dept)}<div class="ref-section"><div class="level-header"><div class="level-title"><div style="width:28px;height:28px;background:${color};border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:'Syne',sans-serif;font-size:10px;font-weight:800;box-shadow:0 2px 8px ${color}44">${label.split(' ')[0].slice(0,2).toUpperCase()}</div><span>${label}</span>${pStore.refs.length>0?`<span class="badge badge-emerald">${pStore.refs.length} loaded</span>`:''}</div><div class="level-actions">`;
   if(pStore.refs.length>0){
     html+=`<div class="search-input-wrap ${searchTerm?'has-value':''}"><svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" class="search-input" id="${dept}-ref-search" placeholder="Search references…" value="${searchTerm}" autocomplete="off" spellcheck="false" oninput="handleSearch(event,'refs','${dept}')"><button type="button" class="search-clear-btn" onclick="clearSearch('${dept}-ref-search','refs','${dept}')" title="Clear search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:10px;height:10px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`;
     if(isAdmin()){
@@ -2821,7 +2679,7 @@ function renderRefsLevel(dept){
     const allCols = pageRefs.length > 0 ? (pageRefs[0]._cols || []) : (pStore.refs.length > 0 ? (pStore.refs[0]._cols || []) : []);
     // Build header: all original Excel columns + Wire List + Action
     const colHeaders = allCols.map(c=>`<th>${c}<span class="sort-icon"></span></th>`).join('');
-    html+=`<div class="data-table-wrap"><div class="dt-header"><div class="dt-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${filteredRefs.length} of ${pStore.refs.length} references</div><div style="font-size:10px;color:var(--tx-3);font-family:'JetBrains Mono',monospace">Page ${page} of ${totalPages||1}</div></div><div class="dt-scroll"><table class="dt"><thead><tr>${colHeaders}<th>Wire List</th><th>Action</th></tr></thead><tbody>`;
+    html+=`<div class="data-table-wrap"><div class="dt-header"><div class="dt-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${filteredRefs.length} of ${pStore.refs.length} references</div><div style="font-size:10px;color:var(--tx-3);font-family:'IBM Plex Mono',monospace">Page ${page} of ${totalPages||1}</div></div><div class="dt-scroll"><table class="dt"><thead><tr>${colHeaders}<th>Wire List</th><th>Action</th></tr></thead><tbody>`;
     pageRefs.forEach(ref=>{
       const wires=pStore.refData[ref.id]||[];const hasWires=wires.length>0;
       // Render all original Excel columns
@@ -3385,7 +3243,7 @@ function renderPagodaRequests(){
       else if(it.pagodaStatus==='out_of_stock')tag='<span class="wst wst-oos">OOS</span>';
       return`<div class="rc-item" style="${it.pagodaStatus==='in_stock'?'border-color:rgba(0,214,143,.22)':it.pagodaStatus==='out_of_stock'?'border-color:rgba(245,158,11,.22)':''}"><span class="rc-item-name">${it.wireName}</span><div style="display:flex;align-items:center;gap:6px">${tag}<span class="rc-item-det">×${it.quantity} · ${it.reference} · ${typeTag(it.wireType)}</span></div></div>`;
     }).join('');
-    const progressHtml=multi&&doneCount>0?`<div style="margin:8px 0 3px"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx-3);margin-bottom:3px"><span>${doneCount}/${r.items.length} actioned</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${Math.round(doneCount/r.items.length*100)}%</span></div><div style="height:3px;background:var(--bg-04);border-radius:3px;overflow:hidden"><div style="width:${Math.round(doneCount/r.items.length*100)}%;height:100%;background:linear-gradient(90deg,var(--emerald),var(--teal));border-radius:3px;transition:width .4s"></div></div></div>`:'';
+    const progressHtml=multi&&doneCount>0?`<div style="margin:8px 0 3px"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx-3);margin-bottom:3px"><span>${doneCount}/${r.items.length} actioned</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${Math.round(doneCount/r.items.length*100)}%</span></div><div style="height:3px;background:var(--bg-04);border-radius:3px;overflow:hidden"><div style="width:${Math.round(doneCount/r.items.length*100)}%;height:100%;background:linear-gradient(90deg,var(--emerald),var(--teal));border-radius:3px;transition:width .4s"></div></div></div>`:'';
     return`<div class="req-card rc-${r.urgency}"><div class="rc-top"><span class="rc-id">${r.id}</span><div class="rc-meta">${urgBadge(r.urgency)}<span class="badge badge-grey">${r.project}</span><span class="badge badge-steel">from ${r.requestedBy.toUpperCase()}</span></div></div><div class="rc-items">${itemsHtml}</div>${progressHtml}<div class="rc-foot"><div class="status-pill"><span class="s-dot sd-pending"></span>Awaiting action</div><span class="time-label">${timeAgo(r.time)}</span></div><div class="btn-row">${multi?`<button class="btn btn-primary" onclick="openPagodaModal('${r.id}')">Review Items (${r.items.length})</button>`:`<button class="btn btn-success" onclick="markInStock('${r.id}')">In Stock</button><button class="btn btn-amber" onclick="markOOS('${r.id}')">Out of Stock</button>`}</div></div>`;
   }).join('');
   loadHistory('pagoda-hist','pagoda','assignedTo');
@@ -3401,7 +3259,7 @@ function openPagodaModal(reqId){
     // Always use fresh r to reflect latest state after each button click
     const r=requests.find(x=>x.id===reqId)||{items:[]};
     const done=doneCount();const pct=r.items.length?Math.round(done/r.items.length*100):0;
-    return`<div class="mbar"><span>${done} of ${r.items.length} actioned</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%"></div></div><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div> ${r.items.map((it,idx)=>{
+    return`<div class="mbar"><span>${done} of ${r.items.length} actioned</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div> ${r.items.map((it,idx)=>{
       const st=it.pagodaStatus;
       const tag=st==='in_stock'?'<span class="wst wst-in">In Stock</span>':st==='out_of_stock'?'<span class="wst wst-oos">Out of Stock</span>':'';
       const btns=!st?`<button class="wbtn wbtn-ok" onclick="setPagodaItem('${reqId}',${idx},'in_stock')">In Stock</button><button class="wbtn wbtn-oos" onclick="setPagodaItem('${reqId}',${idx},'out_of_stock')">OOS</button>`:`<button class="wbtn wbtn-undo" onclick="setPagodaItem('${reqId}',${idx},null)">Undo</button>`;
@@ -3417,7 +3275,7 @@ function openPagodaModal(reqId){
     const done=doneCount();const fb=document.getElementById('pm-finalize');
     if(fb){fb.disabled=done<fr.items.length;fb.style.opacity=done<fr.items.length?'0.4':'1';fb.textContent=done<fr.items.length?`Finalize (${done}/${fr.items.length})`:'Finalize & Route';}
   }
-  modal.innerHTML=`<div class="modal" style="max-width:620px"><div class="modal-hd" style="background:linear-gradient(135deg,#070e28,#0e2060)"><div><div class="modal-title">${r.id} · Wire Review</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · from ${r.requestedBy.toUpperCase()}</div></div><button class="modal-close" onclick="closePM()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="pm-body">${body()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closePM()" style="flex:0;padding:8px 18px">Cancel</button><button class="btn btn-success" id="pm-finalize" onclick="finalizePagoda('${r.id}')" style="flex:1;opacity:0.4" disabled>Finalize</button></div></div>`;
+  modal.innerHTML=`<div class="modal" style="max-width:620px"><div class="modal-hd" style="background:linear-gradient(135deg,#0a0f1a,#0d1a38)"><div><div class="modal-title">${r.id} · Wire Review</div><div class="modal-sub">${r.project} · ${r.urgency.toUpperCase()} · from ${r.requestedBy.toUpperCase()}</div></div><button class="modal-close" onclick="closePM()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="modal-body" id="pm-body">${body()}</div><div class="modal-footer"><button class="btn btn-outline" onclick="closePM()" style="flex:0;padding:8px 18px">Cancel</button><button class="btn btn-success" id="pm-finalize" onclick="finalizePagoda('${r.id}')" style="flex:1;opacity:0.4" disabled>Finalize</button></div></div>`;
   modal._refresh=refresh;document.body.appendChild(modal);refresh();
 }
 function closePM(){const m=document.getElementById('pagoda-modal');if(m){m.style.opacity='0';m.style.transition='opacity .15s';setTimeout(()=>{m.remove();renderPagodaRequests();updateBadges();},160);}}
@@ -3562,7 +3420,7 @@ function updateCuttingMetrics(){
 function makeDeptCard(r,dept){
   const ip=r.status==='in_progress';const multi=r.items.length>1;const doneCount=r.items.filter(it=>it.deptStatus==='done').length;
   const deptColor=dept==='cutting'?'var(--emerald)':dept==='wpa'?'var(--teal)':'var(--violet)';
-  const progressHtml=multi&&doneCount>0?`<div style="margin:7px 0 2px"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx-3);margin-bottom:3px"><span>${doneCount}/${r.items.length} processed</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${Math.round(doneCount/r.items.length*100)}%</span></div><div style="height:3px;background:var(--bg-04);border-radius:3px;overflow:hidden"><div style="width:${Math.round(doneCount/r.items.length*100)}%;height:100%;background:${deptColor};border-radius:3px;transition:width .4s"></div></div></div>`:'';
+  const progressHtml=multi&&doneCount>0?`<div style="margin:7px 0 2px"><div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx-3);margin-bottom:3px"><span>${doneCount}/${r.items.length} processed</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${Math.round(doneCount/r.items.length*100)}%</span></div><div style="height:3px;background:var(--bg-04);border-radius:3px;overflow:hidden"><div style="width:${Math.round(doneCount/r.items.length*100)}%;height:100%;background:${deptColor};border-radius:3px;transition:width .4s"></div></div></div>`:'';
   const deptLabel=dept==='cutting'?'Cut':dept==='wpa'?'Prep':'Twist';
   const itemsHtml=r.items.map(it=>{
     let stBadge='';
@@ -3590,7 +3448,7 @@ function openDeptModal(reqId,dept){
     const r=requests.find(x=>x.id===reqId)||{items:[]};
     const done=r.items.filter(it=>it.deptStatus==='done').length;
     const pct=r.items.length?Math.round(done/r.items.length*100):0;
-    return`<div class="mbar"><span style="font-size:11px;color:var(--tx-3)">${done} of ${r.items.length} processed</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%;background:${deptColor}"></div></div><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div> ${r.items.map((it,idx)=>{
+    return`<div class="mbar"><span style="font-size:11px;color:var(--tx-3)">${done} of ${r.items.length} processed</span><div class="mbar-track"><div class="mbar-fill" style="width:${pct}%;background:${deptColor}"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${pct}%</span></div> ${r.items.map((it,idx)=>{
       const st=it.deptStatus;const isDone=st==='done';const isIP=st==='in_progress';
       const rowStyle=isDone?`border-color:rgba(0,214,143,.25);background:rgba(0,214,143,.03)`:isIP?'border-color:rgba(74,158,255,.25);background:rgba(74,158,255,.03)':'';
       const tag=isDone?`<span class="wst wst-in">${actionLabel}</span>`:isIP?'<span class="wst" style="background:rgba(74,158,255,.1);color:var(--steel-lt);border:1px solid rgba(74,158,255,.2);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">In Progress</span>':'';
@@ -3826,12 +3684,11 @@ function renderHistoryPage(){
 
   if(!container) return;
 
-  // Save which entries are currently expanded so we can restore after re-render
-  const expandedIds = new Set(
-    [...container.querySelectorAll('.hist-entry.expanded')].map(el=>el.id)
+  // Save which entries are open before re-render
+  const _expandedBefore = new Set(
+    [...container.querySelectorAll('.hist-entry.expanded')].map(el => el.id)
   );
 
-  // Remove filtering class after short delay for smooth transition
   requestAnimationFrame(()=>{
     if(!list.length){
       container.innerHTML = `<div class="empty-state" style="margin-top:32px;padding:48px 20px">
@@ -3843,8 +3700,8 @@ function renderHistoryPage(){
       </div>`;
     } else {
       container.innerHTML = list.map(r=>buildHistEntry(r)).join('');
-      // Restore previously expanded entries
-      expandedIds.forEach(id=>{
+      // Restore open entries after DOM rebuild
+      _expandedBefore.forEach(id => {
         const el = document.getElementById(id);
         if(el) el.classList.add('expanded');
       });
@@ -3857,7 +3714,7 @@ function buildHistEntry(r){
   const submitted=fmtDateTime(r.time);
   const dotColor=r.status==='completed'?'var(--emerald)':r.status==='in_progress'?'var(--steel)':'var(--amber)';
   const statusLabel=r.status==='completed'?'Completed':r.status==='in_progress'?'In Progress':'Pending';
-  const deptColors={assembly:'rgba(224,123,57,.1)',wpa:'rgba(20,184,166,.1)',twist:'rgba(168,85,247,.1)',pagoda:'rgba(74,158,255,.1)',cutting:'rgba(0,214,143,.1)'};
+  const deptColors={assembly:'rgba(0,180,216,.1)',wpa:'rgba(20,184,166,.1)',twist:'rgba(168,85,247,.1)',pagoda:'rgba(74,158,255,.1)',cutting:'rgba(0,214,143,.1)'};
   const deptTextColors={assembly:'var(--copper)',wpa:'var(--teal)',twist:'var(--violet-lt)',pagoda:'var(--steel-lt)',cutting:'var(--emerald)'};
   const dept=r.requestedBy;
   const wireNames=r.items.map(i=>i.wireName);
@@ -3903,7 +3760,7 @@ function buildHistDetails(r){
     const stepCls=dsDone?'done':dsIP?'active':'waiting';
     const doneItems=r.items.filter(i=>i.deptStatus==='done').length;
     const dsExitTs=r.completedAt?new Date(r.completedAt):null;
-    const dsDurMs=dsDone&&dsExitTs?(dsExitTs-new Date(r.time)):null;const dsDur=dsDurMs!==null?fmtDuration(dsDurMs):null;
+    const cuttingStartTs=pagodaExitTs||new Date(r.time);const dsDurMs=dsDone&&dsExitTs?(dsExitTs-cuttingStartTs):null;const dsDur=dsDurMs!==null?fmtDuration(dsDurMs):null;
     html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}"> ${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:(r.assignedTo||'?').charAt(0).toUpperCase()}
     </div></div><div class="ht-body"><div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}"> ${(r.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}</div> <div class="ht-sub">${doneItems}/${r.items.length} wire${r.items.length>1?'s':''} processed</div> ${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:''}
     </div></div>`;
@@ -3922,7 +3779,7 @@ function buildHistDetails(r){
       : it.deptStatus==='done'             ? `<span class="wst wst-in">Done \u2713</span>`
       : it.deptStatus==='in_progress'      ? `<span class="wst" style="background:rgba(74,158,255,.1);color:var(--steel-lt);border:1px solid rgba(74,158,255,.2);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">In Progress</span>`
       :                                      `<span class="wst" style="background:rgba(255,255,255,.04);color:var(--tx-3);border:1px solid var(--bd-1);font-size:8px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:20px;text-transform:uppercase">Pending</span>`;
-    return`<tr><td style="color:var(--tx-4);font-family:'JetBrains Mono',monospace;font-size:10px">${i+1}</td><td style="font-weight:600;color:var(--tx-1)">${it.wireName}</td><td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx-3)">${it.reference||'—'}</td><td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--steel-lt)">${it.quantity}</td><td>${st}</td></tr>`;
+    return`<tr><td style="color:var(--tx-4);font-family:'IBM Plex Mono',monospace;font-size:10px">${i+1}</td><td style="font-weight:600;color:var(--tx-1)">${it.wireName}</td><td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--tx-3)">${it.reference||'—'}</td><td style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--steel-lt)">${it.quantity}</td><td>${st}</td></tr>`;
   }).join('')}</tbody></table>`;
   return html;
 }
@@ -3970,15 +3827,16 @@ function loadHistory(containerId, dept, field){
   const deptColors = {assembly:'var(--copper)', wpa:'var(--teal)', twist:'var(--violet-lt)',
                       pagoda:'var(--steel-lt)', cutting:'var(--emerald)'};
 
-  // Save expanded state before re-render
-  const expandedIds = new Set(
-    [...container.querySelectorAll('.hist-entry.expanded')].map(el=>el.id)
+  // Save which entries are open before re-render
+  const _deptExpandedBefore = new Set(
+    [...container.querySelectorAll('.hist-entry.expanded')].map(el => el.id)
   );
 
   container.innerHTML = comp.map(r => {
     const dt          = fmtDateTime(r.completedAt || r.time);
     const submitDt    = fmtDateTime(r.time);
-    const entryId     = 'dh_' + r.id.replace(/[^a-z0-9]/gi,'_');
+    // Unique per container — prevents ID collisions across departments
+    const entryId     = containerId + '_' + r.id.replace(/[^a-z0-9]/gi,'_');
     const totalMs     = r.completedAt && r.time
                         ? new Date(r.completedAt) - new Date(r.time) : null;
     const dur         = totalMs !== null && totalMs > 0 ? fmtDuration(totalMs) : null;
@@ -4051,7 +3909,7 @@ function loadHistory(containerId, dept, field){
           ${(r.urgency||'').toUpperCase()}
         </span>
         ${dur ? `<span style="font-size:10px;color:var(--teal);flex-shrink:0;
-                   font-family:'JetBrains Mono',monospace">⏱ ${dur}</span>` : ''}
+                   font-family:'IBM Plex Mono',monospace">⏱ ${dur}</span>` : ''}
         <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
           <div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);
                box-shadow:0 0 6px var(--emerald)"></div>
@@ -4070,47 +3928,38 @@ function loadHistory(containerId, dept, field){
             <div>
               <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
                    color:var(--tx-4);margin-bottom:2px">Submitted</div>
-              <div style="font-size:11px;color:var(--tx-2);font-family:'JetBrains Mono',monospace">
+              <div style="font-size:11px;color:var(--tx-2);font-family:'IBM Plex Mono',monospace">
                 ${submitDt.date} ${submitDt.time}
               </div>
             </div>
             <div>
               <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
                    color:var(--tx-4);margin-bottom:2px">Completed</div>
-              <div style="font-size:11px;color:var(--emerald);font-family:'JetBrains Mono',monospace">
+              <div style="font-size:11px;color:var(--emerald);font-family:'IBM Plex Mono',monospace">
                 ${dt.date} ${dt.time}
               </div>
             </div>
             ${dur ? `<div>
               <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
                    color:var(--tx-4);margin-bottom:2px">Total Duration</div>
-              <div style="font-size:11px;color:var(--teal);font-family:'JetBrains Mono',monospace">⏱ ${dur}</div>
+              <div style="font-size:11px;color:var(--teal);font-family:'IBM Plex Mono',monospace">⏱ ${dur}</div>
             </div>` : ''}
             <div>
               <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
                    color:var(--tx-4);margin-bottom:2px">Wires</div>
-              <div style="font-size:11px;color:var(--tx-2);font-family:'JetBrains Mono',monospace">
+              <div style="font-size:11px;color:var(--tx-2);font-family:'IBM Plex Mono',monospace">
                 ${r.items.length} item${r.items.length!==1?'s':''}
               </div>
             </div>
           </div>
-
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-               color:var(--tx-4);margin-bottom:10px">
-            Wire Details (${r.items.length} item${r.items.length!==1?'s':''})
-          </div>
-          ${wireRows}
-
-          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--bd-1)">
-            ${timeline}
-          </div>
+          ${timeline}
         </div>
       </div>
     </div>`;
   }).join('');
 
-  // Restore expanded state after re-render
-  expandedIds.forEach(id=>{
+  // Restore open entries after DOM rebuild
+  _deptExpandedBefore.forEach(id => {
     const el = document.getElementById(id);
     if(el) el.classList.add('expanded');
   });
@@ -4160,7 +4009,7 @@ function renderAnalytics(){
   const dc=depts.map(d=>requests.filter(r=>r.assignedTo===d&&r.status!=='completed').length);const tot=dc.reduce((a,b)=>a+b,0)||1;const C=2*Math.PI*38;let off=0;
   const segs=depts.map((d,i)=>{const pct=dc[i]/tot;const dash=pct*C;const s=`<circle cx="50" cy="50" r="38" fill="none" stroke="${deptColors[i]}" stroke-width="11" stroke-dasharray="${dash} ${C-dash}" stroke-dashoffset="${-off}" transform="rotate(-90 50 50)" style="transition:all .6s cubic-bezier(.16,1,.3,1)" opacity="0.85"/>`;off+=dash;return s;}).join('');
   document.getElementById('donut-svg').innerHTML=`<circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="11"/>${segs}`;
-  document.getElementById('donut-legend').innerHTML=depts.map((d,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${deptColors[i]}"></div><span style="color:var(--tx-2);flex:1">${deptNames[i]}</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--tx-1)">${dc[i]}</span></div>`).join('');
+  document.getElementById('donut-legend').innerHTML=depts.map((d,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${deptColors[i]}"></div><span style="color:var(--tx-2);flex:1">${deptNames[i]}</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--tx-1)">${dc[i]}</span></div>`).join('');
   const wc={};requests.forEach(r=>r.items.forEach(it=>{wc[it.wireName]=(wc[it.wireName]||0)+it.quantity;}));
   const tw=Object.entries(wc).sort((a,b)=>b[1]-a[1]).slice(0,5);const mw=Math.max(...tw.map(x=>x[1]),1);
   document.getElementById('top-wires').innerHTML=tw.map(([n,c])=>`<div class="wbar-item"><span class="wbar-name">${n}</span><div class="wbar-track"><div class="wbar-fill" style="width:${(c/mw*100).toFixed(0)}%;background:var(--steel-lt)"></div></div><span class="wbar-count">${c}</span></div>`).join('')||'<div class="empty-state"><p>No data yet</p></div>';
@@ -4733,7 +4582,10 @@ function debouncedRefreshAll(){
         renderReqList('wpa');
         renderReqList('twist');
         if(currentPage === 'history') renderHistoryPage();
-        refreshDeptHistories();
+        // Only rebuild dept histories if no entry is currently open — prevents
+        // the 1-second close bug caused by innerHTML wiping expanded entries
+        const _anyOpen = document.querySelector('.hist-entry.expanded');
+        if(!_anyOpen) refreshDeptHistories();
       } else {
         // Even with a modal open, keep badges and background lists fresh
         renderReqList('assembly');
@@ -4763,7 +4615,7 @@ function openDbConfig(){
             </div> <div style="font-size:11px;color:var(--tx-3);margin-top:3px">Connect to your database for persistent real-time data</div> </div> <button onclick="document.getElementById('db-cfg-overlay').remove()" style="background:none;border:none;cursor:pointer;color:var(--tx-3);padding:4px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> </button> </div> <div style="padding:24px"> <div id="db-cfg-status" style="display:flex;align-items:center;gap:9px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid var(--bd-1);border-radius:8px;margin-bottom:20px;font-size:12px;color:var(--tx-3)"> ${sbReady
               ? `<span style="width:8px;height:8px;border-radius:50%;background:#00d68f;flex-shrink:0"></span> Connected to Supabase`
               : `<span style="width:8px;height:8px;border-radius:50%;background:#ff4757;flex-shrink:0"></span> Not connected — edit credentials below and reload`}
-          </div> <div style="margin-bottom:16px"> <label style="display:block;font-size:11px;font-weight:600;color:var(--tx-2);margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase">Supabase Project URL</label> <input id="cfg-url" type="text" value="${SUPABASE_URL}" style="width:100%;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:8px;padding:10px 13px;font-size:13px;color:var(--tx-1);font-family:'JetBrains Mono',monospace;outline:none;box-sizing:border-box" placeholder="https://xxxx.supabase.co"> <div style="font-size:10px;color:var(--tx-3);margin-top:5px">Supabase Dashboard → Project Settings → API</div> </div> <div style="margin-bottom:20px"> <label style="display:block;font-size:11px;font-weight:600;color:var(--tx-2);margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase">Anon / Public Key</label> <input id="cfg-key" type="password" value="${SUPABASE_ANON}" style="width:100%;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--tx-1);font-family:'JetBrains Mono',monospace;outline:none;box-sizing:border-box" placeholder="eyJhbGciOiJI..."> <div style="font-size:10px;color:var(--tx-3);margin-top:5px">The <code style="background:rgba(255,255,255,.07);padding:1px 5px;border-radius:3px">anon</code> public key — safe to use in browser</div> </div> <div style="background:rgba(74,158,255,.05);border:1px solid rgba(74,158,255,.15);border-radius:8px;padding:14px;margin-bottom:4px"> <div style="font-size:11px;font-weight:700;color:var(--steel-lt);margin-bottom:8px">Required SQL (run once in Supabase SQL Editor)</div> <pre id="db-sql" style="background:var(--bg-base);border:1px solid var(--bd-1);border-radius:6px;padding:11px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--tx-2);overflow-x:auto;margin:0;line-height:1.7;white-space:pre-wrap">-- TABLE 1: app_users (employee accounts)
+          </div> <div style="margin-bottom:16px"> <label style="display:block;font-size:11px;font-weight:600;color:var(--tx-2);margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase">Supabase Project URL</label> <input id="cfg-url" type="text" value="${SUPABASE_URL}" style="width:100%;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:8px;padding:10px 13px;font-size:13px;color:var(--tx-1);font-family:'IBM Plex Mono',monospace;outline:none;box-sizing:border-box" placeholder="https://xxxx.supabase.co"> <div style="font-size:10px;color:var(--tx-3);margin-top:5px">Supabase Dashboard → Project Settings → API</div> </div> <div style="margin-bottom:20px"> <label style="display:block;font-size:11px;font-weight:600;color:var(--tx-2);margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase">Anon / Public Key</label> <input id="cfg-key" type="password" value="${SUPABASE_ANON}" style="width:100%;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--tx-1);font-family:'IBM Plex Mono',monospace;outline:none;box-sizing:border-box" placeholder="eyJhbGciOiJI..."> <div style="font-size:10px;color:var(--tx-3);margin-top:5px">The <code style="background:rgba(255,255,255,.07);padding:1px 5px;border-radius:3px">anon</code> public key — safe to use in browser</div> </div> <div style="background:rgba(74,158,255,.05);border:1px solid rgba(74,158,255,.15);border-radius:8px;padding:14px;margin-bottom:4px"> <div style="font-size:11px;font-weight:700;color:var(--steel-lt);margin-bottom:8px">Required SQL (run once in Supabase SQL Editor)</div> <pre id="db-sql" style="background:var(--bg-base);border:1px solid var(--bd-1);border-radius:6px;padding:11px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--tx-2);overflow-x:auto;margin:0;line-height:1.7;white-space:pre-wrap">-- TABLE 1: app_users (employee accounts)
 CREATE TABLE IF NOT EXISTS app_users (
   uid TEXT PRIMARY KEY,
   full_name TEXT NOT NULL,
@@ -4821,7 +4673,7 @@ CREATE TABLE IF NOT EXISTS wire_data (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 ALTER TABLE wire_data ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "wd_allow_all" ON wire_data FOR ALL USING (true) WITH CHECK (true);</pre> <button onclick="navigator.clipboard.writeText(document.getElementById('db-sql').textContent).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy SQL',1800)})" style="margin-top:9px;padding:5px 14px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:6px;font-size:11px;font-weight:600;color:var(--tx-2);cursor:pointer;font-family:'Barlow',sans-serif">Copy SQL</button> </div> </div> <div style="padding:16px 24px;border-top:1px solid var(--bd-1);display:flex;gap:10px;justify-content:flex-end"> <button onclick="document.getElementById('db-cfg-overlay').remove()" style="padding:9px 20px;background:transparent;border:1px solid var(--bd-1);border-radius:8px;font-size:13px;font-weight:600;color:var(--tx-2);cursor:pointer">Close</button> <button onclick="applyDbConfig()" style="padding:9px 22px;background:var(--copper);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:.3px">Save & Reconnect</button> </div> </div>`;
+CREATE POLICY "wd_allow_all" ON wire_data FOR ALL USING (true) WITH CHECK (true);</pre> <button onclick="navigator.clipboard.writeText(document.getElementById('db-sql').textContent).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy SQL',1800)})" style="margin-top:9px;padding:5px 14px;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:6px;font-size:11px;font-weight:600;color:var(--tx-2);cursor:pointer;font-family:'Outfit',sans-serif">Copy SQL</button> </div> </div> <div style="padding:16px 24px;border-top:1px solid var(--bd-1);display:flex;gap:10px;justify-content:flex-end"> <button onclick="document.getElementById('db-cfg-overlay').remove()" style="padding:9px 20px;background:transparent;border:1px solid var(--bd-1);border-radius:8px;font-size:13px;font-weight:600;color:var(--tx-2);cursor:pointer">Close</button> <button onclick="applyDbConfig()" style="padding:9px 22px;background:var(--copper);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:.3px">Save & Reconnect</button> </div> </div>`;
     document.body.appendChild(modal);
   }
 }
@@ -5076,7 +4928,7 @@ function showStatusModal(status){
         const dt = fmtDateTime(r.time);
         const urgColors = {normal:'badge-emerald',urgent:'badge-amber',critical:'badge-crimson'};
         const wirePreview = r.items.slice(0,2).map(i=>`${i.quantity}× ${i.wireName}`).join(', ')+(r.items.length>2?` +${r.items.length-2} more`:'');
-        const deptBg={assembly:'rgba(224,123,57,.1)',wpa:'rgba(20,184,166,.1)',twist:'rgba(168,85,247,.1)',pagoda:'rgba(74,158,255,.1)',cutting:'rgba(0,214,143,.1)'};
+        const deptBg={assembly:'rgba(0,180,216,.1)',wpa:'rgba(20,184,166,.1)',twist:'rgba(168,85,247,.1)',pagoda:'rgba(74,158,255,.1)',cutting:'rgba(0,214,143,.1)'};
         const deptTxt={assembly:'var(--copper)',wpa:'var(--teal)',twist:'var(--violet-lt)',pagoda:'var(--steel-lt)',cutting:'var(--emerald)'};
         const entryId='sm_'+r.id.replace(/[^a-z0-9]/gi,'_');
         return`<div class="hist-entry" id="${entryId}" onclick="toggleHistEntry('${entryId}')" style="margin-bottom:8px">
@@ -5170,19 +5022,19 @@ function closeStatusModal(){
   z-index:9999;
   display:flex;align-items:center;justify-content:center;
   padding:7px 20px;
-  background:rgba(8,11,18,.92);
-  border-top:1px solid rgba(224,123,57,.18);
+  background:rgba(13,15,17,.94);
+  border-top:1px solid rgba(0,180,216,.18);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
   pointer-events:none;
   user-select:none;
 }
 html[data-theme="light"] #powered-footer{
-  background:rgba(240,242,247,.92);
-  border-top:1px solid rgba(192,90,16,.18);
+  background:rgba(216,221,228,.95);
+  border-top:1px solid rgba(0,119,168,.22);
 }
 #powered-footer span{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'IBM Plex Mono',monospace;
   font-size:10px;
   letter-spacing:2px;
   text-transform:uppercase;
