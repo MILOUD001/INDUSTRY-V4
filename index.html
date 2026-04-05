@@ -607,8 +607,13 @@ body::before{
 @keyframes shiftPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.5)}}
 
 /*  MAIN CONTENT  */
-.main{margin-left:var(--sb-w);min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1}
-
+.main {
+  margin-left: var(--sb-w);
+  width: calc(100% - var(--sb-w)); /* ✅ prevents right empty space */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 .topbar{
   position:sticky;top:0;z-index:50;
   background:rgba(8,11,18,.88);
