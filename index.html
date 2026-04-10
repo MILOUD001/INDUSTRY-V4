@@ -4600,12 +4600,13 @@ function buildHistDetails(r){
       const dsDone=ds.status==='completed';const dsIP=ds.status==='in_progress';
       const dsEntryTs=new Date(ds.time);const dsExitTs=ds.completedAt?new Date(ds.completedAt):null;
       const dsDurMs=dsDone&&dsExitTs?(dsExitTs-dsEntryTs):null;const dsDur=dsDurMs!==null?fmtDuration(dsDurMs):null;
-      const waitMs=dsEntryTs-submittedTs;const waitDur=waitMs>0?fmtDuration(waitMs):null;
+      // "Waiting since" = how long this dept has been holding the task (from when Pagoda routed it to them, until now)
+      const waitMs=!dsDone?(Date.now()-dsEntryTs):null;const waitDur=waitMs!==null&&waitMs>0?fmtDuration(waitMs):null;
       const deptCl=deptColors2[ds.assignedTo]||'var(--tx-2)';
       const stepCls=dsDone?'done':dsIP?'active':'waiting';
       const doneItems=ds.items.filter(i=>i.deptStatus==='done').length;
       html+=`<div class="ht-step"><div class="ht-dot-wrap"><div class="ht-dot ${stepCls}" style="${(dsDone||dsIP)?`border-color:${deptCl};${dsDone?`background:${deptCl}`:''}`:''}"> ${dsDone?`<svg viewBox="0 0 10 10" fill="none"><polyline points="2,5 4,7 8,3" stroke="#080b12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`:ds.assignedTo.charAt(0).toUpperCase()}
-      </div></div><div class="ht-body"><div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}"> ${(ds.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}</div> <div class="ht-sub">${doneItems}/${ds.items.length} wire${ds.items.length>1?'s':''} processed</div> ${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:waitDur?`<div class="ht-duration" style="background:rgba(255,255,255,.04);color:var(--tx-3);border-color:var(--bd-1)">⏳ Waiting since ${waitDur}</div>`:''}
+      </div></div><div class="ht-body"><div class="ht-label" style="${dsDone||dsIP?`color:${deptCl}`:''}"> ${(ds.assignedTo||'').toUpperCase()} — ${dsDone?'Completed':dsIP?'In Progress':'Pending'}</div> <div class="ht-sub">${doneItems}/${ds.items.length} wire${ds.items.length>1?'s':''} processed</div> ${dsDur?`<div class="ht-duration">⏱ Processing time: ${dsDur}</div>`:waitDur?`<div class="ht-duration" style="background:rgba(255,255,255,.04);color:var(--tx-3);border-color:var(--bd-1)">⏳ In queue for ${waitDur}</div>`:''}
         ${ds.completedAt?`<div class="ht-time" style="margin-top:3px">Completed: ${fmtDateTime(ds.completedAt).full}</div>`:''}
       </div></div>`;
     });
