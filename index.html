@@ -5870,6 +5870,398 @@ function closeStatusModal(){
 })();
 </script>
 
+<!-- ════════════════════════════════════════════════════════
+     INDUSTRIAL PROFESSIONAL UPGRADE — Dashboard Overrides
+     Siemens TIA Portal / Rockwell FactoryTalk aesthetic
+     ════════════════════════════════════════════════════════ -->
+<style>
+/* ── INDUSTRIAL PANEL SYSTEM ── */
+:root {
+  --ind-panel-bg: #0e1115;
+  --ind-panel-hd: #13171c;
+  --ind-panel-bd: rgba(0,180,216,.18);
+  --ind-grid-line: rgba(255,255,255,.04);
+  --ind-accent-h: 3px;
+  --ind-mono: 'IBM Plex Mono', monospace;
+}
+
+/* Override card to look like industrial panels */
+.card {
+  background: var(--ind-panel-bg) !important;
+  border: 1px solid var(--ind-panel-bd) !important;
+  border-radius: 0 !important;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: var(--ind-accent-h);
+  background: linear-gradient(90deg, var(--copper) 0%, var(--copper-lt) 40%, transparent 100%);
+  z-index: 1;
+}
+.card:hover {
+  border-color: rgba(0,180,216,.35) !important;
+  transform: none !important;
+}
+
+/* Card header — dark tool-bar feel */
+.card-head {
+  background: var(--ind-panel-hd) !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid rgba(0,180,216,.14) !important;
+  gap: 6px !important;
+}
+.card-head:hover { background: var(--ind-panel-hd) !important; }
+.card-title {
+  font-family: var(--ind-mono) !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: var(--tx-2) !important;
+}
+.card-body { padding: 14px 16px !important; }
+
+/* Badge overrides — more angular, industrial */
+.badge {
+  border-radius: 2px !important;
+  font-family: var(--ind-mono) !important;
+  font-size: 9px !important;
+  letter-spacing: 1.5px !important;
+  padding: 2px 7px !important;
+}
+
+/* Live badge gets a blinking LED */
+.badge-steel {
+  background: rgba(0,180,216,.06) !important;
+  color: var(--copper) !important;
+  border: 1px solid rgba(0,180,216,.3) !important;
+  position: relative;
+  padding-left: 16px !important;
+}
+.badge-steel::before {
+  content: '';
+  position: absolute; left: 6px; top: 50%; transform: translateY(-50%);
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--copper);
+  box-shadow: 0 0 6px var(--copper);
+  animation: ledBlink 1.4s ease-in-out infinite;
+}
+@keyframes ledBlink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .25; }
+}
+
+/* ── KPI CARDS — SCADA Widget Style ── */
+.kpi-grid {
+  gap: 10px !important;
+  margin-bottom: 18px !important;
+}
+.kpi-card {
+  background: var(--ind-panel-bg) !important;
+  border: 1px solid var(--ind-panel-bd) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 2px 12px rgba(0,0,0,.6) !important;
+  transition: border-color .2s !important;
+  position: relative;
+}
+.kpi-card:hover {
+  background: var(--ind-panel-bg) !important;
+  transform: none !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 2px 20px rgba(0,0,0,.7),
+              0 0 0 1px rgba(0,180,216,.3) !important;
+}
+
+/* Override the ::before top stripe with a left-side thick accent */
+.kpi-card::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 0; top: 0; bottom: 0; width: 3px !important;
+  height: 100% !important; right: auto !important;
+  border-radius: 0 !important;
+  background: none !important;
+}
+.kpi-steel::before  { background: var(--steel) !important; }
+.kpi-emerald::before{ background: var(--emerald) !important; }
+.kpi-amber::before  { background: var(--amber) !important; }
+.kpi-teal::before   { background: var(--teal) !important; }
+
+/* Hide the glow orb */
+.kpi-card::after { display: none !important; }
+
+/* Wrap content in inner padding */
+.kpi-icon {
+  width: 28px !important; height: 28px !important;
+  border-radius: 2px !important;
+  margin-bottom: 8px !important;
+  margin-left: 14px !important;
+  margin-top: 14px !important;
+}
+.kpi-val {
+  font-family: var(--ind-mono) !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  letter-spacing: -1px !important;
+  color: var(--tx-1) !important;
+  margin-bottom: 2px !important;
+  padding: 0 14px !important;
+  line-height: 1.1 !important;
+}
+.kpi-label {
+  font-family: var(--ind-mono) !important;
+  font-size: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 2px !important;
+  color: var(--tx-3) !important;
+  padding: 0 14px 14px !important;
+  display: block !important;
+}
+
+/* Click hint for clickable kpis */
+.kpi-click-hint {
+  font-family: var(--ind-mono) !important;
+  font-size: 8px !important;
+  letter-spacing: 1.5px !important;
+  padding: 3px 14px 8px !important;
+  color: var(--copper) !important;
+  opacity: 0 !important;
+  transition: opacity .2s !important;
+}
+.kpi-clickable:hover .kpi-click-hint { opacity: 1 !important; }
+.kpi-clickable:hover { border-color: rgba(0,180,216,.5) !important; cursor: pointer; }
+.kpi-clickable::after { display: none !important; }
+
+/* ── BAR CHART — Industrial histogram ── */
+.bar-track {
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 6px !important;
+  height: 150px !important;
+  padding: 20px 0 0 0 !important;
+  position: relative !important;
+  border-left: 1px solid rgba(0,180,216,.15) !important;
+  border-bottom: 1px solid rgba(0,180,216,.15) !important;
+}
+
+/* Grid lines behind bars */
+.bar-track::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--ind-grid-line) 1px, transparent 1px);
+  background-size: 100% 37.5px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bar-col {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+.bar-fill {
+  width: 80% !important;
+  border-radius: 0 !important;
+  min-height: 2px !important;
+  position: relative !important;
+  background: linear-gradient(to top,
+    var(--copper) 0%,
+    rgba(0,180,216,.45) 100%) !important;
+  box-shadow: 0 0 10px rgba(0,180,216,.22),
+              inset 0 0 0 1px rgba(0,180,216,.2) !important;
+  transition: height .7s cubic-bezier(.16,1,.3,1) !important;
+}
+.bar-fill::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--copper-lt);
+  box-shadow: 0 0 8px var(--copper);
+}
+.bar-val {
+  position: absolute !important;
+  top: -18px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  font-family: var(--ind-mono) !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  color: var(--copper-lt) !important;
+  background: rgba(0,180,216,.08) !important;
+  border: 1px solid rgba(0,180,216,.2) !important;
+  padding: 1px 4px !important;
+  white-space: nowrap !important;
+  letter-spacing: .5px !important;
+}
+.bar-lbl {
+  font-family: var(--ind-mono) !important;
+  font-size: 8px !important;
+  color: var(--tx-3) !important;
+  letter-spacing: 1px !important;
+  margin-top: 5px !important;
+  text-transform: uppercase !important;
+}
+
+/* ── DONUT / DEPT WORKLOAD ── */
+.donut-wrap {
+  padding: 16px !important;
+  align-items: flex-start !important;
+}
+#donut-svg { filter: drop-shadow(0 0 8px rgba(0,180,216,.12)); }
+.legend-item {
+  font-family: var(--ind-mono) !important;
+  font-size: 10px !important;
+  letter-spacing: .5px !important;
+  margin-bottom: 10px !important;
+  padding: 5px 8px !important;
+  border-left: 2px solid transparent !important;
+  transition: background .15s !important;
+}
+.legend-item:hover { background: rgba(255,255,255,.03) !important; }
+.legend-dot {
+  width: 8px !important; height: 8px !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 6px currentColor !important;
+  flex-shrink: 0 !important;
+}
+
+/* ── WIRE BARS (Top Wires + Projects) ── */
+.wbar-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 11px !important;
+  margin-bottom: 0 !important;
+  padding: 7px 0 !important;
+  border-bottom: 1px solid var(--ind-grid-line) !important;
+  transition: background .15s !important;
+}
+.wbar-item:last-child { border-bottom: none !important; }
+.wbar-item:hover { background: rgba(0,180,216,.03) !important; margin: 0 -16px !important; padding: 7px 16px !important; }
+.wbar-name {
+  flex: 1 !important;
+  font-family: var(--ind-mono) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  color: var(--tx-1) !important;
+  letter-spacing: .5px !important;
+}
+.wbar-track {
+  width: 120px !important;
+  height: 5px !important;
+  background: rgba(255,255,255,.05) !important;
+  border-radius: 0 !important;
+  position: relative !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+}
+.wbar-fill {
+  height: 100% !important;
+  border-radius: 0 !important;
+  transition: width .6s cubic-bezier(.16,1,.3,1) !important;
+  position: relative !important;
+}
+.wbar-fill::after {
+  content: '';
+  position: absolute; right: 0; top: -2px; bottom: -2px; width: 2px;
+  background: inherit;
+  filter: brightness(1.8);
+  box-shadow: 0 0 6px currentColor;
+}
+.wbar-count {
+  font-family: var(--ind-mono) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--tx-1) !important;
+  min-width: 32px !important;
+  text-align: right !important;
+}
+
+/* ── PANEL: Daily chart container padding ── */
+#page-analytics > .two-col > .card > div:not(.card-head) {
+  padding: 16px 16px 10px !important;
+  background: linear-gradient(180deg,
+    rgba(0,180,216,.02) 0%,
+    transparent 40%) !important;
+}
+
+/* ── KPI GRID on analytics page — status row ── */
+#page-analytics .kpi-grid {
+  border: 1px solid rgba(0,180,216,.1);
+  background: rgba(0,0,0,.2);
+  padding: 10px;
+}
+
+/* ── TWO-COL layout gap ── */
+.two-col { gap: 12px !important; }
+.three-col { gap: 10px !important; }
+
+/* ── DEPT BANNER industrial upgrade ── */
+.dept-banner {
+  border-left: 4px solid var(--copper) !important;
+  border-radius: 0 !important;
+}
+.db-title {
+  font-family: var(--ind-mono) !important;
+  letter-spacing: 2px !important;
+}
+
+/* ── LIGHT MODE overrides ── */
+html[data-theme="light"] .card {
+  background: #f0f4f8 !important;
+  border-color: rgba(0,100,140,.2) !important;
+}
+html[data-theme="light"] .card-head {
+  background: #e4eaf1 !important;
+  border-bottom-color: rgba(0,100,140,.15) !important;
+}
+html[data-theme="light"] .kpi-card {
+  background: #f0f4f8 !important;
+  border-color: rgba(0,100,140,.2) !important;
+}
+html[data-theme="light"] .bar-track {
+  border-left-color: rgba(0,100,140,.2) !important;
+  border-bottom-color: rgba(0,100,140,.2) !important;
+}
+html[data-theme="light"] .bar-fill {
+  background: linear-gradient(to top,
+    var(--copper) 0%,
+    rgba(0,150,200,.4) 100%) !important;
+}
+html[data-theme="light"] .wbar-item {
+  border-bottom-color: rgba(0,0,0,.07) !important;
+}
+html[data-theme="light"] #page-analytics .kpi-grid {
+  background: rgba(0,0,0,.04) !important;
+  border-color: rgba(0,100,140,.12) !important;
+}
+
+/* ── PAGE HEADING strip above KPI ── */
+#page-analytics::before {
+  content: '◆ SYSTEM OVERVIEW — WIRE REQUEST MANAGEMENT';
+  display: block;
+  font-family: var(--ind-mono);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: var(--tx-3);
+  text-transform: uppercase;
+  padding: 0 0 14px 0;
+  border-bottom: 1px solid var(--ind-panel-bd);
+  margin-bottom: 14px;
+}
+html[data-theme="light"] #page-analytics::before {
+  border-bottom-color: rgba(0,100,140,.18);
+  color: var(--tx-3);
+}
+</style>
+<!-- END INDUSTRIAL UPGRADE -->
+
 <!-- POWERED BY FOOTER -->
 <style>
 #powered-footer{
