@@ -2406,7 +2406,64 @@ img, svg, video, canvas {
 </style>
 </head>
 <body> <!--  LOGIN  -->
-<div id="login-screen"> <div class="login-wire-line" style="top:15%;width:60%;left:20%;animation-duration:9s;animation-delay:0s"></div> <div class="login-wire-line" style="top:35%;width:40%;left:5%;animation-duration:12s;animation-delay:2s"></div> <div class="login-wire-line" style="top:55%;width:70%;left:15%;animation-duration:8s;animation-delay:3.5s"></div> <div class="login-wire-line" style="top:75%;width:50%;left:30%;animation-duration:11s;animation-delay:1s"></div> <div class="login-wrap"> <div class="login-header"> <div class="login-logo"> <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#080b12"/><circle cx="10" cy="16" r="4" fill="#080b12"/><circle cx="22" cy="16" r="4" fill="#080b12"/><path d="M6 10L16 6l10 4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/><path d="M6 22l10 4 10-4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/></svg> </div> <div class="login-brand">MILOUD <em>EZZAKY</em></div> <div class="login-version">Industry V.7 &nbsp;·&nbsp; Wire Harness Manufacturing</div> </div> <!--  TAB SWITCHER  --> <div class="auth-tabs"> <button class="auth-tab active" id="tab-signin" onclick="showAuthPanel('signin')">Sign In</button> <button class="auth-tab" id="tab-signup" onclick="showAuthPanel('signup')">Sign Up</button> </div> <!--  SIGN IN PANEL  --> <div class="login-card" id="panel-signin"> <div class="login-card-title">Welcome Back</div> <div class="login-card-sub">Sign in with your Employee ID and password</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="si-uid" placeholder="e.g. ME-001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="si-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px"> <button type="button" onclick="togglePw('si-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> </div> <div id="si-error" class="auth-msg auth-err" style="display:none"></div> <button class="login-submit" onclick="doLogin()">Sign In →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('forgot')">Forgot password?</button> </div> </div> <!--  SIGN UP PANEL  --> <div class="login-card" id="panel-signup" style="display:none"> <div class="login-card-title">Create Account</div> <div class="login-card-sub">Register with your Gmail — login is always with Employee ID &amp; password</div> <div class="form-group"><label class="form-label">Full Name</label> <input type="text" class="form-input" id="su-name" placeholder="e.g. Ahmed Benali" autocomplete="name"> </div> <div class="form-group"><label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(used for account recovery)</span></label> <div style="position:relative"> <input type="email" class="form-input" id="su-gmail" placeholder="yourname@gmail.com" autocomplete="email" oninput="validateGmail(this)" style="padding-right:36px"> <span id="su-gmail-icon" style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none"></span> </div> <div id="su-gmail-hint" style="font-size:10px;color:var(--tx-3);margin-top:4px">Must be a @gmail.com address</div> </div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="su-uid" placeholder="e.g. ME-042" autocomplete="username"> </div> <div class="form-group"><label class="form-label">Department</label> <select id="su-dept" class="form-input" onchange="renderProjectCheckboxes()"> <option value="assembly">ASSEMBLY — Request Only</option> <option value="pagoda">PAGODA — Central Hub</option> <option value="cutting">CUTTING AREA</option> <option value="wpa">WIRE PREP AREA</option> <option value="twist">TWIST DEPARTMENT</option> </select> </div> <div class="form-group" id="su-proj-group"> <label class="form-label">Project Access <span style="color:var(--crimson)">*</span> <span style="color:var(--tx-3);font-size:9px;font-weight:400;letter-spacing:0">— select one or more</span></label> <div id="su-proj-list" style="max-height:160px;overflow-y:auto;background:var(--bg-03);border:1px solid var(--bd-1);border-radius:var(--r-sm);padding:8px 10px;display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;"></div> <div style="display:flex;gap:7px;margin-top:6px"> <button type="button" onclick="toggleAllProjects(true)" style="font-size:10px;padding:3px 9px;background:var(--bg-04);border:1px solid var(--bd-1);border-radius:5px;color:var(--tx-2);cursor:pointer">All</button> <button type="button" onclick="toggleAllProjects(false)" style="font-size:10px;padding:3px 9px;background:var(--bg-04);border:1px solid var(--bd-1);border-radius:5px;color:var(--tx-2);cursor:pointer">None</button> </div> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="su-pw" placeholder="Min 6 characters" style="padding-right:40px" oninput="checkPwStrength(this.value)"> <button type="button" onclick="togglePw('su-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="pw-strength-bar"><div id="pw-strength-fill"></div></div> <div id="pw-strength-label" style="font-size:10px;color:var(--tx-3);margin-top:3px"></div> </div> <div class="form-group"><label class="form-label">Confirm Password</label> <input type="password" class="form-input" id="su-pw2" placeholder="Repeat password"> </div> <div id="su-error" class="auth-msg auth-err" style="display:none"></div> <div id="su-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" onclick="doSignUp()">Create Account →</button> <div style="text-align:center;margin-top:14px"> <span style="font-size:11px;color:var(--tx-3)">Already have an account?</span> <button class="auth-link" onclick="showAuthPanel('signin')">Sign In</button> </div> </div> <!--  FORGOT PASSWORD PANEL  --> <div class="login-card" id="panel-forgot" style="display:none"> <div class="login-card-title">Reset Password</div> <div class="login-card-sub">Verify your identity using your Employee ID and Gmail</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="fp-uid" placeholder="e.g. ME-001"> </div> <div class="form-group" id="fp-secret-group"> <label class="form-label">Gmail Address <span style="color:var(--tx-3);font-size:10px">(registered at sign up)</span></label> <input type="email" class="form-input" id="fp-secret" placeholder="yourname@gmail.com"> </div> <div class="form-group" id="fp-newpw-group" style="display:none"> <label class="form-label">New Password</label> <div style="position:relative"> <input type="password" class="form-input" id="fp-newpw" placeholder="Min 6 characters" style="padding-right:40px"> <button type="button" onclick="togglePw('fp-newpw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> <div class="form-group" style="margin-top:10px"><label class="form-label">Confirm New Password</label> <input type="password" class="form-input" id="fp-newpw2" placeholder="Repeat new password"> </div> </div> <div id="fp-error" class="auth-msg auth-err" style="display:none"></div> <div id="fp-success" class="auth-msg auth-ok" style="display:none"></div> <button class="login-submit" id="fp-btn" onclick="doForgotStep()">Verify Identity →</button> <div style="text-align:center;margin-top:14px"> <button class="auth-link" onclick="showAuthPanel('signin')">← Back to Sign In</button> </div> </div> <div class="login-footer">© 2026 Miloud Ezzaky Industry V.7 &nbsp;·&nbsp; Project → Reference → Wire</div> </div>
+<div id="login-screen"> <div class="login-wire-line" style="top:15%;width:60%;left:20%;animation-duration:9s;animation-delay:0s"></div> <div class="login-wire-line" style="top:35%;width:40%;left:5%;animation-duration:12s;animation-delay:2s"></div> <div class="login-wire-line" style="top:55%;width:70%;left:15%;animation-duration:8s;animation-delay:3.5s"></div> <div class="login-wire-line" style="top:75%;width:50%;left:30%;animation-duration:11s;animation-delay:1s"></div> <div class="login-wrap"> <div class="login-header"> <div class="login-logo"> <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="14" width="24" height="4" rx="2" fill="#080b12"/><circle cx="10" cy="16" r="4" fill="#080b12"/><circle cx="22" cy="16" r="4" fill="#080b12"/><path d="M6 10L16 6l10 4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/><path d="M6 22l10 4 10-4" stroke="#080b12" stroke-width="2" stroke-linecap="round"/></svg> </div> <div class="login-brand">MILOUD <em>EZZAKY</em></div> <div class="login-version">Industry V.7 &nbsp;·&nbsp; Wire Harness Manufacturing</div> </div> <!--  TAB SWITCHER  -->
+        <!-- Two tabs: Admin Sign In | Operator Login -->
+        <div class="auth-tabs" style="max-width:380px">
+          <button class="auth-tab active" id="tab-signin"    onclick="showAuthPanel('signin')">Admin</button>
+          <button class="auth-tab"        id="tab-operator"  onclick="showAuthPanel('operator')">Operator</button>
+        </div> <!--  SIGN IN PANEL  --> <div class="login-card" id="panel-signin"> <div class="login-card-title">Welcome Back</div> <div class="login-card-sub">Sign in with your Employee ID and password</div> <div class="form-group"><label class="form-label">Employee ID</label> <input type="text" class="form-input" id="si-uid" placeholder="e.g. ME-001" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"> </div> <div class="form-group"><label class="form-label">Password</label> <div style="position:relative"> <input type="password" class="form-input" id="si-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px"> <button type="button" onclick="togglePw('si-pw',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--tx-3);cursor:pointer;padding:2px"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> </button> </div> </div> <div id="si-error" class="auth-msg auth-err" style="display:none"></div> <button class="login-submit" onclick="doLogin()">Sign In →</button> </div>
+        <!-- ═══════════════════════════════════════════════════
+             OPERATOR LOGIN PANEL
+             - No password needed: only Name + Matricule
+             - Then choose Department
+             - If Assembly → choose Project from dropdown
+             ═══════════════════════════════════════════════════ -->
+        <div class="login-card" id="panel-operator" style="display:none">
+          <div class="login-card-title">Operator Access</div>
+          <div class="login-card-sub">Enter your name and matricule to continue</div>
+
+          <!-- Operator full name -->
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" id="op-name" placeholder="e.g. Ahmed Benali"
+                   autocomplete="name" onkeydown="if(event.key==='Enter')doOperatorLogin()">
+          </div>
+
+          <!-- Operator matricule (ID number) — no password -->
+          <div class="form-group">
+            <label class="form-label">Matricule (ID Number)</label>
+            <input type="text" class="form-input" id="op-matricule" placeholder="e.g. 12345"
+                   autocomplete="off" onkeydown="if(event.key==='Enter')doOperatorLogin()">
+          </div>
+
+          <!-- Department selector — drives project visibility -->
+          <div class="form-group">
+            <label class="form-label">Department</label>
+            <select class="form-input" id="op-dept" onchange="onOperatorDeptChange()">
+              <option value="">— Select department —</option>
+              <option value="pagoda">Pagoda</option>
+              <option value="twist">Twist</option>
+              <option value="wpa">Preparation WPA</option>
+              <option value="assembly">Assembly</option>
+            </select>
+          </div>
+
+          <!-- Project dropdown — only shown when Assembly is selected -->
+          <div class="form-group" id="op-project-group" style="display:none">
+            <label class="form-label">Project <span style="color:var(--crimson)">*</span></label>
+            <select class="form-input" id="op-project">
+              <option value="">— Select project —</option>
+              <!-- Populated dynamically by onOperatorDeptChange() -->
+            </select>
+          </div>
+
+          <!-- Error message area -->
+          <div id="op-error" class="auth-msg auth-err" style="display:none"></div>
+
+          <button class="login-submit" onclick="doOperatorLogin()">Enter as Operator →</button>
+        </div>
+
+        <div class="login-footer">© 2026 Miloud Ezzaky Industry V.7 &nbsp;·&nbsp; Project → Reference → Wire</div> </div>
 </div> <!--  APP  -->
 <div id="app"> <div class="sb-overlay" id="sb-overlay" onclick="closeSB()"></div> <aside class="sidebar"> <nav class="sb-nav"> <div class="nav-section"> <span class="nav-section-label">Overview</span> <button class="nav-btn active" onclick="switchPage('analytics',this)" data-page="analytics" data-label="Analytics"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Analytics
         </button> <button class="nav-btn" onclick="switchPage('history',this)" data-page="history" data-label="Order History"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Order History<span class="nav-badge nb-copper" id="b-history">0</span> </button> </div> <div class="nav-section"> <span class="nav-section-label">Departments</span> <button class="nav-btn" onclick="switchPage('assembly',this)" data-page="assembly" data-label="Assembly"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Assembly<span class="nav-badge nb-copper" id="b-assembly">0</span> </button> <button class="nav-btn" onclick="switchPage('pagoda',this)" data-page="pagoda" data-label="Pagoda Hub"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> Pagoda Hub<span class="nav-badge nb-crimson" id="b-pagoda">0</span> </button> <button class="nav-btn" onclick="switchPage('cutting',this)" data-page="cutting" data-label="Cutting"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg> Cutting<span class="nav-badge nb-steel" id="b-cutting">0</span> </button> <button class="nav-btn" onclick="switchPage('wpa',this)" data-page="wpa" data-label="Wire Prep Area"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Wire Prep Area<span class="nav-badge nb-teal" id="b-wpa">0</span> </button> <button class="nav-btn" onclick="switchPage('twist',this)" data-page="twist" data-label="Twist"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M3 12h18M12 3c2 2 3 5 3 9s-1 7-3 9M12 3c-2 2-3 5-3 9s1 7 3 9"/></svg> Twist<span class="nav-badge nb-violet" id="b-twist">0</span> </button> </nav>
@@ -2639,13 +2696,11 @@ function getUsers(){
   try{return JSON.parse(localStorage.getItem('me_v7_users')||'{}');}catch(e){return {};}
 }
 function saveUsers(u){localStorage.setItem('me_v7_users',JSON.stringify(u));}
-// Seed a default admin if no users exist yet
+// Seed the hardcoded admin account
 (function seedAdmin(){
   const u=getUsers();
-  if(!u['admin']){
-    u['admin']={uid:'admin',name:'Admin',dept:'admin',pw:btoa('admin2026'),secret:'admin',createdAt:new Date().toISOString()};
-    saveUsers(u);
-  }
+  u['0624282922']={uid:'0624282922',name:'Admin',dept:'admin',pw:btoa('0672094015'),secret:'',createdAt:new Date().toISOString()};
+  saveUsers(u);
 })();
 
 //  Panel switcher 
@@ -2675,25 +2730,25 @@ function toggleAllProjects(v){
   document.querySelectorAll('#su-proj-list input[type=checkbox]').forEach(c=>c.checked=v);
 }
 function showAuthPanel(panel){
-  ['signin','signup','forgot'].forEach(p=>{
+  // Show the matching panel, hide all others
+  ['signin','operator'].forEach(p=>{
     const el=document.getElementById('panel-'+p);
     if(el)el.style.display=p===panel?'':'none';
   });
-  // Tabs (only signin/signup have tabs)
+  // Highlight the correct tab
   document.getElementById('tab-signin').classList.toggle('active',panel==='signin');
-  document.getElementById('tab-signup').classList.toggle('active',panel==='signup');
-  // Build project checkboxes when signup is shown
-  if(panel==='signup') setTimeout(renderProjectCheckboxes, 0);
-  // Reset forgot state
-  if(panel==='forgot'){
-    fpVerified=false;
-    document.getElementById('fp-newpw-group').style.display='none';
-    document.getElementById('fp-secret-group').style.display='';
-    document.getElementById('fp-btn').textContent='Verify Identity →';
-    authMsg('fp-error','');authMsg('fp-success','');
+  document.getElementById('tab-operator').classList.toggle('active',panel==='operator');
+  // Reset operator panel when navigating back to it
+  if(panel==='operator'){
+    document.getElementById('op-name').value='';
+    document.getElementById('op-matricule').value='';
+    document.getElementById('op-dept').value='';
+    document.getElementById('op-project').innerHTML='<option value="">— Select project —</option>';
+    document.getElementById('op-project-group').style.display='none';
+    authMsg('op-error','');
   }
   // Clear errors
-  ['si-error','su-error','su-success'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  ['si-error','op-error'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
 }
 
 //  Helpers 
@@ -2735,34 +2790,117 @@ function checkPwStrength(val){
   label.textContent=l.t;label.style.color=l.c;
 }
 
-//  SIGN IN 
+//  SIGN IN (Admin only — hardcoded credentials)
 async function doLogin(){
   const uid=document.getElementById('si-uid').value.trim();
   const pw=document.getElementById('si-pw').value;
-  if(!uid){authMsg('si-error','Please enter your Employee ID.');return;}
+  if(!uid){authMsg('si-error','Please enter your Admin ID.');return;}
   if(!pw){authMsg('si-error','Please enter your password.');return;}
-  // Try DB first (if connected), then fall back to localStorage
-  let user=null;
-  if(sbReady){
-    const {data,error}=await sb.from('app_users').select('*').eq('uid',uid).single();
-    if(!error&&data){
-      // Sync DB user into localStorage
-      const users=getUsers();
-      users[uid]={uid,name:data.full_name,dept:data.department,pw:data.pw_hash,secret:data.secret||'',createdAt:data.created_at};
-      saveUsers(users);
-      user=users[uid];
-    }
+  // Hardcoded admin credentials
+  if(uid==='0624282922' && pw==='0672094015'){
+    authMsg('si-error','');
+    currentUser={username:uid,department:'admin',name:'Admin',allowedProjects:null};
+    enterApp('admin');
+    return;
   }
-  if(!user){
-    const users=getUsers();
-    user=users[uid];
+  authMsg('si-error','Invalid Admin ID or password.');
+  document.getElementById('si-pw').focus();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  OPERATOR DEPARTMENT CHANGE HANDLER
+//  Called whenever the operator selects a department.
+//  Shows / hides the project dropdown and populates it
+//  dynamically from the global PROJECTS list when Assembly is picked.
+// ═══════════════════════════════════════════════════════════════════
+function onOperatorDeptChange(){
+  const dept = document.getElementById('op-dept').value;
+  const projectGroup = document.getElementById('op-project-group');
+  const projectSelect = document.getElementById('op-project');
+
+  if(dept === 'assembly'){
+    // Assembly chosen → build project list from PROJECTS constant
+    let opts = '<option value="">— Select project —</option>';
+    PROJECTS.forEach(p => {
+      if(p.isMain){
+        // VOLVO: add each sub-project as individual options
+        p.subs.forEach(sub => {
+          const val = 'VOLVO__' + sub.replace(/ /g,'_');
+          opts += `<option value="${val}">VOLVO · ${sub}</option>`;
+        });
+      } else {
+        opts += `<option value="${p.id}">${p.name}</option>`;
+      }
+    });
+    projectSelect.innerHTML = opts;
+    projectGroup.style.display = ''; // show the project dropdown
+  } else {
+    // Non-assembly departments → hide and reset project dropdown
+    projectSelect.innerHTML = '<option value="">— Select project —</option>';
+    projectGroup.style.display = 'none';
   }
-  if(!user){authMsg('si-error','Employee ID not found. Please sign up first.');return;}
-  if(!user.is_active&&user.is_active===false){authMsg('si-error','This account has been deactivated. Contact admin.');return;}
-  if(atob(user.pw)!==pw){authMsg('si-error','Incorrect password.');document.getElementById('si-pw').focus();return;}
-  authMsg('si-error','');
-  const dept=user.dept||user.department;
-  currentUser={username:uid,department:dept,name:user.name||user.full_name||uid,allowedProjects:user.allowedProjects||null};
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  OPERATOR LOGIN
+//  Validates Name + Matricule + Department (+ Project if Assembly).
+//  No password is required for operators.
+//  Sets currentUser and calls the shared enterApp() function so
+//  the rest of the app works exactly the same as admin login.
+// ═══════════════════════════════════════════════════════════════════
+function doOperatorLogin(){
+  const name       = document.getElementById('op-name').value.trim();
+  const matricule  = document.getElementById('op-matricule').value.trim();
+  const dept       = document.getElementById('op-dept').value;
+  const project    = document.getElementById('op-project').value;
+
+  // ── Validation ──────────────────────────────────────────────────
+  if(!name){
+    authMsg('op-error','Please enter your full name.');
+    return;
+  }
+  if(!matricule){
+    authMsg('op-error','Please enter your Matricule (ID number).');
+    return;
+  }
+  // Matricule must be numeric
+  if(!/^\d+$/.test(matricule)){
+    authMsg('op-error','Matricule must contain numbers only.');
+    return;
+  }
+  if(!dept){
+    authMsg('op-error','Please select your department.');
+    return;
+  }
+  // If Assembly is selected, a project must also be chosen
+  if(dept === 'assembly' && !project){
+    authMsg('op-error','Please select a project for Assembly.');
+    return;
+  }
+
+  // ── Build currentUser for the session ───────────────────────────
+  // username uses matricule as unique ID, prefixed with OP- for clarity
+  const uid = 'OP-' + matricule;
+
+  // For assembly operators, restrict allowedProjects to their chosen project only.
+  // For other departments, no project restriction is needed.
+  const allowedProjects = (dept === 'assembly' && project) ? [project] : null;
+
+  currentUser = {
+    username        : uid,
+    department      : dept,
+    name            : name,
+    allowedProjects : allowedProjects,
+    matricule       : matricule,          // extra field for display / audit
+    operatorProject : project || null,    // the selected assembly project (if any)
+    isOperator      : true               // flag to distinguish from admin accounts
+  };
+
+  // Clear any previous error
+  authMsg('op-error','');
+
+  // Hand off to the shared enterApp() which handles navigation,
+  // sidebar visibility, data loading — everything stays the same.
   enterApp(dept);
 }
 
@@ -2867,7 +3005,28 @@ async function doForgotStep(){
 
 //  ENTER APP 
 function saveSession(){
-  try{sessionStorage.setItem('me_v7_session',JSON.stringify({uid:currentUser.username,dept:currentUser.department,name:currentUser.name,allowedProjects:currentUser.allowedProjects||null}));}catch(e){}
+  try{
+    // Persist full session including operator-specific fields
+    sessionStorage.setItem('me_v7_session',JSON.stringify({
+      uid:currentUser.username,
+      dept:currentUser.department,
+      name:currentUser.name,
+      allowedProjects:currentUser.allowedProjects||null,
+      // Operator-specific fields stored for display / access control
+      matricule:currentUser.matricule||null,
+      operatorProject:currentUser.operatorProject||null,
+      isOperator:currentUser.isOperator||false
+    }));
+    // Also persist operator info to localStorage for convenience
+    if(currentUser.isOperator){
+      localStorage.setItem('me_v7_operator',JSON.stringify({
+        name:currentUser.name,
+        matricule:currentUser.matricule,
+        department:currentUser.department,
+        project:currentUser.operatorProject||null
+      }));
+    }
+  }catch(e){}
 }
 function clearSession(){
   try{sessionStorage.removeItem('me_v7_session');}catch(e){}
@@ -2918,7 +3077,11 @@ function applyDeptNav(dept){
   });
   const chip=document.getElementById('topbar-user-chip');
   if(chip){
-    chip.innerHTML=`<span style="font-weight:700;color:var(--copper)">${currentUser.name}</span><span style="opacity:.6;margin-left:6px;font-size:10px;text-transform:uppercase;letter-spacing:1px">${dept}</span>`;
+    // Show matricule badge for operators; department label for admin
+    const subLabel = currentUser.isOperator
+      ? `${dept.toUpperCase()} · #${currentUser.matricule}`
+      : dept;
+    chip.innerHTML=`<span style="font-weight:700;color:var(--copper)">${currentUser.name}</span><span style="opacity:.6;margin-left:6px;font-size:10px;text-transform:uppercase;letter-spacing:1px">${subLabel}</span>`;
     chip.style.display='flex';
   }
 }
